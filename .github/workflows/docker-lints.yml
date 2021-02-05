@@ -1,9 +1,10 @@
-name: Python application
+name: Docker Linting
 
 on: [push]
 
 jobs:
   build:
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Lint Dockerfile
