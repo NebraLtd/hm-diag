@@ -1,0 +1,12 @@
+name: Python application
+
+on: [push]
+
+jobs:
+  build:
+    steps:
+    - uses: actions/checkout@v2
+    - name: Lint Dockerfile
+      uses: brpaz/hadolint-action@v1.2.1
+      with:
+        dockerfile: Dockerfile
