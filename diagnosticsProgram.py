@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from time import sleep
 
 while True:
-    print("Starting Diag")
+    print("Diag Loop")
 
     # Variables for all Checks
 
