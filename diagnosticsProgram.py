@@ -56,14 +56,14 @@ while True:
         .readlines()[38].strip()[10:]
 
     # Get USB IDs to check for BT And Modem
-    usbids = os.popen('lsusb').read()
-
-    if "0a12:0001" in usbids:
+    btIdCheck = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
+    if "0a12" in btIdCheck:
         diagnostics["BT"] = True
     else:
         diagnostics["BT"] = False
 
-    if "2c7c:0125" in usbids:
+    lteIdCheck = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
+    if "2c7c" in btIdCheck:
         diagnostics["LTE"] = True
     else:
         diagnostics["LTE"] = False
