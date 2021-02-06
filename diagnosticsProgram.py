@@ -82,13 +82,13 @@ while True:
         miner_object = miner_bus.get_object('com.helium.Miner', '/')
         miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
         p2pstatus = miner_interface.P2PStatus()
-        print(p2pstatus)
+        #print(p2pstatus)
         diagnostics["MH"] = str(p2pstatus[3][1])
         diagnostics['MC'] = str(p2pstatus[0][1])
     except dbus.exceptions.DBusException:
         diagnostics["MH"] = "000000"
         diagnostics['MC'] = "Error"
-        print("P2PFAIl")
+        #print("P2PFAIl")
 
     try:
         public_keys_file = open("/var/data/public_keys").readline().split('"')
@@ -100,7 +100,7 @@ while True:
         diagnostics["OK"] = "Error"
         diagnostics["AN"] = "Error"
 
-    print(diagnostics)
+    #print(diagnostics)
 
     qrCodeDiagnostics = {
         "BN": diagnostics['BN'],
