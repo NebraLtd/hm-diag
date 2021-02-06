@@ -17,6 +17,8 @@ COPY Ubuntu-Bold.ttf Ubuntu-Bold.ttf
 COPY diagnosticsProgram.py diagnosticsProgram.py
 COPY genHTML.py genHTML.py
 
+WORKDIR /etc/nginx/conf.d
+COPY default.conf default.conf
 
 WORKDIR /opt/nebraDiagnostics/html/
 COPY bootstrap.min.css bootstrap.min.css
