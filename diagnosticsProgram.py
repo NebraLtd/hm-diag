@@ -35,7 +35,7 @@ while True:
     # Get wifi MAC address
     try:
         diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
-            .readline().strip()
+            .readline().strip().upper()
     except FileNotFoundError:
         diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
 
