@@ -10,6 +10,7 @@ py3-qrcode=6.1-r2 \
 py3-dbus=1.2.16-r2 \
 nginx=1.18.0-r14
 
+RUN mkdir -p /run/nginx
 RUN mkdir html
 COPY startDiag.sh startDiag.sh
 COPY Ubuntu-Bold.ttf Ubuntu-Bold.ttf
