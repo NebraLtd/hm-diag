@@ -110,6 +110,14 @@ while True:
         "RPI": diagnostics['RPI'],
         "OK": diagnostics['OK']
     }
+
+    if(dictString["ECC"] is True and dictString["E0"] != "FF:FF:FF:FF:FF:FF"
+            and dictString["W0"] != "FF:FF:FF:FF:FF:FF" and
+            dictString["BT"] is True and dictString["LOR"] is True):
+        diagnostics["PF"] = True
+    else:
+        diagnostics["PF"] = False
+        
     diagJson = json.dumps(diagnostics)
 
     with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
