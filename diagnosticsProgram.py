@@ -123,6 +123,9 @@ while True:
     with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
         diagOut.write(diagJson)
 
+    with open("/var/data/diagnostics/diagnostics.json", 'w') as diagOut:
+        diagOut.write(diagJson)
+
     qrcodeJson = str(json.dumps(qrCodeDiagnostics))
     qrcodeBytes = qrcodeJson.encode('ascii')
     qrcodeBase64 = base64.b64encode(qrcodeBytes)
