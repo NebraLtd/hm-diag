@@ -111,13 +111,13 @@ while True:
         "OK": diagnostics['OK']
     }
 
-    if(dictString["ECC"] is True and dictString["E0"] != "FF:FF:FF:FF:FF:FF"
-            and dictString["W0"] != "FF:FF:FF:FF:FF:FF" and
-            dictString["BT"] is True and dictString["LOR"] is True):
+    if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF" and
+            diagnostics["BT"] is True and diagnostics["LOR"] is True):
         diagnostics["PF"] = True
     else:
         diagnostics["PF"] = False
-        
+
     diagJson = json.dumps(diagnostics)
 
     with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
