@@ -24,7 +24,7 @@ WORKDIR /opt/nebraDiagnostics/html/
 COPY bootstrap.min.css bootstrap.min.css
 COPY index.html.template index.html.template
 
-RUN groupadd -r diag && useradd --no-log-init -r -g diag diag
+RUN addgroup -r diag && adduser --no-log-init -r -g diag diag
 
 USER diag
 
