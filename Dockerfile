@@ -24,8 +24,8 @@ WORKDIR /opt/nebraDiagnostics/html/
 COPY bootstrap.min.css bootstrap.min.css
 COPY index.html.template index.html.template
 
-RUN addgroup -r diag && adduser --no-log-init -r -g diag diag
+# RUN addgroup -r diag && adduser --no-log-init -r -g diag diag
 
-USER diag
+# USER diag
 
 ENTRYPOINT ["sh", "/opt/nebraDiagnostics/startDiag.sh"]
