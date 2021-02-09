@@ -103,8 +103,8 @@ while True:
     # print(diagnostics)
 
     qrCodeDiagnostics = {
-        "BN": diagnostics['VA'],
-        "BA": diagnostics['RE'],
+        "VA": diagnostics['VA'],
+        "RE": diagnostics['RE'],
         "E0": diagnostics['E0'],
         "W0": diagnostics['W0'],
         "RPI": diagnostics['RPI'],
