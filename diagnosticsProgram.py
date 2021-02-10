@@ -102,17 +102,30 @@ while True:
 
     # print(diagnostics)
 
+    # Check the basics if they're fine
+    if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF" and
+            diagnostics["BT"] is True and diagnostics["LOR"] is True):
+        diagnostics["PF"] = True
+    else:
+        diagnostics["PF"] = False
+
     qrCodeDiagnostics = {
-        "BN": diagnostics['BN'],
-        "BA": diagnostics['BA'],
+        "VA": diagnostics['VA'],
+        "RE": diagnostics['RE'],
         "E0": diagnostics['E0'],
         "W0": diagnostics['W0'],
         "RPI": diagnostics['RPI'],
-        "OK": diagnostics['OK']
+        "OK": diagnostics['OK'],
+        "PF": diagnostics["PF"]
     }
+
     diagJson = json.dumps(diagnostics)
 
     with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
+        diagOut.write(diagJson)
+
+    with open("/var/data/nebraDiagnostics.json", 'w') as diagOut:
         diagOut.write(diagJson)
 
     qrcodeJson = str(json.dumps(qrCodeDiagnostics))
