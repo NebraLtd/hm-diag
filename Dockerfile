@@ -3,7 +3,7 @@ FROM arm64v8/alpine:edge
 WORKDIR /opt/nebraDiagnostics/
 
 RUN apk add --no-cache \
-python3=3.8.7-r0 \
+python3=3.8.7-r2 \
 i2c-tools=4.2-r0 \
 usbutils=013-r0 \
 py3-qrcode=6.1-r2 \
