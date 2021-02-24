@@ -2,6 +2,7 @@
 
 #Run diag
 rm /opt/nebraDiagnostics/html/index.html
+rm /opt/nebraDiagnostics/html/initFile.txt
 cp /opt/nebraDiagnostics/html/index.html.template /opt/nebraDiagnostics/html/index.html
 nginx
 sleep 30
