@@ -133,7 +133,7 @@ while True:
     qrcodeBase64 = base64.b64encode(qrcodeBytes)
 
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
-        initFile.write(str(qrcodeBase64))
+        initFile.write(str(qrcodeBase64, 'ascii'))
 
     qrcodeOut = qrcode.make(qrcodeBase64)
     qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
