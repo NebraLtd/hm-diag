@@ -46,7 +46,7 @@ while True:
     diagnostics["BA"] = os.getenv('BALENA_APP_NAME')
 
     # Get Frequency
-    diagnostics["RE"] = os.getenv('REGION')
+    diagnostics["FR"] = os.getenv('FREQ')
 
     # Get Variant
     diagnostics["VA"] = os.getenv('VARIANT')
@@ -112,7 +112,7 @@ while True:
 
     qrCodeDiagnostics = {
         "VA": diagnostics['VA'],
-        "RE": diagnostics['RE'],
+        "FR": diagnostics['FR'],
         "E0": diagnostics['E0'],
         "W0": diagnostics['W0'],
         "RPI": diagnostics['RPI'],

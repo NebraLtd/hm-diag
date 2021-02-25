@@ -83,7 +83,7 @@ def generateHTML(dictString):
             </tr>
             <tr class="bg-info">
               <th>Frequency</th>
-              <td>%(RE)s</td>
+              <td>%(FR)s</td>
             </tr>
             <tr class="bg-info">
               <th>Variant</th>
