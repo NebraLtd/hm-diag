@@ -147,7 +147,7 @@ while True:
     modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
     nameString = "ID: %s" % diagnostics["BN"]
     macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["RE"]
+    freqString = "Region: %s" % diagnostics["FR"]
 
     addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
     addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
@@ -164,7 +164,7 @@ while True:
     modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
     nameString = "ID: %s" % diagnostics["BN"]
     macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["RE"]
+    freqString = "Region: %s" % diagnostics["FR"]
     addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
     addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
     addText.text((25, 100), macString, (0, 0, 0), font=fnt)
