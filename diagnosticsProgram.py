@@ -63,7 +63,7 @@ while True:
         diagnostics["BT"] = False
 
     lteIdCheck = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
-    if "2c7c" in btIdCheck:
+    if "2c7c" in lteIdCheck:
         diagnostics["LTE"] = True
     else:
         diagnostics["LTE"] = False
