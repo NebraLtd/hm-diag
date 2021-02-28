@@ -167,7 +167,7 @@ def generateHTML(dictString):
           </tbody>
         </table>
     </div>
-    <!---<div class="col">
+    <div class="col">
       <h2 class="text-center">Support QR</h2>
       <div class="text-center">
         <img src="diagnosticsQR.png" class="img-thumbnail">
@@ -175,7 +175,7 @@ def generateHTML(dictString):
       <!---<div class="text-center">
         <img src="productLabel.png" class="img-thumbnail">
       </div>--->
-    </div>-->
+    </div>
   </div>
   <hr/>
 

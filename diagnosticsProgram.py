@@ -144,44 +144,44 @@ while True:
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
         initFile.write(str(qrcodeBase64, 'ascii'))
 
-    qrcodeOut = qrcode.make(qrcodeBase64)
-    qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
+    #qrcodeOut = qrcode.make(qrcodeBase64)
+    #qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
 
-    canvas = Image.new('RGBA', (675, 800), (255, 255, 255, 255))
+    #canvas = Image.new('RGBA', (675, 800), (255, 255, 255, 255))
 
-    addText = ImageDraw.Draw(canvas)
+    #addText = ImageDraw.Draw(canvas)
 
-    fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
+    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
 
-    modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    nameString = "ID: %s" % diagnostics["BN"]
-    macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["FR"]
+    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
+    #nameString = "ID: %s" % diagnostics["BN"]
+    #macString = "ETH: %s" % diagnostics["E0"]
+    #freqString = "Region: %s" % diagnostics["FR"]
 
-    addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
-    addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
-    addText.text((60, 700), macString, (0, 0, 0), font=fnt)
-    addText.text((60, 725), freqString, (0, 0, 0), font=fnt)
+    #addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
+    #addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
+    #addText.text((60, 700), macString, (0, 0, 0), font=fnt)
+    #addText.text((60, 725), freqString, (0, 0, 0), font=fnt)
 
-    canvas.paste(qrcodeOut, (15, 0))
+    #canvas.paste(qrcodeOut, (15, 0))
     # qrcodeOut.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
-    canvas.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
+    #canvas.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
 
-    canvas = Image.new('RGBA', (638, 201), (255, 255, 255, 255))
-    addText = ImageDraw.Draw(canvas)
-    fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
-    modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    nameString = "ID: %s" % diagnostics["BN"]
-    macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["FR"]
-    addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
-    addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
-    addText.text((25, 100), macString, (0, 0, 0), font=fnt)
-    addText.text((25, 125), freqString, (0, 0, 0), font=fnt)
-    macQrcode = qrcode.make(diagnostics["E0"])
-    macQrcode = macQrcode.resize((200, 200), Image.ANTIALIAS)
-    canvas.paste(macQrcode, (425, 0))
-    canvas.save('/opt/nebraDiagnostics/html/productLabel.png')
+    #canvas = Image.new('RGBA', (638, 201), (255, 255, 255, 255))
+    #addText = ImageDraw.Draw(canvas)
+    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
+    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
+    #nameString = "ID: %s" % diagnostics["BN"]
+    #macString = "ETH: %s" % diagnostics["E0"]
+    #freqString = "Region: %s" % diagnostics["FR"]
+    #addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
+    #addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
+    #addText.text((25, 100), macString, (0, 0, 0), font=fnt)
+    #addText.text((25, 125), freqString, (0, 0, 0), font=fnt)
+    #macQrcode = qrcode.make(diagnostics["E0"])
+    #macQrcode = macQrcode.resize((200, 200), Image.ANTIALIAS)
+    #canvas.paste(macQrcode, (425, 0))
+    #canvas.save('/opt/nebraDiagnostics/html/productLabel.png')
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generateHTML(diagnostics))
