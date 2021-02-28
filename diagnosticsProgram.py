@@ -69,13 +69,18 @@ while True:
         diagnostics["LTE"] = False
 
     # LoRa Module Test
-    with open("/var/pktfwd/diagnostics") as diagOut:
-        loraStatus = diagOut.read()
-
-    if(loraStatus == "true"):
-        diagnostics["LOR"] = True
-    else:
-        diagnostics["LOR"] = False
+    diagnostics["LOR"] = None
+    while(diagnostics["LOR"] is None):
+        try:
+            with open("/var/pktfwd/diagnostics") as diagOut:
+                loraStatus = diagOut.read()
+                if(loraStatus == "true"):
+                    diagnostics["LOR"] = True
+                else:
+                    diagnostics["LOR"] = False
+        except FileNotFoundError:
+            #Packet forwarder container hasn't started
+            sleep(15)
 
     try:
         miner_bus = dbus.SystemBus()
