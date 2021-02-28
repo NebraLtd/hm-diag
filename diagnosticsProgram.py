@@ -42,6 +42,9 @@ while True:
     # Get Balena Name
     diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
 
+    # Get Balena UUID
+    diagnostics["ID"] = os.getenv('BALENA_DEVICE_UUID')
+
     # Get Balena App
     diagnostics["BA"] = os.getenv('BALENA_APP_NAME')
 
@@ -122,7 +125,8 @@ while True:
         "E0": diagnostics['E0'],
         "RPI": diagnostics['RPI'],
         "OK": diagnostics['OK'],
-        "PF": diagnostics["PF"]
+        "PF": diagnostics["PF"],
+        "ID": diagnostics["ID"]
     }
 
     diagJson = json.dumps(diagnostics)
