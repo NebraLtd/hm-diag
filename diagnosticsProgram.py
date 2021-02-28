@@ -80,7 +80,7 @@ while True:
                     diagnostics["LOR"] = False
         except FileNotFoundError:
             #Packet forwarder container hasn't started
-            sleep(15)
+            sleep(10)
 
     try:
         miner_bus = dbus.SystemBus()
@@ -95,15 +95,16 @@ while True:
         diagnostics['MC'] = "Error"
         # print("P2PFAIl")
 
-    try:
-        public_keys_file = open("/var/data/public_keys").readline().split('"')
-        diagnostics["PK"] = str(public_keys_file[1])
-        diagnostics["OK"] = str(public_keys_file[3])
-        diagnostics["AN"] = str(public_keys_file[5])
-    except FileNotFoundError:
-        diagnostics["PK"] = "Error"
-        diagnostics["OK"] = "Error"
-        diagnostics["AN"] = "Error"
+    diagnostics["PK"] = None
+    while(diagnostics["PK"] is None):
+        try:
+            public_keys_file = open("/var/data/public_keys").readline().split('"')
+            diagnostics["PK"] = str(public_keys_file[1])
+            diagnostics["OK"] = str(public_keys_file[3])
+            diagnostics["AN"] = str(public_keys_file[5])
+        except FileNotFoundError:
+            sleep(10)
+
 
     # print(diagnostics)
 
