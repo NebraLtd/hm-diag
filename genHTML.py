@@ -14,7 +14,7 @@ def generateHTML(dictString):
     <!-- Bootstrap core CSS -->
 <link href="bootstrap.min.css" rel="stylesheet">
     <!-- Favicons -->
-<meta name="theme-color" content="#7952b3">
+<meta name="theme-color" content="#03a9f4">
 
 
     <style>
