@@ -144,9 +144,9 @@ def generateHTML(dictString):
     else:
         htmlData = htmlData + """class='bg-danger text-white'"""
     htmlData = htmlData + """ >
-        `   <th>Miner Status</th>
+           <th>Miner Status</th>
             <td>%(MC)s</td>
-          </tr>`
+          </tr>
             <tr class="bg-info">
               <th>Miner Height</th>
               <td>%(MH)s</td>
