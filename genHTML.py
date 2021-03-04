@@ -49,7 +49,7 @@ def generateHTML(dictString):
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Nebra Helium Hotspot Diagnostics Page</a>
+    <a class="navbar-brand" href="#">Nebra Hotspot Diagnostics</a>
   </div>
 </nav>
 
