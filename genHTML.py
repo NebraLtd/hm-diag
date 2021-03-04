@@ -174,7 +174,7 @@ def generateHTML(dictString):
       </div>
       <!---<div class="text-center">
         <img src="productLabel.png" class="img-thumbnail">
-      </div>--->
+      </div>
     </div>-->
   </div>
   <hr/>
