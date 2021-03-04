@@ -4,7 +4,7 @@ WORKDIR /opt/nebraDiagnostics/
 
 RUN apk add --no-cache \
 python3 \
-i2c-tools\
+i2c-tools \
 usbutils \
 py3-qrcode \
 py3-dbus \
