@@ -42,11 +42,14 @@ while True:
     # Get Balena Name
     diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
 
+    # Get Balena UUID
+    diagnostics["ID"] = os.getenv('BALENA_DEVICE_UUID')
+
     # Get Balena App
     diagnostics["BA"] = os.getenv('BALENA_APP_NAME')
 
     # Get Frequency
-    diagnostics["RE"] = os.getenv('REGION')
+    diagnostics["FR"] = os.getenv('FREQ')
 
     # Get Variant
     diagnostics["VA"] = os.getenv('VARIANT')
@@ -63,19 +66,24 @@ while True:
         diagnostics["BT"] = False
 
     lteIdCheck = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
-    if "2c7c" in btIdCheck:
+    if "2c7c" in lteIdCheck:
         diagnostics["LTE"] = True
     else:
         diagnostics["LTE"] = False
 
     # LoRa Module Test
-    with open("/var/pktfwd/diagnostics") as diagOut:
-        loraStatus = diagOut.read()
-
-    if(loraStatus == "true"):
-        diagnostics["LOR"] = True
-    else:
-        diagnostics["LOR"] = False
+    diagnostics["LOR"] = None
+    while(diagnostics["LOR"] is None):
+        try:
+            with open("/var/pktfwd/diagnostics") as diagOut:
+                loraStatus = diagOut.read()
+                if(loraStatus == "true"):
+                    diagnostics["LOR"] = True
+                else:
+                    diagnostics["LOR"] = False
+        except FileNotFoundError:
+            #Packet forwarder container hasn't started
+            sleep(10)
 
     try:
         miner_bus = dbus.SystemBus()
@@ -90,15 +98,16 @@ while True:
         diagnostics['MC'] = "Error"
         # print("P2PFAIl")
 
-    try:
-        public_keys_file = open("/var/data/public_keys").readline().split('"')
-        diagnostics["PK"] = str(public_keys_file[1])
-        diagnostics["OK"] = str(public_keys_file[3])
-        diagnostics["AN"] = str(public_keys_file[5])
-    except FileNotFoundError:
-        diagnostics["PK"] = "Error"
-        diagnostics["OK"] = "Error"
-        diagnostics["AN"] = "Error"
+    diagnostics["PK"] = None
+    while(diagnostics["PK"] is None):
+        try:
+            public_keys_file = open("/var/data/public_keys").readline().split('"')
+            diagnostics["PK"] = str(public_keys_file[1])
+            diagnostics["OK"] = str(public_keys_file[3])
+            diagnostics["AN"] = str(public_keys_file[5])
+        except FileNotFoundError:
+            sleep(10)
+
 
     # print(diagnostics)
 
@@ -112,12 +121,12 @@ while True:
 
     qrCodeDiagnostics = {
         "VA": diagnostics['VA'],
-        "RE": diagnostics['RE'],
+        "FR": diagnostics['FR'],
         "E0": diagnostics['E0'],
-        "W0": diagnostics['W0'],
         "RPI": diagnostics['RPI'],
         "OK": diagnostics['OK'],
-        "PF": diagnostics["PF"]
+        "PF": diagnostics["PF"],
+        "ID": diagnostics["ID"]
     }
 
     diagJson = json.dumps(diagnostics)
@@ -131,45 +140,52 @@ while True:
     qrcodeJson = str(json.dumps(qrCodeDiagnostics))
     qrcodeBytes = qrcodeJson.encode('ascii')
     qrcodeBase64 = base64.b64encode(qrcodeBytes)
-    qrcodeOut = qrcode.make(qrcodeBase64)
-    qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
 
-    canvas = Image.new('RGBA', (675, 800), (255, 255, 255, 255))
+    with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
+        initFile.write(str(qrcodeBase64, 'ascii'))
 
-    addText = ImageDraw.Draw(canvas)
+    #qrcodeOut = qrcode.make(qrcodeBase64)
+    #qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
 
-    fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
+    #canvas = Image.new('RGBA', (675, 800), (255, 255, 255, 255))
 
-    modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    nameString = "ID: %s" % diagnostics["BN"]
-    macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["RE"]
+    #addText = ImageDraw.Draw(canvas)
 
-    addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
-    addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
-    addText.text((60, 700), macString, (0, 0, 0), font=fnt)
-    addText.text((60, 725), freqString, (0, 0, 0), font=fnt)
+    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
 
-    canvas.paste(qrcodeOut, (15, 0))
+    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
+    #nameString = "ID: %s" % diagnostics["BN"]
+    #macString = "ETH: %s" % diagnostics["E0"]
+    #freqString = "Region: %s" % diagnostics["FR"]
+
+    #addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
+    #addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
+    #addText.text((60, 700), macString, (0, 0, 0), font=fnt)
+    #addText.text((60, 725), freqString, (0, 0, 0), font=fnt)
+
+    #canvas.paste(qrcodeOut, (15, 0))
     # qrcodeOut.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
-    canvas.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
+    #canvas.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
 
-    canvas = Image.new('RGBA', (638, 201), (255, 255, 255, 255))
-    addText = ImageDraw.Draw(canvas)
-    fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
-    modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    nameString = "ID: %s" % diagnostics["BN"]
-    macString = "ETH: %s" % diagnostics["E0"]
-    freqString = "Region: %s" % diagnostics["RE"]
-    addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
-    addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
-    addText.text((25, 100), macString, (0, 0, 0), font=fnt)
-    addText.text((25, 125), freqString, (0, 0, 0), font=fnt)
-    macQrcode = qrcode.make(diagnostics["E0"])
-    macQrcode = macQrcode.resize((200, 200), Image.ANTIALIAS)
-    canvas.paste(macQrcode, (425, 0))
-    canvas.save('/opt/nebraDiagnostics/html/productLabel.png')
+    #canvas = Image.new('RGBA', (638, 201), (255, 255, 255, 255))
+    #addText = ImageDraw.Draw(canvas)
+    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
+    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
+    #nameString = "ID: %s" % diagnostics["BN"]
+    #macString = "ETH: %s" % diagnostics["E0"]
+    #freqString = "Region: %s" % diagnostics["FR"]
+    #addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
+    #addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
+    #addText.text((25, 100), macString, (0, 0, 0), font=fnt)
+    #addText.text((25, 125), freqString, (0, 0, 0), font=fnt)
+    #macQrcode = qrcode.make(diagnostics["E0"])
+    #macQrcode = macQrcode.resize((200, 200), Image.ANTIALIAS)
+    #canvas.paste(macQrcode, (425, 0))
+    #canvas.save('/opt/nebraDiagnostics/html/productLabel.png')
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generateHTML(diagnostics))
-    sleep(300)
+    if(diagnostics["PF"] is True):
+        sleep(300)
+    else:
+        sleep(30)

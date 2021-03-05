@@ -14,7 +14,7 @@ def generateHTML(dictString):
     <!-- Bootstrap core CSS -->
 <link href="bootstrap.min.css" rel="stylesheet">
     <!-- Favicons -->
-<meta name="theme-color" content="#03a9f4">
+<meta name="theme-color" content="#7952b3">
 
 
     <style>
@@ -49,7 +49,7 @@ def generateHTML(dictString):
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Nebra Hotspot Diagnostics</a>
+    <a class="navbar-brand" href="#">Nebra Helium Hotspot Diagnostics Page</a>
   </div>
 </nav>
 
@@ -144,9 +144,9 @@ def generateHTML(dictString):
     else:
         htmlData = htmlData + """class='bg-danger text-white'"""
     htmlData = htmlData + """ >
-           <th>Miner Status</th>
+        `   <th>Miner Status</th>
             <td>%(MC)s</td>
-          </tr>
+          </tr>`
             <tr class="bg-info">
               <th>Miner Height</th>
               <td>%(MH)s</td>
@@ -167,15 +167,15 @@ def generateHTML(dictString):
           </tbody>
         </table>
     </div>
-    <!---<div class="col">
+    <div class="col">
       <h2 class="text-center">Support QR</h2>
       <div class="text-center">
         <img src="diagnosticsQR.png" class="img-thumbnail">
       </div>
       <!---<div class="text-center">
         <img src="productLabel.png" class="img-thumbnail">
-      </div>
-    </div>-->
+      </div>--->
+    </div>
   </div>
   <hr/>
 
