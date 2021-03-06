@@ -1,7 +1,6 @@
 # Checks basic hardware features.
 
 import os
-import dbus
 import json
 import base64
 from genHTML import generateHTML
