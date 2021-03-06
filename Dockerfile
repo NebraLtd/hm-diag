@@ -8,16 +8,10 @@ i2c-tools=4.2-r0 \
 usbutils=013-r0 \
 nginx=1.18.0-r14
 
-RUN mkdir -p /run/nginx
-RUN mkdir html
-COPY startDiag.sh startDiag.sh
-COPY diagnosticsProgram.py diagnosticsProgram.py
-COPY genHTML.py genHTML.py
+RUN mkdir -p /run/nginx && mkdir html
 
-WORKDIR /etc/nginx/conf.d
-COPY default.conf default.conf
-
-WORKDIR /opt/nebraDiagnostics/html/
-COPY bootstrap.min.css bootstrap.min.css
+COPY diagnostics-program /opt/nebraDiagnostics
+COPY default.conf /etc/nginx/conf.d/default.conf
+COPY bootstrap.min.css /opt/nebraDiagnostics/html/bootstrap.min.css
 
 ENTRYPOINT ["sh", "/opt/nebraDiagnostics/startDiag.sh"]
