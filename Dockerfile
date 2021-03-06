@@ -19,6 +19,5 @@ COPY default.conf default.conf
 
 WORKDIR /opt/nebraDiagnostics/html/
 COPY bootstrap.min.css bootstrap.min.css
-COPY index.html.template index.html.template
 
 ENTRYPOINT ["sh", "/opt/nebraDiagnostics/startDiag.sh"]
