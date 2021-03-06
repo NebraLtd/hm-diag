@@ -11,7 +11,6 @@ nginx=1.18.0-r14
 RUN mkdir -p /run/nginx
 RUN mkdir html
 COPY startDiag.sh startDiag.sh
-COPY Ubuntu-Bold.ttf Ubuntu-Bold.ttf
 COPY diagnosticsProgram.py diagnosticsProgram.py
 COPY genHTML.py genHTML.py
 
