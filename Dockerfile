@@ -3,10 +3,10 @@ FROM arm64v8/alpine:edge
 WORKDIR /opt/nebraDiagnostics/
 
 RUN apk add --no-cache \
-python3 \
-i2c-tools \
-usbutils \
-nginx
+python3=3.8.7-r3 \
+i2c-tools=4.2-r0 \
+usbutils=013-r0 \
+nginx=1.18.0-r14
 
 RUN mkdir -p /run/nginx
 RUN mkdir html
