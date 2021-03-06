@@ -4,7 +4,6 @@ import os
 import json
 import base64
 from genHTML import generateHTML
-from PIL import Image, ImageDraw, ImageFont
 from time import sleep
 
 while True:
