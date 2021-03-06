@@ -2,7 +2,6 @@
 
 import os
 import dbus
-import qrcode
 import json
 import base64
 from genHTML import generateHTML
@@ -85,19 +84,6 @@ while True:
             #Packet forwarder container hasn't started
             sleep(10)
 
-    try:
-        miner_bus = dbus.SystemBus()
-        miner_object = miner_bus.get_object('com.helium.Miner', '/')
-        miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
-        p2pstatus = miner_interface.P2PStatus()
-        # print(p2pstatus)
-        diagnostics["MH"] = str(p2pstatus[3][1])
-        diagnostics['MC'] = str(p2pstatus[0][1])
-    except dbus.exceptions.DBusException:
-        diagnostics["MH"] = "000000"
-        diagnostics['MC'] = "Error"
-        # print("P2PFAIl")
-
     diagnostics["PK"] = None
     while(diagnostics["PK"] is None):
         try:
@@ -119,7 +105,7 @@ while True:
     else:
         diagnostics["PF"] = False
 
-    qrCodeDiagnostics = {
+    prodDiagnostics = {
         "VA": diagnostics['VA'],
         "FR": diagnostics['FR'],
         "E0": diagnostics['E0'],
@@ -137,51 +123,13 @@ while True:
     with open("/var/data/nebraDiagnostics.json", 'w') as diagOut:
         diagOut.write(diagJson)
 
-    qrcodeJson = str(json.dumps(qrCodeDiagnostics))
-    qrcodeBytes = qrcodeJson.encode('ascii')
-    qrcodeBase64 = base64.b64encode(qrcodeBytes)
+    prodJson = str(json.dumps(prodDiagnostics))
+    prodBytes = prodJson.encode('ascii')
+    prodBase64 = base64.b64encode(prodBytes)
 
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
-        initFile.write(str(qrcodeBase64, 'ascii'))
+        initFile.write(str(prodBase64, 'ascii'))
 
-    #qrcodeOut = qrcode.make(qrcodeBase64)
-    #qrcodeOut = qrcodeOut.resize((625, 625), Image.ANTIALIAS)
-
-    #canvas = Image.new('RGBA', (675, 800), (255, 255, 255, 255))
-
-    #addText = ImageDraw.Draw(canvas)
-
-    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
-
-    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    #nameString = "ID: %s" % diagnostics["BN"]
-    #macString = "ETH: %s" % diagnostics["E0"]
-    #freqString = "Region: %s" % diagnostics["FR"]
-
-    #addText.text((60, 650), modelString, (0, 0, 0), font=fnt)
-    #addText.text((60, 675), nameString, (0, 0, 0), font=fnt)
-    #addText.text((60, 700), macString, (0, 0, 0), font=fnt)
-    #addText.text((60, 725), freqString, (0, 0, 0), font=fnt)
-
-    #canvas.paste(qrcodeOut, (15, 0))
-    # qrcodeOut.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
-    #canvas.save('/opt/nebraDiagnostics/html/diagnosticsQR.png')
-
-    #canvas = Image.new('RGBA', (638, 201), (255, 255, 255, 255))
-    #addText = ImageDraw.Draw(canvas)
-    #fnt = ImageFont.truetype("/opt/nebraDiagnostics/Ubuntu-Bold.ttf", 24)
-    #modelString = "Nebra %s Helium Hotspot" % diagnostics["VA"]
-    #nameString = "ID: %s" % diagnostics["BN"]
-    #macString = "ETH: %s" % diagnostics["E0"]
-    #freqString = "Region: %s" % diagnostics["FR"]
-    #addText.text((25, 50), modelString, (0, 0, 0), font=fnt)
-    #addText.text((25, 75), nameString, (0, 0, 0), font=fnt)
-    #addText.text((25, 100), macString, (0, 0, 0), font=fnt)
-    #addText.text((25, 125), freqString, (0, 0, 0), font=fnt)
-    #macQrcode = qrcode.make(diagnostics["E0"])
-    #macQrcode = macQrcode.resize((200, 200), Image.ANTIALIAS)
-    #canvas.paste(macQrcode, (425, 0))
-    #canvas.save('/opt/nebraDiagnostics/html/productLabel.png')
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generateHTML(diagnostics))
