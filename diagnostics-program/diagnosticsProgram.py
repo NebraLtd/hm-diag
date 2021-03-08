@@ -109,6 +109,7 @@ while True:
         "E0": diagnostics['E0'],
         "RPI": diagnostics['RPI'],
         "OK": diagnostics['OK'],
+        "PK": diagnostics['PK'],
         "PF": diagnostics["PF"],
         "ID": diagnostics["ID"]
     }
