@@ -1,4 +1,4 @@
-FROM arm64v8/alpine:edge
+FROM arm32v5/alpine:edge
 
 WORKDIR /opt/nebraDiagnostics/
 
