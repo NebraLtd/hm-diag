@@ -1,12 +1,20 @@
-FROM arm32v6/alpine:3.12.4
+FROM balenalib/raspberry-pi-debian:buster-run
 
 WORKDIR /opt/nebraDiagnostics/
 
-RUN apk add --no-cache \
-python3=3.8.8-r0 \
-i2c-tools=4.1-r3 \
-usbutils=012-r1 \
-nginx=1.18.0-r1
+RUN \
+apt-get update && \
+DEBIAN_FRONTEND="noninteractive" \
+TZ="Europe/London" \
+apt-get -y install \
+nginx=1.14.2-2+deb10u3 \
+python3-minimal=3.7.3- \
+usbutils=1:010-3 \
+i2c-tools=4.1-1 \
+--no-install-recommends && \
+apt-get autoremove -y &&\
+apt-get clean && \
+rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /run/nginx && mkdir html
 
