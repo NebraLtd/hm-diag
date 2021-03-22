@@ -1,3 +1,5 @@
+# Docker Container that runs the Nebra Diagnostics Tool
+
 FROM arm32v6/alpine:3.12.4
 
 WORKDIR /opt/nebraDiagnostics/
