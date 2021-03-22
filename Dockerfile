@@ -8,7 +8,7 @@ DEBIAN_FRONTEND="noninteractive" \
 TZ="Europe/London" \
 apt-get -y install \
 nginx=1.14.2-2+deb10u3 \
-python3=3.7.3-1 \
+python3-minimal=3.7.3-1 \
 usbutils=1:010-3 \
 i2c-tools=4.1-1 \
 --no-install-recommends && \
