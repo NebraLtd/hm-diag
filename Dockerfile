@@ -19,7 +19,7 @@ rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /run/nginx && mkdir html
 
 COPY diagnostics-program /opt/nebraDiagnostics
-COPY default.conf /etc/nginx/sites-available/default
+COPY default.conf /etc/nginx/conf.d/default.conf
 COPY bootstrap.min.css /opt/nebraDiagnostics/html/bootstrap.min.css
 
 ENTRYPOINT ["sh", "/opt/nebraDiagnostics/startDiag.sh"]
