@@ -53,7 +53,7 @@ while True:
 
     # Get RPi serial number
     diagnostics["RPI"] = open("/proc/cpuinfo")\
-        .readlines()[38].strip()[10:]
+        .readlines()[-2].strip()[10:]
 
     # Get USB IDs to check for BT And Modem
     btIdCheck = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
