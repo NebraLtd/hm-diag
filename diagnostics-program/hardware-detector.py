@@ -21,3 +21,15 @@ variant_definitions = {
 # Syncrobit Hotspot
 "SYNCROBIT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'}
 }
+
+# List of USB Wi-Fi Adaptors used
+
+usb_wifi_adaptor_ids = {
+"148f:5370" : "RT5370"
+}
+
+# List of LTE adaptor combinations
+
+lte_adaptor_ids = {
+"2c7c:0125" : "QUECTEL-EC25"
+}
