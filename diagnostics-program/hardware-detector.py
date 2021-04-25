@@ -15,7 +15,13 @@ variant_definitions = {
     'ic-id': '27187-HNTIN'
     },
 # Nebra Outdoor Hotspot
-"NEB-OUT" : {'spibus': 'spidev1.2', 'reset' : 38, 'mac' : 'eth0'},
+"NEB-OUT" : {
+    'spibus': 'spidev1.2',
+    'reset' : 38,
+    'mac' : 'eth0',
+    'fcc-id' : '2AZDM-HNTIN',
+    'ic-id': '27187-HNTIN'
+    },
 # Nebra Light Pi Zero Hotspot
 "NEB-LITE-PZW" : {'spibus': 'spidev1.2', 'reset' : 22, 'mac' : 'wlan0'},
 # Nebra Light Pocket Beaglebone Hotspot
