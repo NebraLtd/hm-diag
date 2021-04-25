@@ -2,7 +2,7 @@
 from datetime import datetime
 
 
-def generateHTML(dictString):
+def generate_html(dictString):
     htmlData = """
 
 <!doctype html>
@@ -138,7 +138,7 @@ def generateHTML(dictString):
               <th>LoRa OK?</th>
               <td>%(LOR)s</td>
             </tr>
-            
+
             <tr """ % dictString
     if(dictString["VA"] == "Outdoor"):
         if(dictString["LTE"] is True):

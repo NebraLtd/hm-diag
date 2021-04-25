@@ -3,7 +3,7 @@
 import os
 import json
 import base64
-from genHTML import generateHTML
+from html-generator import generate_html
 from time import sleep
 
 while True:
@@ -131,7 +131,7 @@ while True:
 
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
-        htmlOut.write(generateHTML(diagnostics))
+        htmlOut.write(generate_html(diagnostics))
     if(diagnostics["PF"] is True):
         sleep(300)
     else:
