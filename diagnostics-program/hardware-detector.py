@@ -7,7 +7,13 @@
 
 variant_definitions = {
 # Nebra Indoor Hotspot
-"NEB-IN" : {'spibus': 'spidev1.2', 'reset' : 38, 'mac' : 'eth0'},
+"NEB-IN" : {
+    'spibus': 'spidev1.2',
+    'reset' : 38,
+    'mac' : 'eth0',
+    'fcc-id' : '2AZDM-HNTIN',
+    'ic-id': '27187-HNTIN'
+    },
 # Nebra Outdoor Hotspot
 "NEB-OUT" : {'spibus': 'spidev1.2', 'reset' : 38, 'mac' : 'eth0'},
 # Nebra Light Pi Zero Hotspot
