@@ -19,8 +19,8 @@ variant_definitions = {
     'spibus': 'spidev1.2',
     'reset' : 38,
     'mac' : 'eth0',
-    'fcc-id' : '2AZDM-HNTIN',
-    'ic-id': '27187-HNTIN'
+    'fcc-id' : '2AZDM-HNTOUT',
+    'ic-id': '27187-HNTOUT'
     },
 # Nebra Light Pi Zero Hotspot
 "NEB-LITE-PZW" : {'spibus': 'spidev1.2', 'reset' : 22, 'mac' : 'wlan0'},
