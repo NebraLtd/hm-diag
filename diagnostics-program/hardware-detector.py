@@ -22,16 +22,36 @@ variant_definitions = {
     'fcc-id' : '2AZDM-HNTOUT',
     'ic-id': '27187-HNTOUT'
     },
-# Nebra Light Pi Zero Hotspot
-"NEB-LITE-PZW" : {'spibus': 'spidev1.2', 'reset' : 22, 'mac' : 'wlan0'},
-# Nebra Light Pocket Beaglebone Hotspot
-"NEB-LITE-PBB" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'eth0'},
+# Nebra Light Pi Zero SPI Hotspot
+"NEB-LITE-PZW-SPI" : {
+    'spibus': 'spidev1.2',
+    'reset' : 22,
+    'mac' : 'wlan0',
+    'fcc-id' : '2AZDM-HNTPZI',
+    'ic-id': '27187-HNTPZI'
+    },
+# Nebra Light Pi Zero USB Hotspot
+"NEB-LITE-PZW-USB" : {
+    'spibus': 'spidev1.2',
+    'reset' : 22,
+    'mac' : 'wlan0',
+    'fcc-id' : '2AZDM-HNTPZX',
+    'ic-id': '27187-HNTPZX'
+    },
+# Nebra Light Pocket Beaglebone USB Hotspot
+"NEB-LITE-PBB" : {
+    'spibus': 'spidev0.0',
+    'reset' : 1,
+    'mac' : 'eth0',
+    'fcc-id' : '2AZDM-HNTPBU',
+    'ic-id': '27187-HNTPBU'
+    }
 # Original Helium Hotspot
-"HELIUM-HOTSPOT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'},
+#"HELIUM-HOTSPOT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'},
 # RAK Hotspot
-"RAK-HOTSPOT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'},
+#"RAK-HOTSPOT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'},
 # Syncrobit Hotspot
-"SYNCROBIT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'}
+#"SYNCROBIT" : {'spibus': 'spidev0.0', 'reset' : 42, 'mac' : 'wlan0'}
 }
 
 # List of USB Wi-Fi Adaptors used
