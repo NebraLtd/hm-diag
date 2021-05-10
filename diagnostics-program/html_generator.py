@@ -140,7 +140,7 @@ def generate_html(dictString):
             </tr>
 
             <tr """ % dictString
-    if(dictString["VA"] == "Outdoor"):
+    if(dictString["VA"] == "NEBHNT-OUT1"):
         if(dictString["LTE"] is True):
             htmlData = htmlData + """class='bg-success text-white'"""
         else:
