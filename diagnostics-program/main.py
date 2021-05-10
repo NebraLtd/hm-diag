@@ -7,6 +7,13 @@ from html_generator import generate_html
 from hardware_detector import variant_definitions
 from time import sleep
 
+sentry_key = os.getenv('SENTRY_DIAG')
+if(sentry_key):
+    balena_id = os.getenv('BALENA_DEVICE_UUID')
+    balena_app = os.getenv('BALENA_APP_NAME')
+    sentry_sdk.init(sentry_key, environment=balena_app)
+    sentry_sdk.set_user({"id": balena_id})
+
 while True:
     print("Diag Loop")
 
