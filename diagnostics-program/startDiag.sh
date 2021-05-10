@@ -9,4 +9,4 @@ rm /opt/nebraDiagnostics/html/initFile.txt
 nginx
 #sleep 30
 #rm /opt/nebraDiagnostics/html/index.html
-python3 -u /opt/nebraDiagnostics/diagnosticsProgram.py
+python3 -u /opt/nebraDiagnostics/diagnostics-program/main.py
