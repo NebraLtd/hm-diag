@@ -9,6 +9,7 @@ from time import sleep
 
 sentry_key = os.getenv('SENTRY_DIAG')
 if(sentry_key):
+    print("Sentry Diagnostics Detected")
     balena_id = os.getenv('BALENA_DEVICE_UUID')
     balena_app = os.getenv('BALENA_APP_NAME')
     sentry_sdk.init(sentry_key, environment=balena_app)
