@@ -103,6 +103,11 @@ while True:
     else:
         diagnostics["PF"] = False
 
+    # Add variant variables into diagnostics
+
+    variant_variables = variant_definitions[diagnostics['VA']]
+    diagnostics.update(variant_variables)
+
     prodDiagnostics = {
         "VA": diagnostics['VA'],
         "FR": diagnostics['FR'],
