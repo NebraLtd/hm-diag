@@ -6,6 +6,7 @@ import base64
 from html_generator import generate_html
 from hardware_detector import variant_definitions
 from time import sleep
+import sentry_sdk
 
 sentry_key = os.getenv('SENTRY_DIAG')
 if(sentry_key):
