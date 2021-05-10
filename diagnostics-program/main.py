@@ -4,6 +4,7 @@ import os
 import json
 import base64
 from html_generator import generate_html
+from hardware_detector import variant_definitions
 from time import sleep
 
 while True:
