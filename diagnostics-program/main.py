@@ -3,7 +3,7 @@
 import os
 import json
 import base64
-from html-generator import generate_html
+from html_generator import generate_html
 from time import sleep
 
 while True:
