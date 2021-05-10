@@ -5,7 +5,7 @@ FROM arm32v6/alpine:3.12.4
 WORKDIR /opt/nebraDiagnostics/
 
 RUN apk add --no-cache \
-python3=3.8.8-r0 \
+python3=3.8.10-r0 \
 i2c-tools=4.1-r3 \
 usbutils=012-r1 \
 nginx=1.18.0-r1
