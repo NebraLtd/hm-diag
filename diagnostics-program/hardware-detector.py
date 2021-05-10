@@ -102,59 +102,70 @@ variant_definitions = {
         'ecc': True
         },
 
-    # Nebra Hotspot HAT Tinkerboard
+    # Nebra Hotspot HAT Tinkerboard 1
     "NEBHNT-HHTK" : {
-        'spibus': 'spidev1.2',
-        'reset' : 38,
+        'spibus': 'spidev2.0',
+        'reset' : 167,
         'mac' : 'eth0',
-        'status': 25,
-        'button': 26,
+        'status': 163,
+        'button': 162,
         'ecc': True,
-        'type': "Full"
+        'type': "Light"
         },
 
-    # Nebra Hotspot HAT Tinkerboard
+    # Nebra Hotspot HAT Tinkerboard 2
     "NEBHNT-HHTK2" : {
-        'spibus': 'spidev1.2',
-        'reset' : 38,
+        'spibus': 'spidev2.0',
+        'reset' : 167,
         'mac' : 'eth0',
-        'status': 25,
-        'button': 26,
+        'status': 163,
+        'button': 162,
         'ecc': True,
         'type': "Full"
         },
 
-    # Nebra Indoor Hotspot
-    "NEBHNT-IN1" : {
-        'spibus': 'spidev1.2',
-        'reset' : 38,
-        'mac' : 'eth0',
-        'status': 25,
-        'button': 26,
+    # RAKwireless Hotspot Miner
+    "COMP-RAKHM" : {
+        'spibus': 'spidev0.0',
+        'reset' : 17,
+        'mac' : 'wlan0',
+        'status': 20,
+        'button': 21,
         'ecc': True,
         'type': "Full"
         },
 
-    # Nebra Indoor Hotspot
-    "NEBHNT-IN1" : {
-        'spibus': 'spidev1.2',
-        'reset' : 38,
-        'mac' : 'eth0',
-        'status': 25,
-        'button': 26,
+    # Helium Hotspot
+    "COMP-HELIUM" : {
+        'spibus': 'spidev0.0',
+        'reset' : 17,
+        'mac' : 'wlan0',
+        'status': 20,
+        'button': 21,
         'ecc': True,
         'type': "Full"
         },
 
-    # Nebra Indoor Hotspot
-    "NEBHNT-IN1" : {
-        'spibus': 'spidev1.2',
-        'reset' : 38,
+    # DIY Pi Supply Hotspot HAT
+    "DIY-PISLGH" : {
+        'spibus': 'spidev0.0',
+        'reset' : 22,
         'mac' : 'eth0',
-        'status': 25,
-        'button': 26,
-        'ecc': True,
-        'type': "Full"
+        'status': 20,
+        'button': 21,
+        'ecc': False,
+        'type': "Light"
+        },
+
+    # Nebra Indoor Hotspot
+    "DIY-RAK2287" : {
+        'spibus': 'spidev0.0',
+        'reset' : 17,
+        'mac' : 'eth0',
+        'status': 20,
+        'button': 21,
+        'ecc': False,
+        'type': "Light"
         }
 }
 
