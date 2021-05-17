@@ -1,4 +1,5 @@
-# Checks basic hardware features.
+# Nebra Diagnostics Tool
+# Checks basic hardware features and hardware for validation
 
 import os
 import json
