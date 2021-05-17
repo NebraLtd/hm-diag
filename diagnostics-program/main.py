@@ -3,8 +3,18 @@
 import os
 import json
 import base64
-from genHTML import generateHTML
+from html_generator import generate_html
+from variant_definitions import variant_definitions
 from time import sleep
+import sentry_sdk
+
+sentry_key = os.getenv('SENTRY_DIAG')
+if(sentry_key):
+    print("Sentry Diagnostics Detected")
+    balena_id = os.getenv('BALENA_DEVICE_UUID')
+    balena_app = os.getenv('BALENA_APP_NAME')
+    sentry_sdk.init(sentry_key, environment=balena_app)
+    sentry_sdk.set_user({"id": balena_id})
 
 while True:
     print("Diag Loop")
@@ -103,6 +113,11 @@ while True:
     else:
         diagnostics["PF"] = False
 
+    # Add variant variables into diagnostics
+
+    variant_variables = variant_definitions[diagnostics['VA']]
+    diagnostics.update(variant_variables)
+
     prodDiagnostics = {
         "VA": diagnostics['VA'],
         "FR": diagnostics['FR'],
@@ -131,7 +146,7 @@ while True:
 
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
-        htmlOut.write(generateHTML(diagnostics))
+        htmlOut.write(generate_html(diagnostics))
     if(diagnostics["PF"] is True):
         sleep(300)
     else:
