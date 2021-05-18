@@ -79,7 +79,7 @@ def generate_html(dictString):
           <tbody>
             <tr class="bg-info">
               <th>Helium Address</th>
-              <td>%(PK)s</td>
+              <td><a href="https://explorer.helium.com/hotspots/%(PK)s">%(PK)s</a></td>
             </tr>
             <tr class="bg-info">
               <th>Frequency</th>
