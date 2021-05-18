@@ -78,6 +78,10 @@ def generate_html(dictString):
         <table class="table">
           <tbody>
             <tr class="bg-info">
+              <th>Helium Address</th>
+              <td>%(PK)s</td>
+            </tr>
+            <tr class="bg-info">
               <th>Frequency</th>
               <td>%(FR)s</td>
             </tr>
