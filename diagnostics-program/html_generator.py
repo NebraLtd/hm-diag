@@ -58,7 +58,7 @@ def generate_html(dictString):
   <div class="row">
     <div class="col">
       <h1 class="text-center">Diagnostics Information</h1>
-      <h2 class="text-center">Name: %(BN)s</h2>
+      <h2 class="text-center">Animal Name: %(AN)s</h2>
 """ % dictString
     if(dictString["ECC"] is True and dictString["E0"] != "FF:FF:FF:FF:FF:FF"
             and dictString["W0"] != "FF:FF:FF:FF:FF:FF" and
@@ -77,10 +77,6 @@ def generate_html(dictString):
       <h2 class="text-center">Diagnostics Breakdown</h2>
         <table class="table">
           <tbody>
-            <tr class="bg-info">
-                <th>Helium Name</th>
-                <td>%(AN)s</td>
-            </tr>
             <tr class="bg-info">
               <th>Frequency</th>
               <td>%(FR)s</td>
