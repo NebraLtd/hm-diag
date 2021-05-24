@@ -74,8 +74,8 @@ def generate_html(dictString):
 <hr/>
   <div class="row">
     <div class="col">
-      <h2 class="text-center" style="table-layout: fixed;">Diagnostics Breakdown</h2>
-        <table class="table">
+      <h2 class="text-center">Diagnostics Breakdown</h2>
+        <table class="table" style="table-layout: fixed;">
           <tbody>
             <tr class="bg-info">
               <th>Helium Address</th>
