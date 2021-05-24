@@ -74,12 +74,12 @@ def generate_html(dictString):
 <hr/>
   <div class="row">
     <div class="col">
-      <h2 class="text-center">Diagnostics Breakdown</h2>
+      <h2 class="text-center" style="table-layout: fixed;">Diagnostics Breakdown</h2>
         <table class="table">
           <tbody>
             <tr class="bg-info">
               <th>Helium Address</th>
-              <td><a href="https://explorer.helium.com/hotspots/%(PK)s">%(PK)s</a></td>
+              <td style="word-wrap: break-word;"><a href="https://explorer.helium.com/hotspots/%(PK)s">%(PK)s</a></td>
             </tr>
             <tr class="bg-info">
               <th>Frequency</th>
