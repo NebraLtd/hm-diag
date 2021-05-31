@@ -66,6 +66,9 @@ while True:
     # Get Frequency
     diagnostics["FR"] = os.getenv('FREQ')
 
+    # Get Firmware
+    diagnostics["FW"] = os.getenv('FIRMWARE_VERSION')
+
     # Get Variant
     diagnostics["VA"] = os.getenv('VARIANT')
 
