@@ -86,6 +86,10 @@ def generate_html(dictString):
               <td>%(MH)s</td>
             </tr>
             <tr class="bg-info">
+              <th>Firmware Version</th>
+              <td>%(FW)s</td>
+            </tr>
+            <tr class="bg-info">
               <th>Frequency</th>
               <td>%(FR)s</td>
             </tr>
