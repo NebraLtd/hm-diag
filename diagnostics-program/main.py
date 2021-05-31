@@ -146,6 +146,8 @@ while True:
     except FileNotFoundError:
         diagnostics['RE'] = "UN123"
 
+    print(diagnostics)
+
     # Check the basics if they're fine
     if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
             and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF" and
