@@ -8,6 +8,7 @@ from html_generator import generate_html
 from variant_definitions import variant_definitions
 from time import sleep
 import sentry_sdk
+import dbus
 
 sentry_key = os.getenv('SENTRY_DIAG')
 if(sentry_key):
