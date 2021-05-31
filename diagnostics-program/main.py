@@ -105,7 +105,28 @@ while True:
             sleep(10)
 
 
-    # print(diagnostics)
+    # Get miner diagnostics
+    try:
+        miner_bus = dbus.SystemBus()
+        miner_object = miner_bus.get_object('com.helium.Miner', '/')
+        miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
+        try:
+            p2pstatus = miner_interface.P2PStatus()
+            diagnostics['MC'] = str(p2pstatus[0][1])
+            diagnostics['MD'] = str(p2pstatus[1][1])
+            diagnostics['MH'] = str(p2pstatus[3][1])
+            diagnostics['MN'] = str(p2pstatus[2][1])
+        except dbus.exceptions.DBusException:
+            diagnostics['MC'] = ""
+            diagnostics['MD'] = ""
+            diagnostics['MH'] = ""
+            diagnostics['MN'] = ""
+    except:
+        diagnostics['MC'] = ""
+        diagnostics['MD'] = ""
+        diagnostics['MH'] = ""
+        diagnostics['MN'] = ""
+
 
     # Check the basics if they're fine
     if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
