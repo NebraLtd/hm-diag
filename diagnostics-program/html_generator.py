@@ -82,6 +82,10 @@ def generate_html(dictString):
               <td style="word-wrap: break-word;"><a href="https://explorer.helium.com/hotspots/%(PK)s" target="_blank">%(PK)s</a></td>
             </tr>
             <tr class="bg-info">
+              <th>Miner Height</th>
+              <td>%(MH)s</td>
+            </tr>
+            <tr class="bg-info">
               <th>Frequency</th>
               <td>%(FR)s</td>
             </tr>
@@ -92,6 +96,10 @@ def generate_html(dictString):
             <tr class="bg-info">
               <th>Variant</th>
               <td>%(VA)s</td>
+            </tr>
+            <tr class="bg-info">
+              <th>Miner Connected To Blockchain</th>
+              <td>%(MC)s</td>
             </tr>
             <tr """ % dictString
     if(dictString["ECC"] is True):
