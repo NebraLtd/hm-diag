@@ -97,19 +97,18 @@ while True:
                 else:
                     diagnostics["LOR"] = False
         except FileNotFoundError:
-            #Packet forwarder container hasn't started
+            # Packet forwarder container hasn't started
             sleep(10)
 
     diagnostics["PK"] = None
     while(diagnostics["PK"] is None):
         try:
-            public_keys_file = open("/var/data/public_keys").readline().split('"')
-            diagnostics["PK"] = str(public_keys_file[1])
-            diagnostics["OK"] = str(public_keys_file[3])
-            diagnostics["AN"] = str(public_keys_file[5])
+            pk_file = open("/var/data/public_keys").readline().split('"')
+            diagnostics["PK"] = str(pk_file[1])
+            diagnostics["OK"] = str(pk_file[3])
+            diagnostics["AN"] = str(pk_file[5])
         except FileNotFoundError:
             sleep(10)
-
 
     # Get miner diagnostics
     try:
@@ -144,7 +143,6 @@ while True:
                 break
     except FileNotFoundError:
         diagnostics['RE'] = "UN123"
-
 
     # Check the basics if they're fine
     if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
@@ -184,7 +182,6 @@ while True:
 
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
         initFile.write(str(prodBase64, 'ascii'))
-
 
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generate_html(diagnostics))
