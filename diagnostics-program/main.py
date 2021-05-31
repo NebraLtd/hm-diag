@@ -48,6 +48,12 @@ while True:
     except FileNotFoundError:
         diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
 
+    try:
+        diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
+            .readline().strip().upper()
+    except FileNotFoundError:
+        diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
+
     # Get Balena Name
     diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
 
@@ -126,6 +132,18 @@ while True:
         diagnostics['MD'] = ""
         diagnostics['MH'] = ""
         diagnostics['MN'] = ""
+
+    # Check if the region has been set
+    try:
+        with open("/var/pktfwd/region", 'r') as regionOut:
+            regionFile = regionOut.read()
+
+            if(len(regionFile) > 3):
+                print("Frequency: " + str(regionFile))
+                diagnostics['RE'] = str(regionFile).rstrip('\n')
+                break
+    except FileNotFoundError:
+        diagnostics['RE'] = "UN123"
 
 
     # Check the basics if they're fine
