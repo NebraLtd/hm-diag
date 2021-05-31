@@ -143,7 +143,6 @@ while True:
             if(len(regionFile) > 3):
                 print("Frequency: " + str(regionFile))
                 diagnostics['RE'] = str(regionFile).rstrip('\n')
-                break
     except FileNotFoundError:
         diagnostics['RE'] = "UN123"
 
