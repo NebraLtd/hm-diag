@@ -86,6 +86,10 @@ def generate_html(dictString):
               <td>%(FR)s</td>
             </tr>
             <tr class="bg-info">
+              <th>Region Plan</th>
+              <td>%(RE)s</td>
+            </tr>
+            <tr class="bg-info">
               <th>Variant</th>
               <td>%(VA)s</td>
             </tr>
