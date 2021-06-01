@@ -128,19 +128,21 @@ while True:
         except dbus.exceptions.DBusException:
             diagnostics['MC'] = ""
             diagnostics['MD'] = ""
-            diagnostics['MH'] = ""
+            diagnostics['MH'] = "0"
             diagnostics['MN'] = ""
     except:
         diagnostics['MC'] = ""
         diagnostics['MD'] = ""
-        diagnostics['MH'] = ""
+        diagnostics['MH'] = "0"
         diagnostics['MN'] = ""
 
     # Get the blockchain height from the Helium API
 
-    bchR = requests.get('https://api.helium.io/v1/blocks/height')
-
-    diagnostics['BCH'] = bchR.json()['data']['height']
+    try:
+        bchR = requests.get('https://api.helium.io/v1/blocks/height')
+        diagnostics['BCH'] = bchR.json()['data']['height']
+    except requests.exceptions.ConnectionError:
+        diagnostics['BCH'] = "0"
 
     # Check if the miner height is within 500 blocks and if so say it's synced
     if(int(diagnostics['MH']) > (int(diagnostics['BCH'])-500)):
