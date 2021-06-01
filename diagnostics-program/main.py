@@ -149,7 +149,7 @@ while True:
         diagnostics['MS'] = False
 
     # Calculate a percentage for block sync
-    diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH'])*100))
+    diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH']))*100))
 
     # Check if the region has been set
     try:
