@@ -136,9 +136,20 @@ while True:
         diagnostics['MH'] = ""
         diagnostics['MN'] = ""
 
+    # Get the blockchain height from the Helium API
+
     bchR = requests.get('https://api.helium.io/v1/blocks/height')
 
     diagnostics['BCH'] = bchR.json()['data']['height']
+
+    # Check if the miner height is within 500 blocks and if so say it's synced
+    if(int(diagnostics['MH']) > (int(diagnostics['BCH'])-500)):
+        diagnostics['MS'] = True
+    else:
+        diagnostics['MS'] = False
+
+    # Calculate a percentage for block sync
+    diagnostics['BSP'] = round(((diagnostics['MH']/diagnostics['BCH'])*100))
 
     # Check if the region has been set
     try:
