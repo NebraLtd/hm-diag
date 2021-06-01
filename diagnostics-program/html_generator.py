@@ -83,7 +83,7 @@ def generate_html(dictString):
             </tr>
             <tr class="bg-info">
               <th>Sync Percentage</th>
-              <td>%(bsp)s&#37;</td>
+              <td>%(BSP)s&#37;</td>
             </tr>
             <tr class="bg-info">
               <th>Height Status</th>
