@@ -82,8 +82,12 @@ def generate_html(dictString):
               <td style="word-wrap: break-word;"><a href="https://explorer.helium.com/hotspots/%(PK)s" target="_blank">%(PK)s</a></td>
             </tr>
             <tr class="bg-info">
-              <th>Miner Height</th>
-              <td>%(MH)s</td>
+              <th>Sync Percentage</th>
+              <td>%(bsp)s&#37;</td>
+            </tr>
+            <tr class="bg-info">
+              <th>Height Status</th>
+              <td>%(MH)s / %(BCH)s</td>
             </tr>
             <tr class="bg-info">
               <th>Firmware Version</th>
