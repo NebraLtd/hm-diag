@@ -9,6 +9,7 @@ from variant_definitions import variant_definitions
 from time import sleep
 import sentry_sdk
 import dbus
+import requests
 
 sentry_key = os.getenv('SENTRY_DIAG')
 if(sentry_key):
@@ -134,6 +135,10 @@ while True:
         diagnostics['MD'] = ""
         diagnostics['MH'] = ""
         diagnostics['MN'] = ""
+
+    bchR = requests.get('https://api.helium.io/v1/blocks/height')
+
+    diagnostics['BCH'] = bchR.json()['data']['height']
 
     # Check if the region has been set
     try:
