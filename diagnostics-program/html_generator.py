@@ -196,7 +196,7 @@ def generate_html(dictString):
       https://nebra.io/helium-support</a></p>
       <p class="text-center">
       <a href="diagnostics.json" download="diagnostics-report-""" +\
-        round(datetime.now().timestamp()) + """">
+        str(round(datetime.now().timestamp())) + """">
       Download Diagnostics Info for Support</a></p>
 
       <p class="text-center">&copy; Nebra LTD. 2020-2021<p>
