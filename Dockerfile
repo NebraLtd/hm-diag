@@ -12,6 +12,7 @@ nginx=1.18.0-r2 \
 py3-pip=20.1.1-r0 \
 py3-certifi=2020.4.5.1-r0 \
 py3-urllib3=1.25.9-r0 \
+py3-requests=2.23.0-r0 \
 py3-dbus=1.2.16-r2 &&\
 pip install --no-cache-dir sentry-sdk==1.1.0 && \
 apk del py3-pip
