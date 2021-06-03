@@ -189,7 +189,8 @@ def generate_html(dictString):
   <div class="row">
     <div class="col">
       <p class = "text-center">Last Updated: """ +\
-        datetime.now().strftime("%H:%M %d/%m/%Y") + """
+        datetime.now().strftime("%H:%M") + """ UTC """ +\
+        datetime.now().strftime("%d %b %Y") + """
       </p>
       <p class="text-center">To get support please visit
       <a href="https://nebra.io/helium-support">
