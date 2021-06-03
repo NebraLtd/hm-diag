@@ -139,9 +139,9 @@ while True:
     # Get the blockchain height from the Helium API
 
     if(diagnostics['MN'] == "symmetric"):
-        diagnostics['MR'] == True
+        diagnostics['MR'] = True
     else:
-        diagnostics['MR'] == False
+        diagnostics['MR'] = False
 
     try:
         bchR = requests.get('https://api.helium.io/v1/blocks/height')
