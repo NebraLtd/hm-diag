@@ -142,7 +142,7 @@ while True:
         bchR = requests.get('https://api.helium.io/v1/blocks/height')
         diagnostics['BCH'] = bchR.json()['data']['height']
     except requests.exceptions.ConnectionError:
-        diagnostics['BCH'] = "0"
+        diagnostics['BCH'] = "1"
 
     # Check if the miner height is within 500 blocks and if so say it's synced
     if(int(diagnostics['MH']) > (int(diagnostics['BCH'])-500)):
