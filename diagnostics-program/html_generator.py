@@ -109,6 +109,10 @@ def generate_html(dictString):
               <th>Miner Connected To Blockchain</th>
               <td>%(MC)s</td>
             </tr>
+            <tr class="bg-info">
+              <th>Miner Relayed</th>
+              <td>%(MR)s</td>
+            </tr>
             <tr """ % dictString
     if(dictString["ECC"] is True):
         htmlData = htmlData + """class='bg-success text-white'"""
