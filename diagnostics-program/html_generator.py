@@ -122,7 +122,7 @@ def generate_html(dictString):
             </tr>
             <tr class="bg-info">
               <th>Variant</th>
-              <td>%(VA)s</td>
+              <td>%(FRIENDLY)s</td>
             </tr>
             <tr class="bg-info">
               <th>Miner Connected To Blockchain</th>
