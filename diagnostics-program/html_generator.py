@@ -95,7 +95,7 @@ def generate_html(dictString):
               """ % dictString
               if(dictString["MH"] == 0):
                   htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
-              if(dictString["BCH"] == 1):
+              elif(dictString["BCH"] == 1):
                   htmlData = htmlData + """<td>%(MH)s</td>""" % dictString
               else:
                   htmlData = htmlData + """<td>%(MH)s / %(BCH)s</td>""" % dictString
@@ -111,7 +111,12 @@ def generate_html(dictString):
             </tr>
             <tr class="bg-info">
               <th>Region Plan</th>
-              <td>%(RE)s</td>
+              """ % dictString
+              if(dictString["RE"] == "UN123"):
+                  htmlData = htmlData + """<td>Awaiting Location Assertion</td>""" % dictString
+              else:
+                  htmlData = htmlData + """<td>%(RE)s</td>""" % dictString
+              htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
               <th>Variant</th>
