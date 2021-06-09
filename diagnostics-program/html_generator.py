@@ -109,7 +109,12 @@ def generate_html(dictString):
               <th>Miner Connected To Blockchain</th>
               <td>%(MC)s</td>
             </tr>
-            <tr class="bg-info">
+            <tr """ % dictString
+            if(dictString["MR"] is True):
+                htmlData = htmlData + """class='bg-warning text-white'"""
+            else:
+                htmlData = htmlData + """class='bg-success text-white'"""
+            htmlData = htmlData + """ >
               <th>Miner Relayed</th>
               <td>%(MR)s</td>
             </tr>
