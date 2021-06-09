@@ -86,6 +86,8 @@ def generate_html(dictString):
              """ % dictString
     if(dictString["BSP"] > 100):
       htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
+    elif(dictString["BSP"] < 1):
+      htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
     else:
       htmlData = htmlData + """<td>%(BSP)s&#37;</td>""" % dictString
     htmlData = htmlData + """
@@ -93,9 +95,9 @@ def generate_html(dictString):
             <tr class="bg-info">
               <th>Height Status</th>
               """ % dictString
-    if(dictString["MH"] == 0):
+    if(dictString["MH"] == "0"):
       htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
-    elif(dictString["BCH"] == 1):
+    elif(dictString["BCH"] == "1"):
       htmlData = htmlData + """<td>%(MH)s</td>""" % dictString
     else:
       htmlData = htmlData + """<td>%(MH)s / %(BCH)s</td>""" % dictString
