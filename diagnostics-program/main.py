@@ -10,7 +10,6 @@ from time import sleep
 import sentry_sdk
 import dbus
 import requests
-import nmcli
 
 # sentry_key = os.getenv('SENTRY_DIAG')
 # if(sentry_key):
