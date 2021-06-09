@@ -10,6 +10,7 @@ from time import sleep
 import sentry_sdk
 import dbus
 import requests
+import nmcli
 
 # sentry_key = os.getenv('SENTRY_DIAG')
 # if(sentry_key):
@@ -18,6 +19,8 @@ import requests
 #     balena_app = os.getenv('BALENA_APP_NAME')
 #     sentry_sdk.init(sentry_key, environment=balena_app)
 #     sentry_sdk.set_user({"id": balena_id})
+
+nmcli.disable_use_sudo()
 
 while True:
     print("Diag Loop")
@@ -168,6 +171,17 @@ while True:
                 diagnostics['RE'] = str(regionFile).rstrip('\n')
     except FileNotFoundError:
         diagnostics['RE'] = "UN123"
+
+    # Get some network diagnostics
+
+    try:
+        diagnostics["ETH0I"] = nmcli.device.show('eth0')['IP4.ADDRESS[1]'][:-3]
+    except KeyError:
+        pass
+    try:
+        diagnostics["WLAN0I"] = nmcli.device.show('wlan0')['IP4.ADDRESS[1]'][:-3]
+    except KeyError:
+        pass
 
     # print(diagnostics)
 
