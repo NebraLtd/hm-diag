@@ -82,24 +82,24 @@ def generate_html(dictString):
               <td style="word-wrap: break-word;"><a href="https://explorer.helium.com/hotspots/%(PK)s" target="_blank">%(PK)s</a></td>
             </tr>
             <tr class="bg-info">
-              <th>Sync Percentage</th>
-              """ % dictString
-              if(dictString["BSP"] > 100):
-                  htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
-              else:
-                  htmlData = htmlData + """<td>%(BSP)s&#37;</td>""" % dictString
-              htmlData = htmlData + """
+             <th>Sync Percentage</th>
+             """ % dictString
+    if(dictString["BSP"] > 100):
+      htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
+    else:
+      htmlData = htmlData + """<td>%(BSP)s&#37;</td>""" % dictString
+    htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
               <th>Height Status</th>
               """ % dictString
-              if(dictString["MH"] == 0):
-                  htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
-              elif(dictString["BCH"] == 1):
-                  htmlData = htmlData + """<td>%(MH)s</td>""" % dictString
-              else:
-                  htmlData = htmlData + """<td>%(MH)s / %(BCH)s</td>""" % dictString
-              htmlData = htmlData + """
+    if(dictString["MH"] == 0):
+      htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
+    elif(dictString["BCH"] == 1):
+      htmlData = htmlData + """<td>%(MH)s</td>""" % dictString
+    else:
+      htmlData = htmlData + """<td>%(MH)s / %(BCH)s</td>""" % dictString
+    htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
               <th>Firmware Version</th>
@@ -112,11 +112,11 @@ def generate_html(dictString):
             <tr class="bg-info">
               <th>Region Plan</th>
               """ % dictString
-              if(dictString["RE"] == "UN123"):
-                 htmlData = htmlData + """<td>Awaiting Location Assertion</td>""" % dictString
-              else:
-                 htmlData = htmlData + """<td>%(RE)s</td>""" % dictString
-              htmlData = htmlData + """
+    if(dictString["RE"] == "UN123"):
+     htmlData = htmlData + """<td>Awaiting Location Assertion</td>""" % dictString
+    else:
+     htmlData = htmlData + """<td>%(RE)s</td>""" % dictString
+    htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
               <th>Variant</th>
@@ -127,11 +127,11 @@ def generate_html(dictString):
               <td>%(MC)s</td>
             </tr>
             <tr """ % dictString
-            if(dictString["MR"] is True):
-                htmlData = htmlData + """class='bg-warning text-white'"""
-            else:
-                htmlData = htmlData + """class='bg-success text-white'"""
-            htmlData = htmlData + """ >
+    if(dictString["MR"] is True):
+        htmlData = htmlData + """class='bg-warning text-white'"""
+    else:
+        htmlData = htmlData + """class='bg-success text-white'"""
+    htmlData = htmlData + """ >
               <th>Miner Relayed</th>
               <td>%(MR)s</td>
             </tr>
