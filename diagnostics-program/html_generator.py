@@ -83,7 +83,12 @@ def generate_html(dictString):
             </tr>
             <tr class="bg-info">
               <th>Sync Percentage</th>
-              <td>%(BSP)s&#37;</td>
+              """ % dictString
+              if(dictString["BSP"] == 1):
+                  htmlData = htmlData + """<td>Miner Is Still Loading</td>""" % dictString
+              else:
+                  htmlData = htmlData + """<td>%(BSP)s&#37;</td>""" % dictString
+              htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
               <th>Height Status</th>
