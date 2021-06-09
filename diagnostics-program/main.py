@@ -175,11 +175,19 @@ while True:
     # Get some network diagnostics
 
     try:
-        diagnostics["ETH0I"] = nmcli.device.show('eth0')['IP4.ADDRESS[1]'][:-3]
+        diagnostics["ETH0I4"] = nmcli.device.show('eth0')['IP4.ADDRESS[1]'][:-3]
     except KeyError:
         pass
     try:
-        diagnostics["WLAN0I"] = nmcli.device.show('wlan0')['IP4.ADDRESS[1]'][:-3]
+        diagnostics["ETH0I6"] = nmcli.device.show('eth0')['IP6.ADDRESS[1]'][:-3]
+    except KeyError:
+        pass
+    try:
+        diagnostics["WLAN0I4"] = nmcli.device.show('wlan0')['IP4.ADDRESS[1]'][:-3]
+    except KeyError:
+        pass
+    try:
+        diagnostics["WLAN0I6"] = nmcli.device.show('wlan0')['IP6.ADDRESS[1]'][:-3]
     except KeyError:
         pass
 
