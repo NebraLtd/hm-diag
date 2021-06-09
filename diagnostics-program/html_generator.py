@@ -113,9 +113,9 @@ def generate_html(dictString):
               <th>Region Plan</th>
               """ % dictString
               if(dictString["RE"] == "UN123"):
-                  htmlData = htmlData + """<td>Awaiting Location Assertion</td>""" % dictString
+                 htmlData = htmlData + """<td>Awaiting Location Assertion</td>""" % dictString
               else:
-                  htmlData = htmlData + """<td>%(RE)s</td>""" % dictString
+                 htmlData = htmlData + """<td>%(RE)s</td>""" % dictString
               htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
