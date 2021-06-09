@@ -191,6 +191,13 @@ while True:
     except KeyError:
         pass
 
+    wifiCache = nmcli.device.wifi()
+
+    for network in wifiCache:
+        if(network.ssid != "--"):
+            if(network.in_use):
+                diagnostics['WIFISSID'] = str(network.ssid)
+
     # print(diagnostics)
 
     # Check the basics if they're fine
