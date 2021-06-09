@@ -19,7 +19,6 @@ import requests
 #     sentry_sdk.init(sentry_key, environment=balena_app)
 #     sentry_sdk.set_user({"id": balena_id})
 
-nmcli.disable_use_sudo()
 
 while True:
     print("Diag Loop")
