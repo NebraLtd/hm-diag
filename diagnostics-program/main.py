@@ -11,13 +11,13 @@ import sentry_sdk
 import dbus
 import requests
 
-sentry_key = os.getenv('SENTRY_DIAG')
-if(sentry_key):
-    print("Sentry Diagnostics Detected")
-    balena_id = os.getenv('BALENA_DEVICE_UUID')
-    balena_app = os.getenv('BALENA_APP_NAME')
-    sentry_sdk.init(sentry_key, environment=balena_app)
-    sentry_sdk.set_user({"id": balena_id})
+# sentry_key = os.getenv('SENTRY_DIAG')
+# if(sentry_key):
+#     print("Sentry Diagnostics Detected")
+#     balena_id = os.getenv('BALENA_DEVICE_UUID')
+#     balena_app = os.getenv('BALENA_APP_NAME')
+#     sentry_sdk.init(sentry_key, environment=balena_app)
+#     sentry_sdk.set_user({"id": balena_id})
 
 while True:
     print("Diag Loop")
