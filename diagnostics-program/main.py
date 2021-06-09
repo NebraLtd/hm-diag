@@ -172,32 +172,6 @@ while True:
     except FileNotFoundError:
         diagnostics['RE'] = "UN123"
 
-    # Get some network diagnostics
-
-    try:
-        diagnostics["ETH0I4"] = nmcli.device.show('eth0')['IP4.ADDRESS[1]'][:-3]
-    except KeyError:
-        pass
-    try:
-        diagnostics["ETH0I6"] = nmcli.device.show('eth0')['IP6.ADDRESS[1]'][:-3]
-    except KeyError:
-        pass
-    try:
-        diagnostics["WLAN0I4"] = nmcli.device.show('wlan0')['IP4.ADDRESS[1]'][:-3]
-    except KeyError:
-        pass
-    try:
-        diagnostics["WLAN0I6"] = nmcli.device.show('wlan0')['IP6.ADDRESS[1]'][:-3]
-    except KeyError:
-        pass
-
-    wifiCache = nmcli.device.wifi()
-
-    for network in wifiCache:
-        if(network.ssid != "--"):
-            if(network.in_use):
-                diagnostics['WIFISSID'] = str(network.ssid)
-
     # print(diagnostics)
 
     # Check the basics if they're fine
