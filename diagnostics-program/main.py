@@ -126,12 +126,12 @@ while True:
             diagnostics['MH'] = str(p2pstatus[3][1])
             diagnostics['MN'] = str(p2pstatus[2][1])
         except dbus.exceptions.DBusException:
-            diagnostics['MC'] = ""
+            diagnostics['MC'] = "no"
             diagnostics['MD'] = ""
             diagnostics['MH'] = "0"
             diagnostics['MN'] = ""
     except:
-        diagnostics['MC'] = ""
+        diagnostics['MC'] = "no"
         diagnostics['MD'] = ""
         diagnostics['MH'] = "0"
         diagnostics['MN'] = ""
