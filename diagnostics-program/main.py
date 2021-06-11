@@ -57,12 +57,6 @@ while True:
     except FileNotFoundError:
         diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
 
-    try:
-        diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
-            .readline().strip().upper()
-    except FileNotFoundError:
-        diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
-
     # Get Balena Name
     diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
 
