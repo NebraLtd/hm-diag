@@ -79,13 +79,14 @@ while True:
     diagnostics["RPI"] = open("/proc/cpuinfo")\
         .readlines()[-2].strip()[10:]
 
-    # Get USB IDs to check for BT And Modem
+    # Get USB IDs to check for BT
     btIdCheck = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
     if "0a12" in btIdCheck:
         diagnostics["BT"] = True
     else:
         diagnostics["BT"] = False
 
+    #  And 4G / LTE Modem
     lteIdCheck = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
     if "2c7c" in lteIdCheck:
         diagnostics["LTE"] = True
