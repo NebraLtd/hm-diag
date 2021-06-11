@@ -97,6 +97,7 @@ while True:
     diagnostics["LOR"] = None
     while(diagnostics["LOR"] is None):
         try:
+            # The Pktfwder container creates this file to pass over the status.
             with open("/var/pktfwd/diagnostics") as diagOut:
                 loraStatus = diagOut.read()
                 if(loraStatus == "true"):
@@ -107,6 +108,7 @@ while True:
             # Packet forwarder container hasn't started
             sleep(10)
 
+    # Get the Public Key, Onboarding Key & Helium Animal Name
     diagnostics["PK"] = None
     while(diagnostics["PK"] is None):
         try:
@@ -139,17 +141,18 @@ while True:
         diagnostics['MH'] = "0"
         diagnostics['MN'] = ""
 
-    # Get the blockchain height from the Helium API
-
+    # I believe that if the NAT type is symmetric that it is counted as relayed.
     if(diagnostics['MN'] == "symmetric"):
         diagnostics['MR'] = True
     else:
         diagnostics['MR'] = False
 
+    # Get the blockchain height from the Helium API
     try:
         bchR = requests.get('https://api.helium.io/v1/blocks/height')
         diagnostics['BCH'] = bchR.json()['data']['height']
     except requests.exceptions.ConnectionError:
+        # Request failed, default to 1
         diagnostics['BCH'] = "1"
 
     # Check if the miner height is within 500 blocks and if so say it's synced
@@ -165,16 +168,16 @@ while True:
     try:
         with open("/var/pktfwd/region", 'r') as regionOut:
             regionFile = regionOut.read()
-
             if(len(regionFile) > 3):
                 print("Frequency: " + str(regionFile))
                 diagnostics['RE'] = str(regionFile).rstrip('\n')
     except FileNotFoundError:
+        # No region found, put a dummy region in
         diagnostics['RE'] = "UN123"
 
-    # print(diagnostics)
-
-    # Check the basics if they're fine
+    # Check the basics if they're fine and set an overall value
+    # Basics are: ECC valid, Mac addresses aren't FF, BT Is present,
+    # and LoRa hasn't failed
     if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
             and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF" and
             diagnostics["BT"] is True and diagnostics["LOR"] is True):
@@ -183,10 +186,11 @@ while True:
         diagnostics["PF"] = False
 
     # Add variant variables into diagnostics
-
+    # These are variables from the hardware definitions file
     variant_variables = variant_definitions[diagnostics['VA']]
     diagnostics.update(variant_variables)
 
+    # Create a json with a cutdown feature set which was used in some production
     prodDiagnostics = {
         "VA": diagnostics['VA'],
         "FR": diagnostics['FR'],
@@ -198,14 +202,18 @@ while True:
         "ID": diagnostics["ID"]
     }
 
+    # Generate an overall json
     diagJson = json.dumps(diagnostics)
 
+    # Write the overall diagnostics data to a json file served via Nginx
     with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
         diagOut.write(diagJson)
 
+    # Write the same file to another directory shared between containers
     with open("/var/data/nebraDiagnostics.json", 'w') as diagOut:
         diagOut.write(diagJson)
 
+    # Write the legacy production json to a file in base64
     prodJson = str(json.dumps(prodDiagnostics))
     prodBytes = prodJson.encode('ascii')
     prodBase64 = base64.b64encode(prodBytes)
@@ -213,6 +221,7 @@ while True:
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
         initFile.write(str(prodBase64, 'ascii'))
 
+    # Finally write the HTML data using the generate HTML function
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generate_html(diagnostics))
     if(diagnostics["PF"] is True):
