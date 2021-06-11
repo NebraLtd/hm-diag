@@ -225,6 +225,6 @@ while True:
     with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
         htmlOut.write(generate_html(diagnostics))
     if(diagnostics["PF"] is True):
-        sleep(90)
+        sleep(120)
     else:
         sleep(30)
