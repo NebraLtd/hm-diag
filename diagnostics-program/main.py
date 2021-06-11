@@ -1,15 +1,20 @@
 # Nebra Diagnostics Tool
-# Checks basic hardware features and hardware for validation
+# This tool runs every minute to check a veriaty of parts on the Nebra Hotspot
 
+# Import all of the libraries we require
 import os
 import json
 import base64
-from html_generator import generate_html
-from variant_definitions import variant_definitions
 from time import sleep
 import sentry_sdk
 import dbus
 import requests
+
+# Import the HTML generator file, plus hardware definitions (added in container)
+from html_generator import generate_html
+from variant_definitions import variant_definitions
+
+# Setup Sentry Diagnostics (Temporarily disabled until dbus warning can be ignored)
 
 # sentry_key = os.getenv('SENTRY_DIAG')
 # if(sentry_key):
@@ -19,16 +24,18 @@ import requests
 #     sentry_sdk.init(sentry_key, environment=balena_app)
 #     sentry_sdk.set_user({"id": balena_id})
 
+# Start the diagnostics Loop
 
 while True:
+    # Prints diag loop to help aid with debugging
     print("Diag Loop")
 
-    # Variables for all Checks
+    # Create the dictionary to store all the data
 
     diagnostics = {
     }
 
-    # Check the ECC
+    # Check the ECC Chip is present by running i2c detect and checking 0x60
     eccTest = os.popen('i2cdetect -y 1').read()
 
     if "60 --" in eccTest:
@@ -36,14 +43,14 @@ while True:
     else:
         diagnostics["ECC"] = False
 
-    # Get ethernet MAC address
+    # Get ethernet MAC address, if fail revert to dummy
     try:
         diagnostics["E0"] = open("/sys/class/net/eth0/address")\
             .readline().strip().upper()
     except FileNotFoundError:
         diagnostics["E0"] = "FF:FF:FF:FF:FF:FF"
 
-    # Get wifi MAC address
+    # Get WiFi MAC address, if fail revert to dummy
     try:
         diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
             .readline().strip().upper()
