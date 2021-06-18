@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebra Hotspot Diagnostics</title>
+  <!-- Bootstrap core CSS -->
+  <link href="assets/styles/bootstrap.min.css" rel="stylesheet">  
+</head>
+<body>
+  <header class="bg-white mb-4 d-flex justify-content-center">
+    <a href="#" class="p-3 text-center">
+      <img src="assets/images/nebra-logo.svg"  height="32" alt="Nebra Logo" />
+    </a>
+  </header>
+  <section class="container pb-4">
+    <div class="text-center pb-4 mb-4 border-bottom border-light">
+      <h1>Diagnostics Information</h1>
+      <h3>Animal Name: {NAME}</h3>
+      <h3 class="text-success">All Ok</h3>
+    </div>
+    <h3 class="text-center mb-4">Diagnostics Breakdown</h3>
+    <div class="row mb-4">
+      <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+        <div class="card mb-0 h-100">
+          <table class="table dt-responsive nowrap m-2 w-auto">
+            <tr>
+              <td class="border-0">Helium Address</td>
+              <td class="border-0 text-right"><a href="#">link</a></td>
+            </tr>
+            <tr>
+              <td>Sync Percentage</td>
+              <td class="text-right">100%</td>
+            </tr>
+            <tr>
+              <td>Height Status</td>
+              <td class="text-right">{STATUS}</td>
+            </tr>
+            <tr>
+              <td>Firmware Version</td>
+              <td class="text-right">{VERSION}</td>
+            </tr>
+            <tr>
+              <td>Frequency</td>
+              <td class="text-right">868</td>
+            </tr>
+            <tr>
+              <td>Region Plan</td>
+              <td class="text-right">{PLAN}</td>
+            </tr>
+            <tr>
+              <td>Variant</td>
+              <td class="text-right">{TEXT}</td>
+            </tr>
+            <tr>
+              <td>Miner Connected To Blockchain</td>
+              <td class="text-right">Yes</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+        <div class="card mb-0 h-100">
+          <table class="table dt-responsive nowrap m-2 w-auto">
+            <tr>
+              <td class="border-0">Miner Relayed</td>
+              <td class="border-0 text-warning text-right">True</td>
+            </tr>
+            <tr>
+              <td>ECC Detected</td>
+              <td class="text-success text-right">True</td>
+            </tr>
+            <tr>
+              <td>ETH0 MAC</td>
+              <td class="text-right">00:00:00:00:00:00</td>
+            </tr>
+            <tr>
+              <td>WLAN0 MAC</td>
+              <td class="text-warning text-right">00:00:00:00:00:00</td>
+            </tr>
+            <tr>
+              <td>RPi Serial</td>
+              <td class="text-right">000000000000000000000</td>
+            </tr>
+            <tr>
+              <td>BT Detected</td>
+              <td class="text-success text-right">True</td>
+            </tr>
+            <tr>
+              <td>LoRa OK?</td>
+              <td class="text-success text-right">True</td>
+            </tr>
+            <tr>
+              <td>LTE Detected</td>
+              <td class="text-success text-right">True</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <p>Last Updated: </p>
+      <p>To get support please visit <a href="https://nebra.io/helium-support">https://nebra.io/helium-support</a></p>
+      <p><a href="diagnostics.json">Download Diagnostics Info for Support</a></p>
+      <p>&copy; Nebra LTD. 2020-2021<p>    
+    </div>
+  </section>
+</body>
+</html>
