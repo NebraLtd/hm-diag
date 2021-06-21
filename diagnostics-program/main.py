@@ -10,11 +10,13 @@ from time import sleep
 import dbus
 import requests
 
-# Import the HTML generator file, plus hardware definitions (added in container)
+# Import the HTML generator file, plus hardware definitions
+# (added in container)
 from html_generator import generate_html
 from variant_definitions import variant_definitions
 
-# Setup Sentry Diagnostics (Temporarily disabled until dbus warning can be ignored)
+# Setup Sentry Diagnostics
+# (Temporarily disabled until dbus warning can be ignored)
 
 # sentry_key = os.getenv('SENTRY_DIAG')
 # if(sentry_key):
@@ -135,13 +137,13 @@ while True:
             diagnostics['MD'] = ""
             diagnostics['MH'] = "0"
             diagnostics['MN'] = ""
-    except:
+    except Exception:
         diagnostics['MC'] = "no"
         diagnostics['MD'] = ""
         diagnostics['MH'] = "0"
         diagnostics['MN'] = ""
 
-    # I believe that if the NAT type is symmetric that it is counted as relayed.
+    # I believe that if the NAT type is symmetric that it is counted as relayed
     if(diagnostics['MN'] == "symmetric"):
         diagnostics['MR'] = True
     else:
@@ -162,7 +164,9 @@ while True:
         diagnostics['MS'] = False
 
     # Calculate a percentage for block sync
-    diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH']))*100),3)
+    diagnostics['BSP'] = round(
+        ((int(diagnostics['MH'])/int(diagnostics['BCH']))*100), 3
+    )
 
     # Check if the region has been set
     try:
@@ -190,7 +194,7 @@ while True:
     variant_variables = variant_definitions[diagnostics['VA']]
     diagnostics.update(variant_variables)
 
-    # Create a json with a cutdown feature set which was used in some production
+    # Create a json with a reduced production feature set
     prodDiagnostics = {
         "VA": diagnostics['VA'],
         "FR": diagnostics['FR'],
