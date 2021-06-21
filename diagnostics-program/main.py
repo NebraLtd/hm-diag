@@ -6,7 +6,7 @@ import os
 import json
 import base64
 from time import sleep
-import sentry_sdk
+# import sentry_sdk
 import dbus
 import requests
 
