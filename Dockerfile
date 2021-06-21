@@ -21,7 +21,8 @@ RUN mkdir -p /run/nginx && mkdir html
 
 COPY diagnostics-program /opt/nebraDiagnostics
 COPY default.conf /etc/nginx/conf.d/default.conf
-COPY bootstrap.min.css /opt/nebraDiagnostics/html/bootstrap.min.css
+COPY assets/images/nebra-logo.svg /opt/nebraDiagnostics/html/assets/images/nebra-logo.svg
+COPY assets/styles/bootstrap.min.css /opt/nebraDiagnostics/html/assets/styles/bootstrap.min.css
 
 RUN wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
 
