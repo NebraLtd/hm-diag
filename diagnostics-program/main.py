@@ -6,7 +6,7 @@ import os
 import json
 import base64
 from time import sleep
-import sentry_sdk
+# import sentry_sdk
 import dbus
 import requests
 import subprocess
@@ -99,7 +99,7 @@ def get_miner_diagnostics():
                 "0",
                 ""
             ]
-    except:
+    except Exception:
         param_list = [
             "no",
             "",
@@ -240,7 +240,7 @@ def main():
                 diagnostics['MD'] = ""
                 diagnostics['MH'] = "0"
                 diagnostics['MN'] = ""
-        except:
+        except Exception:
             diagnostics['MC'] = "no"
             diagnostics['MD'] = ""
             diagnostics['MH'] = "0"
@@ -261,13 +261,13 @@ def main():
             diagnostics['BCH'] = "1"
 
         # Check if the miner height is within 500 blocks and if so say it's synced
-        if(int(diagnostics['MH']) > (int(diagnostics['BCH'])-500)):
+        if int(diagnostics['MH'] > int((diagnostics['BCH']) - 500)):
             diagnostics['MS'] = True
         else:
             diagnostics['MS'] = False
 
         # Calculate a percentage for block sync
-        diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH']))*100),3)
+        diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH']))*100), 3)
 
         # Check if the region has been set
         try:
