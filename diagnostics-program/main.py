@@ -13,7 +13,7 @@ import subprocess
 
 # Import the HTML generator file, plus hardware definitions (added in container)
 from html_generator import generate_html
-# from variant_definitions import variant_definitions
+from variant_definitions import variant_definitions
 
 # Setup Sentry Diagnostics (Temporarily disabled until dbus warning can be ignored)
 
