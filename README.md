@@ -3,6 +3,8 @@ Helium Miner Diagnostics
 
 # Diagnostics Json Layout
 
+As part of the code the system produces a JSON file which then is used to carry the data over easily to other parts.
+
 | Variable | Description |
 | --- | --- |
 | ECC | If the ECC Key is detected over I2C |
