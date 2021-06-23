@@ -32,5 +32,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Unit tests
       working-directory: ./diagnostics-program
-      run: python3 -m unittest
-
+      run: |
+        wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
+        python3 -m unittest
