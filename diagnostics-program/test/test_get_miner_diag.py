@@ -10,7 +10,7 @@ from main import get_miner_diagnostics # noqa
 class TestGetMinerDiag(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
-    def test(self, _, null):
+    def test_right_response(self, _, null):
         dbus.SystemBus.return_value = namedtuple("miner_bus", "get_object")(get_object=lambda x, y: [])
         dbus.Interface.return_value = namedtuple("miner_interface", "P2PStatus")(P2PStatus=lambda: [
             [1, 2, 3, 4],
@@ -23,7 +23,7 @@ class TestGetMinerDiag(unittest.TestCase):
 
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
-    def test(self, _, null):
+    def test_wrong_response(self, _, null):
         dbus.SystemBus.return_value = namedtuple("miner_bus", "get_object")(get_object=lambda x, y: [])
         dbus.Interface.side_effect = dbus.exceptions.DBusException()
         res = get_miner_diagnostics()

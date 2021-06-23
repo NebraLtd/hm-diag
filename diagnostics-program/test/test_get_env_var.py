@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import mock_open, patch
+from unittest.mock import patch
 import sys
 import os
 sys.path.append("..")

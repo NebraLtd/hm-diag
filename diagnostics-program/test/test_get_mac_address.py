@@ -8,7 +8,7 @@ from main import get_mac_addr # noqa
 class TestGetEthMac(unittest.TestCase):
     def test_get_data(self):
         m = mock_open(read_data='FF:FF:FF:FF:FF:FF')
-        with patch('builtins.open', m) as mocked_open:
+        with patch('builtins.open', m):
             result = get_mac_addr("random/path")
             self.assertEqual(result, 'FF:FF:FF:FF:FF:FF')
 
