@@ -200,12 +200,12 @@ def main():
 
         # LoRa Module Test
         diagnostics["LOR"] = None
-        while(diagnostics["LOR"] is None):
+        while diagnostics["LOR"] is None:
             try:
                 # The Pktfwder container creates this file to pass over the status.
                 with open("/var/pktfwd/diagnostics") as diagOut:
                     loraStatus = diagOut.read()
-                    if(loraStatus == "true"):
+                    if loraStatus == "true":
                         diagnostics["LOR"] = True
                     else:
                         diagnostics["LOR"] = False
@@ -215,7 +215,7 @@ def main():
 
         # Get the Public Key, Onboarding Key & Helium Animal Name
         diagnostics["PK"] = None
-        while(diagnostics["PK"] is None):
+        while diagnostics["PK"] is None:
             try:
                 pk_file = open("/var/data/public_keys").readline().split('"')
                 diagnostics["PK"] = str(pk_file[1])
@@ -247,7 +247,7 @@ def main():
             diagnostics['MN'] = ""
 
         # I believe that if the NAT type is symmetric that it is counted as relayed.
-        if(diagnostics['MN'] == "symmetric"):
+        if diagnostics['MN'] == "symmetric":
             diagnostics['MR'] = True
         else:
             diagnostics['MR'] = False
@@ -261,7 +261,7 @@ def main():
             diagnostics['BCH'] = "1"
 
         # Check if the miner height is within 500 blocks and if so say it's synced
-        if int(diagnostics['MH'] > int((diagnostics['BCH']) - 500)):
+        if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
             diagnostics['MS'] = True
         else:
             diagnostics['MS'] = False
@@ -273,7 +273,7 @@ def main():
         try:
             with open("/var/pktfwd/region", 'r') as regionOut:
                 regionFile = regionOut.read()
-                if(len(regionFile) > 3):
+                if len(regionFile) > 3:
                     print("Frequency: " + str(regionFile))
                     diagnostics['RE'] = str(regionFile).rstrip('\n')
         except FileNotFoundError:
@@ -329,7 +329,7 @@ def main():
         # Finally write the HTML data using the generate HTML function
         with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
             htmlOut.write(generate_html(diagnostics))
-        if(diagnostics["PF"] is True):
+        if diagnostics["PF"] is True:
             sleep(120)
         else:
             sleep(30)
