@@ -11,11 +11,13 @@ import dbus
 import requests
 import subprocess
 
-# Import the HTML generator file, plus hardware definitions (added in container)
+# Import the HTML generator file,
+# plus hardware definitions (added in container)
 from html_generator import generate_html
 from variant_definitions import variant_definitions
 
-# Setup Sentry Diagnostics (Temporarily disabled until dbus warning can be ignored)
+# Setup Sentry Diagnostics
+# (Temporarily disabled until dbus warning can be ignored)
 
 # sentry_key = os.getenv('SENTRY_DIAG')
 # if(sentry_key):
@@ -70,7 +72,9 @@ def get_helium_blockchain_height():
         try:
             result = result['data']['height']
         except KeyError:
-            raise KeyError("Not found value from key ['data']['height'] in json")
+            raise KeyError(
+                "Not found value from key ['data']['height'] in json"
+            )
         return result
     else:
         return "1"
@@ -146,7 +150,9 @@ def writing_data(path, data):
         with open(path, 'w') as file:
             file.write(data)
     except FileNotFoundError:
-        raise FileNotFoundError(f"Directory does not exist in the path: {path}")
+        raise FileNotFoundError(
+            f"Directory does not exist in the path: {path}"
+        )
     except PermissionError as e:
         raise e
 
@@ -223,7 +229,8 @@ def main():
         diagnostics["LOR"] = None
         while diagnostics["LOR"] is None:
             try:
-                # The Pktfwder container creates this file to pass over the status.
+                # The Pktfwder container creates this file
+                # to pass over the status.
                 with open("/var/pktfwd/diagnostics") as data:
                     lora_status = data.read()
                     if lora_status == "true":
@@ -267,7 +274,8 @@ def main():
             diagnostics['MH'] = "0"
             diagnostics['MN'] = ""
 
-        # I believe that if the NAT type is symmetric that it is counted as relayed.
+        # I believe that:
+        # if the NAT type is symmetric that it is counted as relayed.
         if diagnostics['MN'] == "symmetric":
             diagnostics['MR'] = True
         else:
@@ -281,14 +289,17 @@ def main():
             # Request failed, default to 1
             diagnostics['BCH'] = "1"
 
-        # Check if the miner height is within 500 blocks and if so say it's synced
+        # Check if the miner height
+        # is within 500 blocks and if so say it's synced
         if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
             diagnostics['MS'] = True
         else:
             diagnostics['MS'] = False
 
         # Calculate a percentage for block sync
-        diagnostics['BSP'] = round(((int(diagnostics['MH'])/int(diagnostics['BCH']))*100), 3)
+        diag_mh = int(diagnostics['MH'])
+        diag_bch = int(diagnostics['BCH']) * 100
+        diagnostics['BSP'] = round(diag_mh/diag_bch*100, 3)
 
         # Check if the region has been set
         try:
@@ -304,9 +315,12 @@ def main():
         # Check the basics if they're fine and set an overall value
         # Basics are: ECC valid, Mac addresses aren't FF, BT Is present,
         # and LoRa hasn't failed
-        if(diagnostics["ECC"] is True and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
-                and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF" and
-                diagnostics["BT"] is True and diagnostics["LOR"] is True):
+        if(
+            diagnostics["ECC"] is True
+            and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["BT"] is True and diagnostics["LOR"] is True
+        ):
             diagnostics["PF"] = True
         else:
             diagnostics["PF"] = False
@@ -316,7 +330,8 @@ def main():
         variant_variables = variant_definitions[diagnostics['VA']]
         diagnostics.update(variant_variables)
 
-        # Create a json with a cutdown feature set which was used in some production
+        # Create a json with a cutdown feature
+        # set which was used in some production
         prod_diagnostics = {
             "VA": diagnostics['VA'],
             "FR": diagnostics['FR'],

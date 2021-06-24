@@ -21,13 +21,21 @@ class TestWriteDataToFile(unittest.TestCase):
         self.assertRaises(TypeError, writing_data, 432, self.write_data)
 
     def test_wrong_directory_path(self):
-        self.assertRaises(FileNotFoundError, writing_data, f"/some/path/{self.path}", self.write_data)
+        self.assertRaises(
+            FileNotFoundError,
+            writing_data,
+            f"/some/path/{self.path}",
+            self.write_data)
 
     def test_permissions_error(self):
         with patch("builtins.open", mock_open()) as mf:
             fh_mock = mf.return_value.__enter__.return_value
             fh_mock.write.side_effect = PermissionError
-            self.assertRaises(PermissionError, writing_data, self.path, self.write_data)
+            self.assertRaises(
+                PermissionError,
+                writing_data,
+                self.path,
+                self.write_data)
 
     def tearDown(self):
         subprocess.call(['rm', '-rf', self.path])
