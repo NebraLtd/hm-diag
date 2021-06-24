@@ -130,6 +130,27 @@ def config_search_param(command, param):
         return False
 
 
+def writing_data(path, data):
+    """
+    input:
+        path - path to the file
+        data - data to write to file
+    Possible exceptions:
+    TypeError - if the path is not str.
+    FileNotFoundError - Directory does not exist in the path
+    PermissionError - No file permissions
+    """
+    if type(path) is not str:
+        raise TypeError("The path must be a string value")
+    try:
+        with open(path, 'w') as file:
+            file.write(data)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Directory does not exist in the path: {path}")
+    except PermissionError as e:
+        raise e
+
+
 def main():
     while True:
         # Prints diag loop to help aid with debugging
@@ -185,15 +206,15 @@ def main():
             .readlines()[-2].strip()[10:]
 
         # Get USB IDs to check for BT
-        btIdCheck = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
-        if "0a12" in btIdCheck:
+        bt_id = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
+        if "0a12" in bt_id:
             diagnostics["BT"] = True
         else:
             diagnostics["BT"] = False
 
         #  And 4G / LTE Modem
-        lteIdCheck = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
-        if "2c7c" in lteIdCheck:
+        lte_id = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
+        if "2c7c" in lte_id:
             diagnostics["LTE"] = True
         else:
             diagnostics["LTE"] = False
@@ -203,9 +224,9 @@ def main():
         while diagnostics["LOR"] is None:
             try:
                 # The Pktfwder container creates this file to pass over the status.
-                with open("/var/pktfwd/diagnostics") as diagOut:
-                    loraStatus = diagOut.read()
-                    if loraStatus == "true":
+                with open("/var/pktfwd/diagnostics") as data:
+                    lora_status = data.read()
+                    if lora_status == "true":
                         diagnostics["LOR"] = True
                     else:
                         diagnostics["LOR"] = False
@@ -230,11 +251,11 @@ def main():
             miner_object = miner_bus.get_object('com.helium.Miner', '/')
             miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
             try:
-                p2pstatus = miner_interface.P2PStatus()
-                diagnostics['MC'] = str(p2pstatus[0][1])
-                diagnostics['MD'] = str(p2pstatus[1][1])
-                diagnostics['MH'] = str(p2pstatus[3][1])
-                diagnostics['MN'] = str(p2pstatus[2][1])
+                p2p_status = miner_interface.P2PStatus()
+                diagnostics['MC'] = str(p2p_status[0][1])
+                diagnostics['MD'] = str(p2p_status[1][1])
+                diagnostics['MH'] = str(p2p_status[3][1])
+                diagnostics['MN'] = str(p2p_status[2][1])
             except dbus.exceptions.DBusException:
                 diagnostics['MC'] = "no"
                 diagnostics['MD'] = ""
@@ -271,11 +292,11 @@ def main():
 
         # Check if the region has been set
         try:
-            with open("/var/pktfwd/region", 'r') as regionOut:
-                regionFile = regionOut.read()
-                if len(regionFile) > 3:
-                    print("Frequency: " + str(regionFile))
-                    diagnostics['RE'] = str(regionFile).rstrip('\n')
+            with open("/var/pktfwd/region", 'r') as data:
+                region = data.read()
+                if len(region) > 3:
+                    print("Frequency: " + str(region))
+                    diagnostics['RE'] = str(region).rstrip('\n')
         except FileNotFoundError:
             # No region found, put a dummy region in
             diagnostics['RE'] = "UN123"
@@ -296,7 +317,7 @@ def main():
         diagnostics.update(variant_variables)
 
         # Create a json with a cutdown feature set which was used in some production
-        prodDiagnostics = {
+        prod_diagnostics = {
             "VA": diagnostics['VA'],
             "FR": diagnostics['FR'],
             "E0": diagnostics['E0'],
@@ -308,23 +329,22 @@ def main():
         }
 
         # Generate an overall json
-        diagJson = json.dumps(diagnostics)
+        diag_json = json.dumps(diagnostics)
 
         # Write the overall diagnostics data to a json file served via Nginx
-        with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as diagOut:
-            diagOut.write(diagJson)
+        with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as data:
+            data.write(diag_json)
 
         # Write the same file to another directory shared between containers
-        with open("/var/data/nebraDiagnostics.json", 'w') as diagOut:
-            diagOut.write(diagJson)
+        with open("/var/data/nebraDiagnostics.json", 'w') as data:
+            data.write(diag_json)
 
         # Write the legacy production json to a file in base64
-        prodJson = str(json.dumps(prodDiagnostics))
-        prodBytes = prodJson.encode('ascii')
-        prodBase64 = base64.b64encode(prodBytes)
+        prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
+        prod_base64 = base64.b64encode(prod_json)
 
         with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
-            initFile.write(str(prodBase64, 'ascii'))
+            initFile.write(str(prod_base64, 'ascii'))
 
         # Finally write the HTML data using the generate HTML function
         with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
