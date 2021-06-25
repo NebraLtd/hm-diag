@@ -218,6 +218,8 @@ while True:
     prodBytes = prodJson.encode('ascii')
     prodBase64 = base64.b64encode(prodBytes)
 
+    # This file is consumed by the Hotspot Production Tool
+    # github.com/NebraLtd/Hotspot-Production-Tool
     with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
         initFile.write(str(prodBase64, 'ascii'))
 
