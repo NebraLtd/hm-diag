@@ -3,7 +3,7 @@ from unittest.mock import patch
 import subprocess
 import sys
 sys.path.append("..")
-from main import config_search_param # noqa
+from utils import config_search_param # noqa
 
 
 class TestConfigSearch(unittest.TestCase):

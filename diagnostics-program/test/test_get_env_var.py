@@ -3,7 +3,7 @@ from unittest.mock import patch
 import sys
 import os
 sys.path.append("..")
-from main import get_env_var # noqa
+from utils import get_env_var # noqa
 
 
 class TestGetEnvVariable(unittest.TestCase):

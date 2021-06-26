@@ -2,19 +2,18 @@
 # This tool runs every minute to check a veriaty of parts on the Nebra Hotspot
 
 # Import all of the libraries we require
-import os
 import json
 import base64
 from time import sleep
 # import sentry_sdk
-import dbus
-import requests
-import subprocess
+import utils
+import logging
 
 # Import the HTML generator file,
 # plus hardware definitions (added in container)
 from html_generator import generate_html
 from variant_definitions import variant_definitions
+
 
 # Setup Sentry Diagnostics
 # (Temporarily disabled until dbus warning can be ignored)
@@ -27,134 +26,92 @@ from variant_definitions import variant_definitions
 #     sentry_sdk.init(sentry_key, environment=balena_app)
 #     sentry_sdk.set_user({"id": balena_id})
 
-# Start the diagnostics Loop
 
-
-def get_mac_addr(path):
-    """
-    input: path to the file with the location of the mac address
-    output: A string containing a mac address
-    Possible exceptions:
-        FileNotFoundError - when the file is not found
-        PermissionError - in the absence of access rights to the file
-        TypeError - If the function argument is not a string.
-    """
-    if type(path) is not str:
-        raise TypeError("The path must be a string value")
-    try:
-        file = open(path)
-    except FileNotFoundError as e:
-        raise e
-    except PermissionError as e:
-        raise e
-    return file.readline().strip().upper()
-
-
-def get_env_var(variable):
-    """
-    input: The string value of the environment variable.
-    output: The value of the environment variable if missing return none.
-    """
-    res = os.getenv(variable)
-    return res
-
-
-# Get the blockchain height from the Helium API
-def get_helium_blockchain_height():
-    """
-    output: return current blockchain height from the Helium API
-    Possible exceptions:
-    TypeError - if the key ['data']['height'] in response is not found.
-    """
-    result = requests.get('https://api.helium.io/v1/blocks/height')
-    if result.status_code == 200:
-        result = result.json()
+def get_ethernet_addresses(diagnostics):
+    # Get ethernet MAC and WIFI address
+    path_to_files = [
+        "/sys/class/net/eth0/address",
+        "/sys/class/net/wlan0/address"
+    ]
+    keys = ["E0", "W0"]
+    for (path, key) in zip(path_to_files, keys):
         try:
-            result = result['data']['height']
-        except KeyError:
-            raise KeyError(
-                "Not found value from key ['data']['height'] in json"
-            )
-        return result
-    else:
-        return "1"
+            diagnostics[key] = utils.get_mac_addr(path)
+        except Exception as e:
+            diagnostics[key] = None
+            logging.error(e)
 
 
-def get_miner_diagnostics():
-    # Get miner diagnostics
-    # return MC - MD - MH - MN list
-    param_list = []
-    try:
-        miner_bus = dbus.SystemBus()
-        miner_object = miner_bus.get_object('com.helium.Miner', '/')
-        miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
+def get_environment_var(diagnostics):
+    env_var = [
+        'BALENA_DEVICE_NAME_AT_INIT',
+        'BALENA_DEVICE_UUID',
+        'BALENA_APP_NAME',
+        'FREQ',
+        'FIRMWARE_VERSION',
+        'VARIANT'
+    ]
+    keys = ["BN", "ID", "BA", "FR", "FW", "VA"]
+
+    for (var, key) in zip(env_var, keys):
+        diagnostics[key] = utils.get_env_var(var)
+
+
+def get_network_param(diagnostics):
+    commands = [
+        'i2cdetect -y 1',
+        'grep 0a12 /sys/bus/usb/devices/*/idVendor',
+        'grep 2c7c /sys/bus/usb/devices/*/idVendor'
+    ]
+    parameters = ["60 --", "0a12", "2c7c"]
+    keys = ["ECC", "BT", "LTE"]
+
+    for (command, param, key) in zip(commands, parameters, keys):
         try:
-            p2pstatus = miner_interface.P2PStatus()
-            param_list = [
-                str(p2pstatus[0][1]),
-                str(p2pstatus[1][1]),
-                str(p2pstatus[3][1]),
-                str(p2pstatus[2][1])
-            ]
-        except dbus.exceptions.DBusException:
-            param_list = [
-                "no",
-                "",
-                "0",
-                ""
-            ]
-    except Exception:
-        param_list = [
-            "no",
-            "",
-            "0",
-            ""
-        ]
-
-    return param_list
+            diagnostics[key] = utils.config_search_param(command, param)
+        except Exception as e:
+            logging.error(e)
 
 
-def config_search_param(command, param):
-    """
-    input:
-        command: Command to execute
-        param: The parameter we are looking for in the response
-    return: True is exist, or False if doesn't exist
-    Possible exceptions:
-        TypeError: If the arguments passed to the function are not strings.
-    """
-    if type(command) is not str:
-        raise TypeError("The command must be a string value")
-    if type(param) is not str:
-        raise TypeError("The param must be a string value")
-    result = subprocess.Popen(command.split())
-    if param in result:
-        return True
+def write_public_keys_to_diag(data, diagnostics):
+    if data is not None and len(data) == 3:
+        keys = ["PK", "OK", "AN"]
+        for (param, key) in zip(data, keys):
+            diagnostics[key] = param
     else:
-        return False
-
-
-def writing_data(path, data):
-    """
-    input:
-        path - path to the file
-        data - data to write to file
-    Possible exceptions:
-    TypeError - if the path is not str.
-    FileNotFoundError - Directory does not exist in the path
-    PermissionError - No file permissions
-    """
-    if type(path) is not str:
-        raise TypeError("The path must be a string value")
-    try:
-        with open(path, 'w') as file:
-            file.write(data)
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f"Directory does not exist in the path: {path}"
+        logging.error(
+            "The public keys from the file were obtained with an unknown error"
         )
-    except PermissionError as e:
-        raise e
+
+
+def set_param_miner_diag(diagnostics):
+    param_miner_diag = utils.get_miner_diagnostics()
+    keys = ['MC', 'MD', 'MH', 'MN']
+    for (param, key) in zip(param_miner_diag, keys):
+        diagnostics[key] = param
+
+
+def write_info_to_files(prod_diagnostics, diagnostics):
+    diag_json = json.dumps(diagnostics)
+    prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
+    prod_base64 = base64.b64encode(prod_json)
+    data_str = (str(prod_base64, 'ascii'))
+    html_str = generate_html(diagnostics)
+    path_list = [
+        "/opt/nebraDiagnostics/html/diagnostics.json",
+        "/var/data/nebraDiagnostics.json",
+        "/opt/nebraDiagnostics/html/initFile.txt",
+        "/opt/nebraDiagnostics/html/index.html"
+    ]
+    data_list = [
+        diag_json,
+        diag_json,
+        data_str,
+        html_str
+    ]
+
+    for (path, data) in zip(path_list, data_list):
+        utils.writing_data(path, data)
 
 
 def main():
@@ -167,112 +124,33 @@ def main():
         diagnostics = {
         }
 
-        # Check the ECC Chip is present by running i2c detect and checking 0x60
-        eccTest = os.popen('i2cdetect -y 1').read()
+        # Get ethernet MAC and WIFI address
+        get_ethernet_addresses(diagnostics)
 
-        if "60 --" in eccTest:
-            diagnostics["ECC"] = True
-        else:
-            diagnostics["ECC"] = False
-
-        # Get ethernet MAC address, if fail revert to dummy
-        try:
-            diagnostics["E0"] = open("/sys/class/net/eth0/address")\
-                .readline().strip().upper()
-        except FileNotFoundError:
-            diagnostics["E0"] = "FF:FF:FF:FF:FF:FF"
-
-        # Get WiFi MAC address, if fail revert to dummy
-        try:
-            diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
-                .readline().strip().upper()
-        except FileNotFoundError:
-            diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
-
-        # Get Balena Name
-        diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
-
-        # Get Balena UUID
-        diagnostics["ID"] = os.getenv('BALENA_DEVICE_UUID')
-
-        # Get Balena App
-        diagnostics["BA"] = os.getenv('BALENA_APP_NAME')
-
-        # Get Frequency
-        diagnostics["FR"] = os.getenv('FREQ')
-
-        # Get Firmware
-        diagnostics["FW"] = os.getenv('FIRMWARE_VERSION')
-
-        # Get Variant
-        diagnostics["VA"] = os.getenv('VARIANT')
+        # Get Balena Name, UUID, App, Frequency, Firmware, Variant
+        get_environment_var(diagnostics)
 
         # Get RPi serial number
-        diagnostics["RPI"] = open("/proc/cpuinfo")\
-            .readlines()[-2].strip()[10:]
+        utils.get_rpi_serial(diagnostics)
 
-        # Get USB IDs to check for BT
-        bt_id = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
-        if "0a12" in bt_id:
-            diagnostics["BT"] = True
-        else:
-            diagnostics["BT"] = False
-
-        #  And 4G / LTE Modem
-        lte_id = os.popen('grep 2c7c /sys/bus/usb/devices/*/idVendor').read()
-        if "2c7c" in lte_id:
-            diagnostics["LTE"] = True
-        else:
-            diagnostics["LTE"] = False
+        # Check the ECC Chip is present by running i2c detect and checking 0x60
+        # Get USB IDs to check for BT And 4G / LTE Modem
+        get_network_param(diagnostics)
 
         # LoRa Module Test
-        diagnostics["LOR"] = None
-        while diagnostics["LOR"] is None:
-            try:
-                # The Pktfwder container creates this file
-                # to pass over the status.
-                with open("/var/pktfwd/diagnostics") as data:
-                    lora_status = data.read()
-                    if lora_status == "true":
-                        diagnostics["LOR"] = True
-                    else:
-                        diagnostics["LOR"] = False
-            except FileNotFoundError:
-                # Packet forwarder container hasn't started
-                sleep(10)
+        diagnostics["LOR"] = utils.lora_module_test()
 
         # Get the Public Key, Onboarding Key & Helium Animal Name
-        diagnostics["PK"] = None
-        while diagnostics["PK"] is None:
-            try:
-                pk_file = open("/var/data/public_keys").readline().split('"')
-                diagnostics["PK"] = str(pk_file[1])
-                diagnostics["OK"] = str(pk_file[3])
-                diagnostics["AN"] = str(pk_file[5])
-            except FileNotFoundError:
-                sleep(10)
+        try:
+            data = utils.get_public_keys()
+        except PermissionError as e:
+            data = None
+            logging.error(e)
+
+        write_public_keys_to_diag(data, diagnostics)
 
         # Get miner diagnostics
-        try:
-            miner_bus = dbus.SystemBus()
-            miner_object = miner_bus.get_object('com.helium.Miner', '/')
-            miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
-            try:
-                p2p_status = miner_interface.P2PStatus()
-                diagnostics['MC'] = str(p2p_status[0][1])
-                diagnostics['MD'] = str(p2p_status[1][1])
-                diagnostics['MH'] = str(p2p_status[3][1])
-                diagnostics['MN'] = str(p2p_status[2][1])
-            except dbus.exceptions.DBusException:
-                diagnostics['MC'] = "no"
-                diagnostics['MD'] = ""
-                diagnostics['MH'] = "0"
-                diagnostics['MN'] = ""
-        except Exception:
-            diagnostics['MC'] = "no"
-            diagnostics['MD'] = ""
-            diagnostics['MH'] = "0"
-            diagnostics['MN'] = ""
+        set_param_miner_diag(diagnostics)
 
         # I believe that:
         # if the NAT type is symmetric that it is counted as relayed.
@@ -282,12 +160,12 @@ def main():
             diagnostics['MR'] = False
 
         # Get the blockchain height from the Helium API
+        value = "1"
         try:
-            bchR = requests.get('https://api.helium.io/v1/blocks/height')
-            diagnostics['BCH'] = bchR.json()['data']['height']
-        except requests.exceptions.ConnectionError:
-            # Request failed, default to 1
-            diagnostics['BCH'] = "1"
+            value = utils.get_helium_blockchain_height()
+        except KeyError as e:
+            logging.warning(e)
+        diagnostics['BCH'] = value
 
         # Check if the miner height
         # is within 500 blocks and if so say it's synced
@@ -299,7 +177,7 @@ def main():
         # Calculate a percentage for block sync
         diag_mh = int(diagnostics['MH'])
         diag_bch = int(diagnostics['BCH']) * 100
-        diagnostics['BSP'] = round(diag_mh/diag_bch*100, 3)
+        diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
 
         # Check if the region has been set
         try:
@@ -315,11 +193,11 @@ def main():
         # Check the basics if they're fine and set an overall value
         # Basics are: ECC valid, Mac addresses aren't FF, BT Is present,
         # and LoRa hasn't failed
-        if(
-            diagnostics["ECC"] is True
-            and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
-            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF"
-            and diagnostics["BT"] is True and diagnostics["LOR"] is True
+        if (
+                diagnostics["ECC"] is True
+                and diagnostics["E0"] is not None
+                and diagnostics["W0"] is not None
+                and diagnostics["BT"] is True and diagnostics["LOR"] is True
         ):
             diagnostics["PF"] = True
         else:
@@ -343,27 +221,12 @@ def main():
             "ID": diagnostics["ID"]
         }
 
-        # Generate an overall json
-        diag_json = json.dumps(diagnostics)
-
         # Write the overall diagnostics data to a json file served via Nginx
-        with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as data:
-            data.write(diag_json)
-
         # Write the same file to another directory shared between containers
-        with open("/var/data/nebraDiagnostics.json", 'w') as data:
-            data.write(diag_json)
-
         # Write the legacy production json to a file in base64
-        prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
-        prod_base64 = base64.b64encode(prod_json)
-
-        with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
-            initFile.write(str(prod_base64, 'ascii'))
-
         # Finally write the HTML data using the generate HTML function
-        with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
-            htmlOut.write(generate_html(diagnostics))
+        write_info_to_files(prod_diagnostics, diagnostics)
+
         if diagnostics["PF"] is True:
             sleep(120)
         else:
