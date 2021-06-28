@@ -205,8 +205,11 @@ def main():
 
         # Add variant variables into diagnostics
         # These are variables from the hardware definitions file
-        variant_variables = variant_definitions[diagnostics['VA']]
-        diagnostics.update(variant_variables)
+        try:
+            variant_variables = variant_definitions[diagnostics['VA']]
+            diagnostics.update(variant_variables)
+        except KeyError:
+            pass
 
         # Create a json with a cutdown feature
         # set which was used in some production
