@@ -71,14 +71,9 @@ def get_miner_diagnostics():
                 str(p2pstatus[3][1]),
                 str(p2pstatus[2][1])
             ]
-        except dbus.exceptions.DBusException:
-            param_list = [
-                "no",
-                "",
-                "0",
-                ""
-            ]
-    except Exception:
+        except dbus.exceptions.DBusException as e:
+            raise dbus.exceptions.DBusException(e)
+    except (Exception, dbus.exceptions.DBusException):
         param_list = [
             "no",
             "",
