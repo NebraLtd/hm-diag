@@ -117,9 +117,9 @@ def writing_data(path, data):
         path - path to the file
         data - data to write to file
     Possible exceptions:
-    TypeError - if the path is not str.
-    FileNotFoundError - Directory does not exist in the path
-    PermissionError - No file permissions
+        TypeError - if the path is not str.
+        FileNotFoundError - Directory does not exist in the path
+        PermissionError - No file permissions
     """
     if type(path) is not str:
         raise TypeError("The path must be a string value")
@@ -135,6 +135,16 @@ def writing_data(path, data):
 
 
 def get_rpi_serial(diagnostics):
+    """
+    input:
+        diagnostics - dict
+    Possible exceptions:
+        TypeError - if the path is not str.
+        FileNotFoundError - "/proc/cpuinfo" not found
+        PermissionError - No file permissions
+
+    Writes the received value to the dictionary
+    """
     try:
         rpi_serial = open("/proc/cpuinfo").readlines()[-2].strip()[10:]
     except FileNotFoundError as e:
@@ -146,6 +156,10 @@ def get_rpi_serial(diagnostics):
 
 
 def lora_module_test():
+    """
+    Checks the status of the lore module.
+    Returns true or false.
+    """
     result = None
     while result is None:
         try:
@@ -165,6 +179,14 @@ def lora_module_test():
 
 
 def get_public_keys():
+    """
+    get three public keys
+    PK - The public key of the miner
+    OK - The Onboarding key of the miner
+    AN - The Animal Name of the miner
+    from file "/var/data/public_keys"
+    A list of keys will be returned.
+    """
     pk_file = None
     while pk_file is None:
         try:
