@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, Mock
-import subprocess
 import sys
 sys.path.append("..")
 from utils import config_search_param # noqa
