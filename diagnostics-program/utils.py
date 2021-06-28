@@ -102,8 +102,10 @@ def config_search_param(command, param):
         raise TypeError("The command must be a string value")
     if type(param) is not str:
         raise TypeError("The param must be a string value")
-    result = subprocess.Popen(command.split())
-    if param in result:
+    result = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    out, err = result.communicate()
+    out = out.decode("UTF-8")
+    if param in out:
         return True
     else:
         return False
