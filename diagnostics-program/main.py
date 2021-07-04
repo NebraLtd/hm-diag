@@ -29,6 +29,10 @@ from variant_definitions import variant_definitions
 
 # Start the diagnostics Loop
 
+# Define variables
+PACKET_FORWARDER_DIAGNOSTICS_FILE = '/var/pktfwd/diagnostics'
+HELIUM_PUBLIC_KEYS = '/var/data/public_keys'
+
 
 def get_mac_addr(path):
     """
@@ -50,13 +54,21 @@ def get_mac_addr(path):
     return file.readline().strip().upper()
 
 
-def get_env_var(variable):
+def wait_for_file(file_path, attempts=5, timeout=5):
     """
-    input: The string value of the environment variable.
-    output: The value of the environment variable if missing return none.
+    Helper function for to wait for
+    files to appear on disk.
     """
-    res = os.getenv(variable)
-    return res
+    if not os.path.isfile(file_path):
+        retries_left = attempts
+        print('{} is missing. Waiting for file to appear.'.format(file_path))
+
+        while retries_left > 0:
+            print('...{} attempt(s) left'.format(retries_left))
+            retries_left = retries_left - 1
+            if os.path.isfile(file_path):
+                break
+            sleep(timeout)
 
 
 # Get the blockchain height from the Helium API
@@ -160,10 +172,9 @@ def writing_data(path, data):
 def main():
     while True:
         # Prints diag loop to help aid with debugging
-        print("Diag Loop")
+        print("Diagnostics loop started...")
 
         # Create the dictionary to store all the data
-
         diagnostics = {
         }
 
@@ -180,14 +191,14 @@ def main():
             diagnostics["E0"] = open("/sys/class/net/eth0/address")\
                 .readline().strip().upper()
         except FileNotFoundError:
-            diagnostics["E0"] = "FF:FF:FF:FF:FF:FF"
+            diagnostics["E0"] = "Unknown"
 
         # Get WiFi MAC address, if fail revert to dummy
         try:
             diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
                 .readline().strip().upper()
         except FileNotFoundError:
-            diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
+            diagnostics["W0"] = "Unknown"
 
         # Get Balena Name
         diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
@@ -205,7 +216,7 @@ def main():
         diagnostics["FW"] = os.getenv('FIRMWARE_VERSION')
 
         # Get Variant
-        diagnostics["VA"] = os.getenv('VARIANT')
+        diagnostics["VA"] = os.getenv('VARIANT', 'Unknown')
 
         # Get RPi serial number
         diagnostics["RPI"] = open("/proc/cpuinfo")\
@@ -227,25 +238,31 @@ def main():
 
         # LoRa Module Test
         diagnostics["LOR"] = None
-        while diagnostics["LOR"] is None:
-            try:
-                # The Pktfwder container creates this file
-                # to pass over the status.
-                with open("/var/pktfwd/diagnostics") as data:
-                    lora_status = data.read()
-                    if lora_status == "true":
-                        diagnostics["LOR"] = True
-                    else:
-                        diagnostics["LOR"] = False
-            except FileNotFoundError:
-                # Packet forwarder container hasn't started
-                sleep(10)
+
+        wait_for_file(PACKET_FORWARDER_DIAGNOSTICS_FILE)
+
+        if os.path.isfile(PACKET_FORWARDER_DIAGNOSTICS_FILE):
+            # The Pktfwder container creates this file
+            # to pass over the status.
+            with open(PACKET_FORWARDER_DIAGNOSTICS_FILE) as data:
+                lora_status = data.read()
+                if lora_status == "true":
+                    diagnostics["LOR"] = True
+                else:
+                    diagnostics["LOR"] = False
 
         # Get the Public Key, Onboarding Key & Helium Animal Name
         diagnostics["PK"] = None
-        while diagnostics["PK"] is None:
+        wait_for_file(HELIUM_PUBLIC_KEYS)
+
+        # Set defaults
+        diagnostics["PK"] = 'Unknown'
+        diagnostics["OK"] = 'Unknown'
+        diagnostics["AN"] = 'Unknown'
+
+        if os.path.isfile(HELIUM_PUBLIC_KEYS):
             try:
-                pk_file = open("/var/data/public_keys").readline().split('"')
+                pk_file = open(HELIUM_PUBLIC_KEYS).readline().split('"')
                 diagnostics["PK"] = str(pk_file[1])
                 diagnostics["OK"] = str(pk_file[3])
                 diagnostics["AN"] = str(pk_file[5])
@@ -317,8 +334,8 @@ def main():
         # and LoRa hasn't failed
         if(
             diagnostics["ECC"] is True
-            and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
-            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["E0"] != "Unknown"
+            and diagnostics["W0"] != "Unknown"
             and diagnostics["BT"] is True and diagnostics["LOR"] is True
         ):
             diagnostics["PF"] = True
@@ -327,10 +344,23 @@ def main():
 
         # Add variant variables into diagnostics
         # These are variables from the hardware definitions file
-        variant_variables = variant_definitions[diagnostics['VA']]
+        if diagnostics['VA'] != 'Unknown':
+            variant_variables = variant_definitions[diagnostics['VA']]
+        else:
+            variant_variables = {
+                'FRIENDLY': 'Developer Mode Mock Hotspot',
+                'APPNAME': "Indoor",
+                'SPIBUS': 'spidev1.2',
+                'RESET': 38,
+                'MAC': 'eth0',
+                'STATUS': 25,
+                'BUTTON': 26,
+                'ECCOB': True,
+                'TYPE': "Full"
+            }
         diagnostics.update(variant_variables)
 
-        # Create a json with a cutdown feature
+        # Create a JSON with a cutdown feature
         # set which was used in some production
         prod_diagnostics = {
             "VA": diagnostics['VA'],
@@ -347,7 +377,7 @@ def main():
         diag_json = json.dumps(diagnostics)
 
         # Write the overall diagnostics data to a json file served via Nginx
-        with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as data:
+        with open("/opt/html/diagnostics.json", 'w') as data:
             data.write(diag_json)
 
         # Write the same file to another directory shared between containers
@@ -358,11 +388,11 @@ def main():
         prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
         prod_base64 = base64.b64encode(prod_json)
 
-        with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
+        with open("/opt/html/initFile.txt", 'w') as initFile:
             initFile.write(str(prod_base64, 'ascii'))
 
         # Finally write the HTML data using the generate HTML function
-        with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
+        with open("/opt/html/index.html", 'w') as htmlOut:
             htmlOut.write(generate_html(diagnostics))
         if diagnostics["PF"] is True:
             sleep(120)

@@ -7,10 +7,10 @@ from main import get_mac_addr # noqa
 
 class TestGetEthMac(unittest.TestCase):
     def test_get_data(self):
-        m = mock_open(read_data='FF:FF:FF:FF:FF:FF')
+        m = mock_open(read_data='Unknown')
         with patch('builtins.open', m):
             result = get_mac_addr("random/path")
-            self.assertEqual(result, 'FF:FF:FF:FF:FF:FF')
+            self.assertEqual(result, 'UNKNOWN')
 
     def test_avaliable_file(self):
         m = mock_open()
