@@ -50,15 +50,6 @@ def get_mac_addr(path):
     return file.readline().strip().upper()
 
 
-def get_env_var(variable):
-    """
-    input: The string value of the environment variable.
-    output: The value of the environment variable if missing return none.
-    """
-    res = os.getenv(variable)
-    return res
-
-
 # Get the blockchain height from the Helium API
 def get_helium_blockchain_height():
     """
@@ -160,10 +151,9 @@ def writing_data(path, data):
 def main():
     while True:
         # Prints diag loop to help aid with debugging
-        print("Diag Loop")
+        print("Diagnostics loop started...")
 
         # Create the dictionary to store all the data
-
         diagnostics = {
         }
 
