@@ -255,6 +255,11 @@ def main():
         diagnostics["PK"] = None
         wait_for_file(HELIUM_PUBLIC_KEYS)
 
+        # Set defaults
+        diagnostics["PK"] = 'Unknown'
+        diagnostics["OK"] = 'Unknown'
+        diagnostics["AN"] = 'Unknown'
+
         if os.path.isfile(HELIUM_PUBLIC_KEYS):
             try:
                 pk_file = open(HELIUM_PUBLIC_KEYS).readline().split('"')
