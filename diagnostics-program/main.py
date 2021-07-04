@@ -64,7 +64,7 @@ def wait_for_file(file_path, attempts=5, timeout=5):
         print('{} is missing. Waiting for file to appear.'.format(file_path))
 
         while retries_left > 0:
-            print('...attempt {}/{}'.format(retries_left, attempts))
+            print('...{} attempts left'.format(retries_left))
             retries_left = retries_left - 1
             if os.path.isfile(file_path):
                 break
@@ -216,7 +216,7 @@ def main():
         diagnostics["FW"] = os.getenv('FIRMWARE_VERSION')
 
         # Get Variant
-        diagnostics["VA"] = os.getenv('VARIANT')
+        diagnostics["VA"] = os.getenv('VARIANT', 'Unknown')
 
         # Get RPi serial number
         diagnostics["RPI"] = open("/proc/cpuinfo")\
