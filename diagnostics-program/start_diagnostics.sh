@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #Run diag
-rm -f /opt/nebraDiagnostics/html/index.html
-rm -f /opt/nebraDiagnostics/html/initFile.txt
+rm -f /opt/html/index.html
+rm -f /opt/html/initFile.txt
 
 nginx
-python3 -u /opt/nebraDiagnostics/main.py
+python3 -u /opt/main.py

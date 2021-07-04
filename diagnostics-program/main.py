@@ -337,7 +337,7 @@ def main():
         diag_json = json.dumps(diagnostics)
 
         # Write the overall diagnostics data to a json file served via Nginx
-        with open("/opt/nebraDiagnostics/html/diagnostics.json", 'w') as data:
+        with open("/opt/html/diagnostics.json", 'w') as data:
             data.write(diag_json)
 
         # Write the same file to another directory shared between containers
@@ -348,11 +348,11 @@ def main():
         prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
         prod_base64 = base64.b64encode(prod_json)
 
-        with open("/opt/nebraDiagnostics/html/initFile.txt", 'w') as initFile:
+        with open("/opt/html/initFile.txt", 'w') as initFile:
             initFile.write(str(prod_base64, 'ascii'))
 
         # Finally write the HTML data using the generate HTML function
-        with open("/opt/nebraDiagnostics/html/index.html", 'w') as htmlOut:
+        with open("/opt/html/index.html", 'w') as htmlOut:
             htmlOut.write(generate_html(diagnostics))
         if diagnostics["PF"] is True:
             sleep(120)

@@ -2,7 +2,7 @@
 
 FROM arm32v6/alpine:3.12.4
 
-WORKDIR /opt/nebraDiagnostics/
+WORKDIR /opt/
 
 RUN apk add --no-cache \
     python3=3.8.10-r0 \
@@ -21,8 +21,8 @@ RUN mkdir -p /run/nginx && mkdir html
 
 COPY diagnostics-program /opt/nebraDiagnostics
 COPY default.conf /etc/nginx/conf.d/default.conf
-COPY bootstrap.min.css /opt/nebraDiagnostics/html/bootstrap.min.css
+COPY bootstrap.min.css /opt/html/bootstrap.min.css
 
 RUN wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
 
-ENTRYPOINT ["sh", "/opt/nebraDiagnostics/start_diagnostics.sh"]
+ENTRYPOINT ["sh", "/opt/start_diagnostics.sh"]
