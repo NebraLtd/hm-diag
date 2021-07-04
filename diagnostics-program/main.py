@@ -170,14 +170,14 @@ def main():
             diagnostics["E0"] = open("/sys/class/net/eth0/address")\
                 .readline().strip().upper()
         except FileNotFoundError:
-            diagnostics["E0"] = "FF:FF:FF:FF:FF:FF"
+            diagnostics["E0"] = "Unknown"
 
         # Get WiFi MAC address, if fail revert to dummy
         try:
             diagnostics["W0"] = open("/sys/class/net/wlan0/address")\
                 .readline().strip().upper()
         except FileNotFoundError:
-            diagnostics["W0"] = "FF:FF:FF:FF:FF:FF"
+            diagnostics["W0"] = "Unknown"
 
         # Get Balena Name
         diagnostics["BN"] = os.getenv('BALENA_DEVICE_NAME_AT_INIT')
@@ -307,8 +307,8 @@ def main():
         # and LoRa hasn't failed
         if(
             diagnostics["ECC"] is True
-            and diagnostics["E0"] != "FF:FF:FF:FF:FF:FF"
-            and diagnostics["W0"] != "FF:FF:FF:FF:FF:FF"
+            and diagnostics["E0"] != "Unknown"
+            and diagnostics["W0"] != "Unknown"
             and diagnostics["BT"] is True and diagnostics["LOR"] is True
         ):
             diagnostics["PF"] = True
