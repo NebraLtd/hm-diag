@@ -342,7 +342,17 @@ def main():
         if diagnostics['VA'] != 'Unknown':
             variant_variables = variant_definitions[diagnostics['VA']]
         else:
-            variant_variables = diagnostics['VA']
+            variant_variables = {
+                'FRIENDLY': 'Developer Mode Mock Hotspot',
+                'APPNAME': "Indoor",
+                'SPIBUS': 'spidev1.2',
+                'RESET': 38,
+                'MAC': 'eth0',
+                'STATUS': 25,
+                'BUTTON': 26,
+                'ECCOB': True,
+                'TYPE': "Full"
+            }
         diagnostics.update(variant_variables)
 
         # Create a JSON with a cutdown feature
