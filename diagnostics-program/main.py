@@ -64,7 +64,7 @@ def wait_for_file(file_path, attempts=5, timeout=5):
         print('{} is missing. Waiting for file to appear.'.format(file_path))
 
         while retries_left > 0:
-            print('...{} attempts left'.format(retries_left))
+            print('...{} attempt(s) left'.format(retries_left))
             retries_left = retries_left - 1
             if os.path.isfile(file_path):
                 break
@@ -339,10 +339,13 @@ def main():
 
         # Add variant variables into diagnostics
         # These are variables from the hardware definitions file
-        variant_variables = variant_definitions[diagnostics['VA']]
+        if diagnostics['VA'] != 'Unknown':
+            variant_variables = variant_definitions[diagnostics['VA']]
+        else:
+            variant_variables = diagnostics['VA']
         diagnostics.update(variant_variables)
 
-        # Create a json with a cutdown feature
+        # Create a JSON with a cutdown feature
         # set which was used in some production
         prod_diagnostics = {
             "VA": diagnostics['VA'],
