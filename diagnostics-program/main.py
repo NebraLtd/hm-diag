@@ -29,6 +29,10 @@ from variant_definitions import variant_definitions
 
 # Start the diagnostics Loop
 
+# Define variables
+PACKET_FORWARDER_DIAGNOSTICS_FILE = '/var/pktfwd/diagnostics'
+HELIUM_PUBLIC_KEYS = '/var/data/public_keys'
+
 
 def get_mac_addr(path):
     """
@@ -48,6 +52,23 @@ def get_mac_addr(path):
     except PermissionError as e:
         raise e
     return file.readline().strip().upper()
+
+
+def wait_for_file(file_path, attempts=5, timeout=5):
+    """
+    Helper function for to wait for
+    files to appear on disk.
+    """
+    if not os.path.isfile(file_path):
+        retries_left = attempts
+        print('{} is missing. Waiting for file to appear.'.format(file_path))
+
+        while retries_left > 0:
+            print('...attempt {}/{}'.format(retries_left, attempts))
+            retries_left = retries_left - 1
+            if os.path.isfile(file_path):
+                break
+            sleep(timeout)
 
 
 # Get the blockchain height from the Helium API
@@ -217,25 +238,26 @@ def main():
 
         # LoRa Module Test
         diagnostics["LOR"] = None
-        while diagnostics["LOR"] is None:
-            try:
-                # The Pktfwder container creates this file
-                # to pass over the status.
-                with open("/var/pktfwd/diagnostics") as data:
-                    lora_status = data.read()
-                    if lora_status == "true":
-                        diagnostics["LOR"] = True
-                    else:
-                        diagnostics["LOR"] = False
-            except FileNotFoundError:
-                # Packet forwarder container hasn't started
-                sleep(10)
+
+        wait_for_file(PACKET_FORWARDER_DIAGNOSTICS_FILE)
+
+        if os.path.isfile(PACKET_FORWARDER_DIAGNOSTICS_FILE):
+            # The Pktfwder container creates this file
+            # to pass over the status.
+            with open(PACKET_FORWARDER_DIAGNOSTICS_FILE) as data:
+                lora_status = data.read()
+                if lora_status == "true":
+                    diagnostics["LOR"] = True
+                else:
+                    diagnostics["LOR"] = False
 
         # Get the Public Key, Onboarding Key & Helium Animal Name
         diagnostics["PK"] = None
-        while diagnostics["PK"] is None:
+        wait_for_file(HELIUM_PUBLIC_KEYS)
+
+        if os.path.isfile(HELIUM_PUBLIC_KEYS):
             try:
-                pk_file = open("/var/data/public_keys").readline().split('"')
+                pk_file = open(HELIUM_PUBLIC_KEYS).readline().split('"')
                 diagnostics["PK"] = str(pk_file[1])
                 diagnostics["OK"] = str(pk_file[3])
                 diagnostics["AN"] = str(pk_file[5])
