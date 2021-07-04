@@ -19,7 +19,7 @@ RUN apk add --no-cache \
 
 RUN mkdir -p /run/nginx && mkdir html
 
-COPY diagnostics-program /opt/nebraDiagnostics
+COPY diagnostics-program /opt/
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY bootstrap.min.css /opt/html/bootstrap.min.css
 
