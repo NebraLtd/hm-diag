@@ -1,7 +1,9 @@
 # hm-diag
 Helium Miner Diagnostics
 
-# Diagnostics Json Layout
+# Diagnostics JSON Layout
+
+As part of the code the system produces a JSON file which then is used to carry the data over easily to other parts.
 
 | Variable | Description |
 | --- | --- |
@@ -36,3 +38,19 @@ Helium Miner Diagnostics
 | BUTTON | The GPIO pin of the button on the miner |
 | ECCOB | If the miner should have an ECC chip on board |
 | TYPE | If it is a Full or Light Hotspot |
+
+
+
+## Local development environment
+
+Because the stack is tightly intertwined with Balena, the easiest way to test the code base on your own Raspberry Pi in your own Balena project.
+
+* Create a new Balena project for Raspberry Pi 3 (64 Bit)
+* Download and flash out the disk image provided and boot the device
+* Add the remote Balena repo (`git remote add balena YourUser@git.balena-cloud.com:YourUser/YourProject.git`)
+
+You can now push your changes using the following command:
+
+```
+$ git push balena YourLocalBranch:master
+```

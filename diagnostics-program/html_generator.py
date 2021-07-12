@@ -60,8 +60,8 @@ def generate_html(dictString):
       <h1 class="text-center">Diagnostics Information</h1>
       <h2 class="text-center">Animal Name: %(AN)s</h2>
 """ % dictString
-    if(dictString["ECC"] is True and dictString["E0"] != "FF:FF:FF:FF:FF:FF"
-            and dictString["W0"] != "FF:FF:FF:FF:FF:FF" and
+    if(dictString["ECC"] is True and dictString["E0"] != "Unknown"
+            and dictString["W0"] != "Unknown" and
             dictString["BT"] is True and dictString["LOR"] is True):
         htmlData = htmlData + """
         <h2 class="text-success text-center">All Ok</h2>"""
@@ -157,7 +157,7 @@ def generate_html(dictString):
               <td>%(ECC)s</td>
             </tr>
             <tr """ % dictString
-    if(dictString["E0"] == "FF:FF:FF:FF:FF:FF"):
+    if(dictString["E0"] == "Unknown"):
         htmlData = htmlData + """class='bg-warning text-dark'"""
     else:
         htmlData = htmlData + """class='bg-info text-dark'"""
@@ -166,7 +166,7 @@ def generate_html(dictString):
               <td>%(E0)s</td>
             </tr>
             <tr """ % dictString
-    if(dictString["W0"] == "FF:FF:FF:FF:FF:FF"):
+    if(dictString["W0"] == "Unknown"):
         htmlData = htmlData + """class='bg-warning text-dark'"""
     else:
         htmlData = htmlData + """class='bg-info text-dark'"""
