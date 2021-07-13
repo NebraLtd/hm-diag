@@ -29,6 +29,9 @@ from variant_definitions import variant_definitions
 
 def get_ethernet_addresses(diagnostics):
     # Get ethernet MAC and WIFI address
+
+    # The order of the values in the lists is important!
+    # It determines which value will be available for which key
     path_to_files = [
         "/sys/class/net/eth0/address",
         "/sys/class/net/wlan0/address"
@@ -43,6 +46,8 @@ def get_ethernet_addresses(diagnostics):
 
 
 def get_environment_var(diagnostics):
+    # The order of the values in the lists is important!
+    # It determines which value will be available for which key
     env_var = [
         'BALENA_DEVICE_NAME_AT_INIT',
         'BALENA_DEVICE_UUID',
@@ -58,6 +63,8 @@ def get_environment_var(diagnostics):
 
 
 def get_network_param(diagnostics):
+    # The order of the values in the lists is important!
+    # It determines which value will be available for which key
     commands = [
         'i2cdetect -y 1',
         'grep 0a12 /sys/bus/usb/devices/*/idVendor',
@@ -74,6 +81,8 @@ def get_network_param(diagnostics):
 
 
 def write_public_keys_to_diag(data, diagnostics):
+    # The order of the values in the list is important!
+    # It determines which value will be available for which key
     if data is not None and len(data) == 3:
         keys = ["PK", "OK", "AN"]
         for (param, key) in zip(data, keys):
@@ -85,6 +94,8 @@ def write_public_keys_to_diag(data, diagnostics):
 
 
 def set_param_miner_diag(diagnostics):
+    # The order of the values in the list is important!
+    # It determines which value will be available for which key
     param_miner_diag = utils.get_miner_diagnostics()
     keys = ['MC', 'MD', 'MH', 'MN']
     for (param, key) in zip(param_miner_diag, keys):
@@ -92,6 +103,9 @@ def set_param_miner_diag(diagnostics):
 
 
 def write_info_to_files(prod_diagnostics, diagnostics):
+    # The order of the values in the lists is important!
+    # It determines which value will be available for which key
+
     diag_json = json.dumps(diagnostics)
     prod_json = str(json.dumps(prod_diagnostics)).encode('ascii')
     prod_base64 = base64.b64encode(prod_json)
