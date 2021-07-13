@@ -190,7 +190,7 @@ def main():
 
         # Calculate a percentage for block sync
         diag_mh = int(diagnostics['MH'])
-        diag_bch = int(diagnostics['BCH']) * 100
+        diag_bch = int(diagnostics['BCH'])
         diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
 
         # Check if the region has been set
