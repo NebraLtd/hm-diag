@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import mock_open, patch
 import sys
 sys.path.append("..")
-from main import get_mac_addr # noqa
+from utils import get_mac_addr # noqa
 
 
 class TestGetEthMac(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestGetEthMac(unittest.TestCase):
             result = get_mac_addr("random/path")
             self.assertEqual(result, 'UNKNOWN')
 
-    def test_avaliable_file(self):
+    def test_available_file(self):
         m = mock_open()
         m.side_effect = PermissionError
         with patch("builtins.open", mock_open()) as mf:

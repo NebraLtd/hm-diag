@@ -3,7 +3,7 @@ import sys
 from unittest.mock import mock_open, patch
 import subprocess
 sys.path.append("..")
-from main import writing_data # noqa
+from utils import writing_data # noqa
 
 
 class TestWriteDataToFile(unittest.TestCase):
