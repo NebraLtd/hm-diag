@@ -115,10 +115,10 @@ def write_info_to_files(prod_diagnostics, diagnostics):
     data_str = (str(prod_base64, 'ascii'))
     html_str = generate_html(diagnostics)
     path_list = [
-        "/opt/diagnostics.json",
+        "/opt/html/diagnostics.json",
         "/var/data/nebraDiagnostics.json",
-        "/opt/initFile.txt",
-        "/opt/index.html"
+        "/opt/html/initFile.txt",
+        "/opt/html/index.html"
     ]
     data_list = [
         diag_json,
