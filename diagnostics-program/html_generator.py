@@ -131,10 +131,6 @@ def generate_html(dictString):
     htmlData = htmlData + """
             </tr>
             <tr class="bg-info">
-              <th>Variant</th>
-              <td>%(FRIENDLY)s</td>
-            </tr>
-            <tr class="bg-info">
               <th>Miner Connected To Blockchain</th>
               <td>%(MC)s</td>
             </tr>

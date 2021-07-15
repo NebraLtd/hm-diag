@@ -23,6 +23,8 @@ COPY diagnostics-program /opt/
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY bootstrap.min.css /opt/html/bootstrap.min.css
 
+RUN mkdir -p /opt/nebraDiagnostics/html
+
 RUN wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
 
 ENTRYPOINT ["sh", "/opt/start_diagnostics.sh"]

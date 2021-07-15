@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import dbus
@@ -19,9 +20,9 @@ def get_mac_addr(path):
     try:
         file = open(path)
     except FileNotFoundError as e:
-        raise e
+        raise FileNotFoundError(e)
     except PermissionError as e:
-        raise e
+        raise PermissionError(e)
     return file.readline().strip().upper()
 
 
@@ -97,6 +98,7 @@ def config_search_param(command, param):
         raise TypeError("The command must be a string value")
     if type(param) is not str:
         raise TypeError("The param must be a string value")
+
     result = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     out, err = result.communicate()
     out = out.decode("UTF-8")
@@ -143,9 +145,11 @@ def get_rpi_serial(diagnostics):
     try:
         rpi_serial = open("/proc/cpuinfo").readlines()[-2].strip()[10:]
     except FileNotFoundError as e:
-        raise e
+        diagnostics["RPI"] = None
+        raise FileNotFoundError(e)
     except PermissionError as e:
-        raise e
+        diagnostics["RPI"] = None
+        raise PermissionError(e)
 
     diagnostics["RPI"] = rpi_serial
 

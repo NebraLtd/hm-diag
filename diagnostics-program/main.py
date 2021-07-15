@@ -77,17 +77,20 @@ def get_network_param(diagnostics):
         try:
             diagnostics[key] = utils.config_search_param(command, param)
         except Exception as e:
-            logging.error(e)
+            diagnostics[key] = None
+            logging.warning(e)
 
 
 def write_public_keys_to_diag(data, diagnostics):
     # The order of the values in the list is important!
     # It determines which value will be available for which key
+    keys = ["PK", "OK", "AN"]
     if data is not None and len(data) == 3:
-        keys = ["PK", "OK", "AN"]
         for (param, key) in zip(data, keys):
             diagnostics[key] = param
     else:
+        for key in keys:
+            diagnostics[key] = None
         logging.error(
             "The public keys from the file were obtained with an unknown error"
         )
@@ -125,7 +128,10 @@ def write_info_to_files(prod_diagnostics, diagnostics):
     ]
 
     for (path, data) in zip(path_list, data_list):
-        utils.writing_data(path, data)
+        try:
+            utils.writing_data(path, data)
+        except Exception as e:
+            logging.error(e)
 
 
 def main():
@@ -145,7 +151,10 @@ def main():
         get_environment_var(diagnostics)
 
         # Get RPi serial number
-        utils.get_rpi_serial(diagnostics)
+        try:
+            utils.get_rpi_serial(diagnostics)
+        except Exception as e:
+            logging.warning(e)
 
         # Check the ECC Chip is present by running i2c detect and checking 0x60
         # Get USB IDs to check for BT And 4G / LTE Modem
