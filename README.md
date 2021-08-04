@@ -59,11 +59,13 @@ Because the stack is tightly intertwined with Balena, the easiest way to test th
     * Application type: `Starter`
 * Add a device:
     * Select newest version
-    * Production
+    * Development (required for local mode)
     * Click `Download Balena OS`
-* Use [Etcher](https://www.balena.io/etcher/) to flash the downloaded image.
-* Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary).
-* Deploy changes: `balena push BALENA_PROJECT_OR_DEVICE`
+* Use [Etcher](https://www.balena.io/etcher/) to flash the downloaded image
+* Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary)
+* Deploy changes to:
+    * All devices in application: `balena push BALENA_APPLICATION`
+    * Single device in local mode: `balena push UUID.local`
 
 If you are on the same network as the Raspberry Pi, enter `LOCAL IP ADDRESS` from Balena into the browser.
 
