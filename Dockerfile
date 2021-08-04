@@ -14,15 +14,14 @@ RUN apk add --no-cache \
     py3-urllib3=1.25.9-r0 \
     py3-requests=2.23.0-r0 \
     py3-dbus=1.2.16-r2 &&\
-    pip install --no-cache-dir sentry-sdk==1.1.0 && \
-    apk del py3-pip
+    pip install --no-cache-dir sentry-sdk==1.1.0
 
-RUN mkdir -p /run/nginx && mkdir html
+RUN mkdir /tmp/build
+COPY ./ /tmp/build
+WORKDIR /tmp/build
+RUN pip install -r /tmp/build/requirements.txt 
+RUN python3 setup.py install
+RUN rm -rf /tmp/build
 
-COPY diagnostics-program /opt/
-COPY default.conf /etc/nginx/conf.d/default.conf
-COPY bootstrap.min.css /opt/html/bootstrap.min.css
+ENTRYPOINT ["hm_diag"]
 
-RUN wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
-
-ENTRYPOINT ["sh", "/opt/start_diagnostics.sh"]

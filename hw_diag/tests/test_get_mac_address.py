@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import mock_open, patch
 import sys
 sys.path.append("..")
-from utils import get_mac_addr # noqa
+from hw_diag.utilities.hardware import get_mac_addr # noqa
 
 
 class TestGetEthMac(unittest.TestCase):

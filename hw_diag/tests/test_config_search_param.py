@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, Mock
 import sys
 sys.path.append("..")
-from utils import config_search_param # noqa
+from hw_diag.utilities.hardware import config_search_param # noqa
 
 
 class TestConfigSearch(unittest.TestCase):
