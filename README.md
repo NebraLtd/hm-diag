@@ -63,12 +63,22 @@ Because the stack is tightly intertwined with Balena, the easiest way to test th
     * Click `Download Balena OS`
 * Use [Etcher](https://www.balena.io/etcher/) to flash the downloaded image
 * Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary)
+* Set env vars for the application in Balena:
+    * `FREQ`: 868, 915, etc.
+    * `VARIANT`: Choose from [here](https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py)
 * Deploy changes to:
     * All devices in application: `balena push BALENA_APPLICATION`
-    * Single device in local mode: `balena push UUID.local`
+    * Single device in local mode: `balena push UUID.local` (this will build on the device and )
 
 If you are on the same network as the Raspberry Pi, enter `LOCAL IP ADDRESS` from Balena into the browser.
 
 ### Deprecated deployment
+This is no longer [the recommended way](https://www.balena.io/docs/learn/deploy/deployment/#overview) of doing Balena deployments.
+
 * Add the remote Balena repo:`git remote add balena BALENA_USERNAME@git.balena-cloud.com:BALENA_USERNAME/BALENA_PROJECT.git`
 * Deploy changes: `git push balena YourLocalBranch:master`
+
+## Access from other networks
+
+Balena will generate a public URL for a device if [PUBLIC DEVICE URL](https://www.balena.io/docs/learn/manage/actions/#enable-public-device-url)
+toggled from the Balena device dashboard. This is not generally recommended, except for debugging.
