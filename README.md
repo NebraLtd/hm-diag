@@ -3,6 +3,7 @@ Helium Miner Diagnostics
 
 **hm-diag** is a small website that displays diagnostic information about a hotspot.
 The website is only accessible if you are on the same network as the hotspot.
+Some people have exposed their devices publicly but this is not generally advised.
 
 ## Quick start
 
