@@ -5,7 +5,7 @@ from time import sleep
 from hw_diag.utilities.shell import config_search_param
 
 
-def detect_bt_lte(diagnostics):
+def set_diagnostics_bt_lte(diagnostics):
     devices = {
         'BT': '0a12',
         'LTE': '2c7c'

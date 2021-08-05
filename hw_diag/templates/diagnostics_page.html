@@ -44,7 +44,7 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  <td class="text-right">{{ diagnostics.BSP * 100 }}%</td>
+                  <td class="text-right">{{ diagnostics.BSP }}%</td>
                 </tr>
                 <tr>
                   <td>Height Status</td>
@@ -105,11 +105,11 @@
                   <td class="text-right">{{ diagnostics.W0 }}</td>
                 </tr>
                 <tr>
-                  <td>RPi Serial</td>
+                  <td>Raspberry Pi Serial</td>
                   <td class="text-right">{{ diagnostics.RPI }}</td>
                 </tr>
                 <tr>
-                  <td>BT Detected</td>
+                  <td>Bluetooth Detected</td>
                   {% if diagnostics.BT %}
                     <td class="text-success text-right">True</td>
                   {% else %}
@@ -117,7 +117,7 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>LoRa OK?</td>
+                  <td>LoRa Operational</td>
                   {% if diagnostics.LOR %}
                     <td class="text-success text-right">True</td>
                   {% else %}

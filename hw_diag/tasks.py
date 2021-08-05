@@ -6,7 +6,7 @@ from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import get_ethernet_addresses
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utilities.hardware import detect_bt_lte
+from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.miner import get_public_keys
 from hw_diag.utilities.miner import write_public_keys_to_diag
@@ -36,11 +36,10 @@ def perform_hw_diagnostics():
 
     # Get the Public Key, Onboarding Key & Helium Animal Name
     try:
-        data = get_public_keys()
+        keys = get_public_keys()
+        write_public_keys_to_diag(keys, diagnostics)
     except PermissionError as e:
-        data = None
         logging.error(e)
-    write_public_keys_to_diag(data, diagnostics)
 
     set_param_miner_diag(diagnostics)
 
@@ -67,17 +66,17 @@ def perform_hw_diagnostics():
 
     # Calculate a percentage for block sync
     diag_mh = int(diagnostics['MH'])
-    diag_bch = int(diagnostics['BCH']) * 100
+    diag_bch = int(diagnostics['BCH'])
     diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
 
-    detect_bt_lte(diagnostics)
+    set_diagnostics_bt_lte(diagnostics)
 
     # Check if the region has been set
     try:
         with open("/var/pktfwd/region", 'r') as data:
             region = data.read()
             if len(region) > 3:
-                print("Frequency: " + str(region))
+                log.info("Frequency: " + str(region))
                 diagnostics['RE'] = str(region).rstrip('\n')
     except FileNotFoundError:
         # No region found, put a dummy region in

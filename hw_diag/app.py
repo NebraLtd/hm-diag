@@ -41,9 +41,7 @@ def get_app(name):
 
 def main():
     app = get_app(__name__)
-    debug = False
-    if DEBUG:
-        debug = True
+    debug = bool(DEBUG)
     app.run('0.0.0.0', threaded=True, debug=debug)
 
 

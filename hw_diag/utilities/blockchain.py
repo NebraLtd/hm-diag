@@ -19,5 +19,3 @@ def get_helium_blockchain_height():
                 "Not found value from key ['data']['height'] in json"
             )
         return result
-    else:
-        return "1"
