@@ -12,7 +12,7 @@ from hw_diag.utilities.miner import get_public_keys
 from hw_diag.utilities.miner import write_public_keys_to_diag
 from hw_diag.utilities.miner import set_param_miner_diag
 from hw_diag.utilities.shell import get_environment_var
-from hw_diag.utilities.variant_definitions import variant_definitions
+from hm_hardware_defs.variant import variant_definitions
 
 
 log = logging.getLogger()

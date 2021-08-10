@@ -1,4 +1,5 @@
 dbus-python==1.2.16
 requests==2.25.1
+hm-hardware-defs==0.1.4
 Flask==2.0.1
 Flask-APScheduler==1.12.2

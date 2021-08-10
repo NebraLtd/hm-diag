@@ -60,7 +60,11 @@
                 </tr>
                 <tr>
                   <td>Region Plan</td>
-                  <td class="text-right">{{ diagnostics.RE }}</td>
+                  {% if diagnostics.RE == 'UN123' %}
+                    <td class="text-right">Awaiting Location Assertion</td>
+                  {% else %}
+                    <td class="text-right">{{ diagnostics.RE }}</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Variant</td>
@@ -125,7 +129,7 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>LTE Detected</td>
+                  <td>Modem Detected</td>
                   {% if diagnostics.LTE %}
                     <td class="text-success text-right">True</td>
                   {% else %}

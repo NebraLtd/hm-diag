@@ -12,7 +12,9 @@ def set_diagnostics_bt_lte(diagnostics):
     }
 
     for dev_type, dev_addr in devices.items():
-        resp = os.popen('grep 0a12 /sys/bus/usb/devices/*/idVendor').read()
+        resp = os.popen(
+            'grep %s /sys/bus/usb/devices/*/idVendor' % dev_addr
+        ).read()
         if dev_addr in resp:
             diagnostics[dev_type] = True
         else:
