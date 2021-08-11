@@ -94,7 +94,7 @@ def get_helium_blockchain_height():
 
 def get_miner_diagnostics():
     # Get miner diagnostics
-    # return MC - MD - MH - MN list
+    # return MC - MD - MH - MN - MSESH list
     param_list = []
     try:
         miner_bus = dbus.SystemBus()
@@ -104,23 +104,26 @@ def get_miner_diagnostics():
             p2pstatus = miner_interface.P2PStatus()
             param_list = [
                 str(p2pstatus[0][1]),
-                str(p2pstatus[1][1]),
+                str(p2pstatus[2][1]),
+                str(p2pstatus[4][1]),
                 str(p2pstatus[3][1]),
-                str(p2pstatus[2][1])
+                str(p2pstatus[1][1])
             ]
         except dbus.exceptions.DBusException:
             param_list = [
                 "no",
                 "",
                 "0",
-                ""
+                "",
+                "0"
             ]
     except Exception:
         param_list = [
             "no",
             "",
             "0",
-            ""
+            "",
+            "0"
         ]
 
     return param_list
@@ -277,19 +280,22 @@ def main():
             try:
                 p2p_status = miner_interface.P2PStatus()
                 diagnostics['MC'] = str(p2p_status[0][1])
-                diagnostics['MD'] = str(p2p_status[1][1])
+                diagnostics['MD'] = str(p2p_status[2][1])
                 diagnostics['MH'] = str(p2p_status[3][1])
                 diagnostics['MN'] = str(p2p_status[2][1])
+                diagnostics['MSESH'] = str(p2p_status[1][1])
             except dbus.exceptions.DBusException:
                 diagnostics['MC'] = "no"
                 diagnostics['MD'] = ""
                 diagnostics['MH'] = "0"
                 diagnostics['MN'] = ""
+                diagnostics['MSESH'] = "0"
         except Exception:
             diagnostics['MC'] = "no"
             diagnostics['MD'] = ""
             diagnostics['MH'] = "0"
             diagnostics['MN'] = ""
+            diagnostics['MSESH'] = "0"
 
         # I believe that:
         # if the NAT type is symmetric that it is counted as relayed.
