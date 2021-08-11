@@ -20,10 +20,11 @@ class TestGetMinerDiag(unittest.TestCase):
                 [1, 2, 3, 4],
                 [5, 6, 7, 8],
                 [9, 10, 11, 12],
-                [13, 14, 15, 16]
+                [13, 14, 15, 16],
+                [17, 18, 19, 20]
             ])
         res = get_miner_diagnostics()
-        self.assertEqual(res, ['2', '6', '14', '10'])
+        self.assertEqual(res, ['2', '10', '20', '14', '6'])
 
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
@@ -33,4 +34,4 @@ class TestGetMinerDiag(unittest.TestCase):
             "get_object")(get_object=lambda x, y: [])
         dbus.Interface.side_effect = dbus.exceptions.DBusException()
         res = get_miner_diagnostics()
-        self.assertEqual(res,  ['no', '', '0', ''])
+        self.assertEqual(res,  ['no', '', '0', '', '0'])
