@@ -24,7 +24,7 @@ class TestGetMinerDiag(unittest.TestCase):
                 [17, 18, 19, 20]
             ])
         res = get_miner_diagnostics()
-        self.assertEqual(res, ['2', '10', '20', '14', '6'])
+        self.assertEqual(res, ['2', '10', '18', '14', '6'])
 
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
