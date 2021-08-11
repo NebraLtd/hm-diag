@@ -281,8 +281,8 @@ def main():
                 p2p_status = miner_interface.P2PStatus()
                 diagnostics['MC'] = str(p2p_status[0][1])
                 diagnostics['MD'] = str(p2p_status[2][1])
-                diagnostics['MH'] = str(p2p_status[3][1])
-                diagnostics['MN'] = str(p2p_status[2][1])
+                diagnostics['MH'] = str(p2p_status[4][1])
+                diagnostics['MN'] = str(p2p_status[3][1])
                 diagnostics['MSESH'] = str(p2p_status[1][1])
             except dbus.exceptions.DBusException:
                 diagnostics['MC'] = "no"
