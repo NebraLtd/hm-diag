@@ -135,8 +135,8 @@ def generate_html(dictString):
               <td>%(FRIENDLY)s</td>
             </tr>
             <tr class="bg-info">
-              <th>Miner Connected To Blockchain</th>
-              <td>%(MC)s</td>
+              <th>Miner Well Connected To Blockchain</th>
+              <td>%(MC)s (%(MSESH)s P2P sessions)</td>
             </tr>
             <tr """ % dictString
     if(dictString["MR"] is True):
