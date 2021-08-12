@@ -34,5 +34,5 @@ jobs:
     - name: Unit tests
       working-directory: ./diagnostics-program
       run: |
-        wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py"
+        wget "https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/src/hm_hardware_defs/variant.py"
         python3 -m unittest
