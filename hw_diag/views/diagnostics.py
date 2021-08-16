@@ -6,6 +6,8 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 
+from hw_diag.utilities.hardware import should_display_lte
+
 
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
@@ -28,7 +30,13 @@ def get_diagnostics():
     if request.args.get('json'):
         return jsonify(diagnostics)
 
-    return render_template('diagnostics_page.html', diagnostics=diagnostics)
+    display_lte = should_display_lte(diagnostics)
+
+    return render_template(
+        'diagnostics_page.html',
+        diagnostics=diagnostics,
+        display_lte=display_lte
+    )
 
 
 @DIAGNOSTICS.route('/initFile.txt')
