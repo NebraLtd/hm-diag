@@ -4,7 +4,7 @@ from requests.models import Response
 import sys
 import json
 sys.path.append("..")
-from utils import get_helium_blockchain_height # noqa
+from hw_diag.utilities.blockchain import get_helium_blockchain_height # noqa
 
 
 class TestHelium(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestHelium(unittest.TestCase):
     @patch('requests.get', return_value=the_response2)
     def test_unsuccessful_request(self, _):
         res = get_helium_blockchain_height()
-        self.assertEqual(res, "1")
+        self.assertEqual(res, None)
 
     data = """{
          }"""

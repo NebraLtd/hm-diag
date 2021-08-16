@@ -4,7 +4,7 @@ import dbus
 from unittest.mock import patch
 import sys
 sys.path.append("..")
-from utils import get_miner_diagnostics # noqa
+from hw_diag.utilities.miner import get_miner_diagnostics # noqa
 
 
 class TestGetMinerDiag(unittest.TestCase):

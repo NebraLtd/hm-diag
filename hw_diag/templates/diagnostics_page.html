@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <title>Nebra Hotspot Diagnostics</title>
+  <!-- Bootstrap core CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <header class="bg-white mb-4 d-flex justify-content-center">
+    <a href="#" class="p-3 text-center">
+      <img src="/static/images/nebra-logo.svg"  height="32" alt="Nebra Logo" />
+    </a>
+  </header>
+  <section class="container pb-4">
+
+      {% if diagnostics.error %}
+        <div class="text-center pb-4 mb-4 border-bottom border-light">
+          <h1>Diagnostics Information</h1>
+          <br />
+          <h3>{{ diagnostics.error }}</h3>
+        </div>
+      {% else %}
+        <div class="text-center pb-4 mb-4 border-bottom border-light">
+            <h1>Diagnostics Information</h1>
+            <br />
+            <h3>{{ diagnostics.AN }}</h3>
+            {% if diagnostics.PF %}
+                    <h3 class="text-success">All Ok</h3>
+            {% else %}
+                    <h3 class="text-danger">Errors Found</h3>
+            {% endif %}
+        </div>
+        <h3 class="text-center mb-4">Diagnostics Breakdown</h3>
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                  <td class="border-0">Helium Address</td>
+                  <td class="border-0 text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
+                </tr>
+                <tr>
+                  <td>Sync Percentage</td>
+                  <td class="text-right">{{ diagnostics.BSP }}%</td>
+                </tr>
+                <tr>
+                  <td>Height Status</td>
+                  <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
+                </tr>
+                <tr>
+                  <td>Firmware Version</td>
+                  <td class="text-right">{{ diagnostics.FW }}</td>
+                </tr>
+                <tr>
+                  <td>Frequency</td>
+                  <td class="text-right">{{ diagnostics.FR }}</td>
+                </tr>
+                <tr>
+                  <td>Region Plan</td>
+                  {% if diagnostics.RE == 'UN123' %}
+                    <td class="text-right">Awaiting Location Assertion</td>
+                  {% else %}
+                    <td class="text-right">{{ diagnostics.RE }}</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>Variant</td>
+                  <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
+                </tr>
+                <tr>
+                  <td>Miner Connected To Blockchain</td>
+                  {% if diagnostics.MC == 'yes' %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-warning text-right">False</td>
+                  {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                  <td class="border-0">Miner Relayed</td>
+                  {% if diagnostics.MN == 'symmetric' %}
+                    <td class="border-0 text-warning text-right">True</td>
+                  {% else %}
+                    <td class="border-0 text-success text-right">False</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>ECC Detected</td>
+                  {% if diagnostics.ECC %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>ETH0 MAC</td>
+                  <td class="text-right">{{ diagnostics.E0 }}</td>
+                </tr>
+                <tr>
+                  <td>WLAN0 MAC</td>
+                  <td class="text-right">{{ diagnostics.W0 }}</td>
+                </tr>
+                <tr>
+                  <td>Raspberry Pi Serial</td>
+                  <td class="text-right">{{ diagnostics.RPI }}</td>
+                </tr>
+                <tr>
+                  <td>Bluetooth Detected</td>
+                  {% if diagnostics.BT %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>LoRa Operational</td>
+                  {% if diagnostics.LOR %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>Modem Detected</td>
+                  {% if diagnostics.LTE %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-warning text-right">False</td>
+                  {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    <div class="text-center">
+      {% if diagnostics.last_updated %}
+        <p>Last Updated: {{ diagnostics.last_updated }}</p>
+      {% else %}
+        <p>Last Updated: Never</p>
+      {% endif %}
+      <p>To get support please visit <a href="https://nebra.io/helium-support">https://nebra.io/helium-support</a></p>
+      <p><a href="/?json=true">Download Diagnostics Info for Support</a></p>
+      <p>&copy; Nebra LTD. 2020-2021<p>
+    </div>
+  </section>
+</body>
+</html>

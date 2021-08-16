@@ -2,7 +2,7 @@ import unittest
 import sys
 from unittest.mock import mock_open, patch
 sys.path.append("..")
-from utils import get_public_keys  # noqa
+from hw_diag.utilities.miner import get_public_keys  # noqa
 
 
 class TestGetPublicKeys(unittest.TestCase):

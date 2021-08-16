@@ -2,7 +2,7 @@ import unittest
 import sys
 from unittest.mock import mock_open, patch
 sys.path.append("..")
-from utils import get_rpi_serial  # noqa
+from hw_diag.utilities.hardware import get_rpi_serial  # noqa
 
 
 class TestGetPublicKeys(unittest.TestCase):
