@@ -1,7 +1,17 @@
 # hm-diag
 Helium Miner Diagnostics
 
-# Diagnostics JSON Layout
+**hm-diag** is a small website that displays diagnostic information about a hotspot.
+The website is only accessible if you are on the same network as the hotspot.
+Some people have exposed their devices publicly but this is not generally advised.
+
+## Quick start
+
+Find the IP address of the hotspot using Balena's dashboard or network scanner.
+The website is available on port `80` so you can simply input the hotspot's
+IP address in the browser.
+
+## Diagnostics JSON Layout
 
 As part of the code the system produces a JSON file which then is used to carry the data over easily to other parts.
 
@@ -40,17 +50,35 @@ As part of the code the system produces a JSON file which then is used to carry 
 | TYPE | If it is a Full or Light Hotspot |
 
 
-
 ## Local development environment
 
 Because the stack is tightly intertwined with Balena, the easiest way to test the code base on your own Raspberry Pi in your own Balena project.
 
-* Create a new Balena project for Raspberry Pi 3 (64 Bit)
-* Download and flash out the disk image provided and boot the device
-* Add the remote Balena repo (`git remote add balena YourUser@git.balena-cloud.com:YourUser/YourProject.git`)
+* Create a new Balena application (in a personal org):
+    * Default device type: `Raspberry Pi 3 (using 64 bit OS)`
+    * Application type: `Starter`
+* Add a device:
+    * Select newest version
+    * Development (required for local mode)
+    * Click `Download Balena OS`
+* Use [Etcher](https://www.balena.io/etcher/) to flash the downloaded image
+* Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary)
+* Set env vars for the application in Balena:
+    * `FREQ`: 868, 915, etc.
+    * `VARIANT`: Choose from [here](https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py)
+* Deploy changes to:
+    * All devices in application: `balena push BALENA_APPLICATION`
+    * Single device in local mode: `balena push UUID.local` (this will build on the device and )
 
-You can now push your changes using the following command:
+If you are on the same network as the Raspberry Pi, enter `LOCAL IP ADDRESS` from Balena into the browser.
 
-```
-$ git push balena YourLocalBranch:master
-```
+### Deprecated deployment
+This is no longer [the recommended way](https://www.balena.io/docs/learn/deploy/deployment/#overview) of doing Balena deployments.
+
+* Add the remote Balena repo:`git remote add balena BALENA_USERNAME@git.balena-cloud.com:BALENA_USERNAME/BALENA_PROJECT.git`
+* Deploy changes: `git push balena YourLocalBranch:master`
+
+## Access from other networks
+
+Balena will generate a public URL for a device if [PUBLIC DEVICE URL](https://www.balena.io/docs/learn/manage/actions/#enable-public-device-url)
+toggled from the Balena device dashboard. This is not generally recommended, except for debugging.
