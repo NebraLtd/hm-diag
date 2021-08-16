@@ -23,4 +23,4 @@ RUN pip install -r /tmp/build/requirements.txt
 RUN python3 setup.py install
 RUN rm -rf /tmp/build
 
-ENTRYPOINT ["hm_diag"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
