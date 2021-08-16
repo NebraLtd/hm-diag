@@ -24,4 +24,3 @@ RUN python3 setup.py install
 RUN rm -rf /tmp/build
 
 ENTRYPOINT ["hm_diag"]
-
