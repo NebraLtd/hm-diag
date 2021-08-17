@@ -133,14 +133,16 @@
                     <td class="text-danger text-right">False</td>
                   {% endif %}
                 </tr>
-                <tr>
-                  <td>Modem Detected</td>
-                  {% if diagnostics.LTE %}
-                    <td class="text-success text-right">True</td>
-                  {% else %}
-                    <td class="text-warning text-right">False</td>
-                  {% endif %}
-                </tr>
+                {% if display_lte  %}
+                  <tr>
+                    <td>Modem Detected</td>
+                    {% if diagnostics.LTE %}
+                      <td class="text-success text-right">True</td>
+                    {% else %}
+                      <td class="text-warning text-right">False</td>
+                    {% endif %}
+                  </tr>
+                {% endif %}
               </table>
             </div>
           </div>

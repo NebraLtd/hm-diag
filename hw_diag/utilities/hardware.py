@@ -1,8 +1,17 @@
 import logging
 import os
 from time import sleep
+from hm_hardware_defs.variant import variant_definitions
 
 from hw_diag.utilities.shell import config_search_param
+
+
+def should_display_lte(diagnostics):
+    variant = diagnostics.get('VA')
+    variant_data = variant_definitions.get(variant)
+    if not variant_data:
+        return False
+    return variant_data.get('CELLULAR')
 
 
 def set_diagnostics_bt_lte(diagnostics):
