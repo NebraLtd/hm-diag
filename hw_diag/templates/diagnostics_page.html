@@ -45,7 +45,11 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  <td class="text-right">{{ diagnostics.BSP }}%</td>
+                  {% if diagnostics.BSP > 99.98 %}
+                    <td class="text-right">100%</td>
+                  {% else %}
+                    <td class="text-right">{{ '%0.2f' % diagnostics.BSP|float }}%</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Height Status</td>
