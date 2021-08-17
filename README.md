@@ -53,7 +53,7 @@ As part of the code the system produces a JSON file which then is used to carry 
 | TYPE | If it is a Full or Light Hotspot |
 | VA | ID Of the [hardware variant](https://github.com/NebraLtd/helium-hardware-definitions/blob/master/src/hm_hardware_defs/variant.py) |
 | W0 | Mac Address of the WLAN0 interface |
-| last_updated | When this JSON was last updated |
+| last_updated | When this JSON was last updated (UTC timezone) |
 
 ## Local development environment
 
