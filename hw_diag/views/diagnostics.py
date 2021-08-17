@@ -6,6 +6,8 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 
+from jsonrpcclient import request as rpcrequest
+
 from hw_diag.utilities.hardware import should_display_lte
 
 
@@ -37,6 +39,13 @@ def get_diagnostics():
         diagnostics=diagnostics,
         display_lte=display_lte
     )
+
+
+@DIAGNOSTICS.route('/jsonrpc')
+def check_jsonrpc_alive():
+    JSONRPC_URL = 'http://helium-miner:4467'
+    response = rpcrequest(JSONRPC_URL, 'info_summary')
+    return jsonify(response.data.result)
 
 
 @DIAGNOSTICS.route('/initFile.txt')
