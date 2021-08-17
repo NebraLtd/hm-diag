@@ -7,6 +7,7 @@
   <title>Nebra Hotspot Diagnostics</title>
   <!-- Bootstrap core CSS -->
   <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="/static/images/favicon.ico"">
 </head>
 <body>
   <header class="bg-white mb-4 d-flex justify-content-center">
@@ -44,7 +45,11 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  <td class="text-right">{{ diagnostics.BSP }}%</td>
+                  {% if diagnostics.BSP > 99.98 %}
+                    <td class="text-right">100%</td>
+                  {% else %}
+                    <td class="text-right">{{ '%0.2f' % diagnostics.BSP|float }}%</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Height Status</td>
@@ -128,14 +133,16 @@
                     <td class="text-danger text-right">False</td>
                   {% endif %}
                 </tr>
-                <tr>
-                  <td>Modem Detected</td>
-                  {% if diagnostics.LTE %}
-                    <td class="text-success text-right">True</td>
-                  {% else %}
-                    <td class="text-warning text-right">False</td>
-                  {% endif %}
-                </tr>
+                {% if display_lte  %}
+                  <tr>
+                    <td>Modem Detected</td>
+                    {% if diagnostics.LTE %}
+                      <td class="text-success text-right">True</td>
+                    {% else %}
+                      <td class="text-warning text-right">False</td>
+                    {% endif %}
+                  </tr>
+                {% endif %}
               </table>
             </div>
           </div>
