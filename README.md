@@ -65,7 +65,7 @@ Because the stack is tightly intertwined with Balena, the easiest way to test th
 * Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary)
 * Set env vars for the application in Balena:
     * `FREQ`: 868, 915, etc.
-    * `VARIANT`: Choose from [here](https://raw.githubusercontent.com/NebraLtd/helium-hardware-definitions/master/variant_definitions.py)
+    * `VARIANT`: Choose from [here](https://github.com/NebraLtd/helium-hardware-definitions/blob/master/src/hm_hardware_defs/variant.py)
 * Deploy changes to:
     * All devices in application: `balena push BALENA_APPLICATION`
     * Single device in local mode: `balena push UUID.local` (this will build on the device and )
@@ -80,5 +80,4 @@ This is no longer [the recommended way](https://www.balena.io/docs/learn/deploy/
 
 ## Access from other networks
 
-Balena will generate a public URL for a device if [PUBLIC DEVICE URL](https://www.balena.io/docs/learn/manage/actions/#enable-public-device-url)
-toggled from the Balena device dashboard. This is not generally recommended, except for debugging.
+Balena will generate a public URL for a device if [PUBLIC DEVICE URL](https://www.balena.io/docs/learn/manage/actions/#enable-public-device-url) is toggled from the Balena device dashboard. This is not generally recommended, except for debugging.
