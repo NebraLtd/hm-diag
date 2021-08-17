@@ -12,10 +12,10 @@ setup(
     name=base_name,
     version='1.0',
     author=u'Nebra Ltd.',
-    author_email='nebra.com',
+    author_email='sales@nebra.com',
     include_package_data = True,
     packages=find_packages(), # include all packages under this directory
-    description='to update',
+    description='Diagnostics tool for Nebra Helium Hotspot software.',
     long_description="",
     zip_safe=False,
 

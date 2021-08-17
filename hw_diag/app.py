@@ -5,6 +5,7 @@ from flask import Flask
 from flask_apscheduler import APScheduler
 
 from hw_diag.tasks import perform_hw_diagnostics
+from hw_diag.utilities.hostname import set_hostname
 from hw_diag.views.diagnostics import DIAGNOSTICS
 
 
@@ -32,6 +33,10 @@ def get_app(name):
     @scheduler.task('cron', id='run_diagnostics', minute='*/1')
     def run_diagnostics_task():
         perform_hw_diagnostics()
+
+    # Set hostname for mdns / netbios
+    def run_hostname_task():
+        set_hostname()
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
