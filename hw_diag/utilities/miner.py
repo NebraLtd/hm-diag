@@ -1,6 +1,5 @@
 import json
 import dbus
-import os
 import logging
 from time import sleep
 
