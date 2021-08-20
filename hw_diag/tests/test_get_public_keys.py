@@ -6,14 +6,9 @@ from hw_diag.utilities.miner import get_public_keys  # noqa
 
 
 class TestGetPublicKeys(unittest.TestCase):
-    TEST_DATA = [
-        "{pubkey,",
-        '"112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc"}.',
-        '{onboarding_key,',
-        '"112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc"}.',
-        '{animal_name,',
-        '"gigantic-basil-turtle"}.'
-    ]
+    TEST_DATA = '{pubkey, "112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc"}.'
+    TEST_DATA += '{onboarding_key, "112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc"}.'
+    TEST_DATA += '{animal_name, "gigantic-basil-turtle"}.'
 
     right_list = [
         '112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc',
