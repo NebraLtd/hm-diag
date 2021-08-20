@@ -13,8 +13,8 @@ def get_public_keys():
     from file "/var/data/public_keys"
     A list of keys will be returned.
     """
-    pk_file = None
-    while pk_file is None:
+    pk_file = []
+    while not pk_file:
         try:
             # Lifted from hm-config repo
             with open("/var/data/public_keys") as f:
