@@ -1,5 +1,6 @@
 import json
 import dbus
+import os
 import logging
 from time import sleep
 
@@ -14,34 +15,33 @@ def get_public_keys():
     A list of keys will be returned.
     """
     pk_file = []
-    while not pk_file:
-        try:
-            # Lifted from hm-config repo
-            with open("/var/data/public_keys") as f:
-                for line in f.readlines():
+    try:
+        # Lifted from hm-config repo
+        with open("/var/data/public_keys") as f:
+            for line in f.readlines():
 
-                    # This is insanely ugly, but it gets the
-                    # job done until we switch to the API
-                    erlang_to_json = line.replace('.', '').\
-                        replace(',', ': ').\
-                        replace('pubkey', '"pubkey"').\
-                        replace('onboarding_key', '"onboarding_key"').\
-                        replace('animal_name', '"animal_name"')
+                # This is insanely ugly, but it gets the
+                # job done until we switch to the API
+                erlang_to_json = line.replace('.', '').\
+                    replace(',', ': ').\
+                    replace('pubkey', '"pubkey"').\
+                    replace('onboarding_key', '"onboarding_key"').\
+                    replace('animal_name', '"animal_name"')
 
-                    # Let's future proof this just
-                    # in case something changes later
-                    try:
-                        json_line = json.loads(erlang_to_json)
-                        for key in json_line.keys():
-                            pk_file.append(json_line[key])
-                    except json.JSONDecodeError:
-                        pass
-        except FileNotFoundError:
-            sleep(10)
-        except PermissionError:
-            raise PermissionError(
-                "/var/data/public_keys no permission to read the file"
-            )
+                # Let's future proof this just
+                # in case something changes later
+                try:
+                    json_line = json.loads(erlang_to_json)
+                    for key in json_line.keys():
+                        pk_file.append(json_line[key])
+                except json.JSONDecodeError:
+                    pass
+    except FileNotFoundError:
+        sleep(10)
+    except PermissionError:
+        raise PermissionError(
+            "/var/data/public_keys no permission to read the file"
+        )
 
     return pk_file
 
