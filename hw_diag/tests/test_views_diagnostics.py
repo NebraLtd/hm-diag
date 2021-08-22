@@ -44,7 +44,9 @@ class TestGetDiagnostics(unittest.TestCase):
         # Client perspective
         with self.app.test_client() as c:
             cresp = c.get(url)
-            error_str = 'Diagnostics have not yet run, please try again in a few minutes'
+            error_str = ('Diagnostics have not yet run, '
+                         'please try again in a few minutes'
+                         )
             expected = {'error': error_str}
             self.assertEqual(cresp.json, expected)
             self.assertEqual(

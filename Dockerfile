@@ -8,7 +8,6 @@ RUN apk add --no-cache \
     python3=3.8.10-r0 \
     i2c-tools=4.1-r3 \
     usbutils=012-r1 \
-    nginx=1.18.0-r3 \
     py3-pip=20.1.1-r0 \
     py3-certifi=2020.4.5.1-r0 \
     py3-urllib3=1.25.9-r0 \
@@ -23,4 +22,4 @@ RUN pip install -r /tmp/build/requirements.txt
 RUN python3 setup.py install
 RUN rm -rf /tmp/build
 
-ENTRYPOINT ["hm_diag"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]

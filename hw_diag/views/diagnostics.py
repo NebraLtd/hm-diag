@@ -30,7 +30,11 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
 
     if request.args.get('json'):
-        return jsonify(diagnostics)
+        response = jsonify(diagnostics)
+        response.headers.set('Content-Disposition',
+                             'attachment;filename=nebra-diag.json'
+                             )
+        return response
 
     display_lte = should_display_lte(diagnostics)
 
