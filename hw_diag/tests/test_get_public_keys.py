@@ -8,7 +8,8 @@ from hw_diag.utilities.miner import get_public_keys  # noqa
 class TestGetPublicKeys(unittest.TestCase):
     TEST_DATA = '{}\n{}\n{}'.format(
         '{pubkey, "112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL4Nc"}.',
-        '{onboarding_key, "112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL142"}.',
+        '{onboarding_key, '
+        '"112mPWkGW55kcbQTgbtJvgAKMSTrEhHgavrdF1Cbu8FU85tTL142"}.',
         '{animal_name, "gigantic-basil-turtle"}.'
     )
 
