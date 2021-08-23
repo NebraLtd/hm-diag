@@ -1,6 +1,7 @@
 import logging
 import datetime
 import json
+import subprocess
 
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import get_ethernet_addresses
@@ -107,3 +108,13 @@ def perform_hw_diagnostics():
         json.dump(diagnostics, f)
 
     log.info('Diagnostics complete')
+
+
+def attempt_to_set_up_upnp():
+    """
+    Brute force uPNP configuration.
+
+    @TODO: Rewrite this with a check if uPNP is available and check for status.
+    """
+
+    subprocess.run(["/usr/bin/upnpc", "-e", "Nebra Helium", "-r", "44158", "TCP"])  # nosec (B603)

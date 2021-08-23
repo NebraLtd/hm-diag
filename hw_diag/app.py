@@ -4,7 +4,7 @@ import os
 from flask import Flask
 from flask_apscheduler import APScheduler
 
-from hw_diag.tasks import perform_hw_diagnostics
+from hw_diag.tasks import perform_hw_diagnostics, attempt_to_set_up_upnp
 from hw_diag.views.diagnostics import DIAGNOSTICS
 
 
@@ -32,6 +32,10 @@ def get_app(name):
     @scheduler.task('cron', id='run_diagnostics', minute='*/1')
     def run_diagnostics_task():
         perform_hw_diagnostics()
+
+    @scheduler.task('cron', id='run_upnp_setup', minute='00')
+    def run_upnp_setup_task():
+        attempt_to_set_up_upnp()
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
