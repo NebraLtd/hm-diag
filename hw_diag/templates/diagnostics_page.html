@@ -106,15 +106,23 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>ETH0 MAC</td>
-                  <td class="text-right">{{ diagnostics.E0 }}</td>
+                  <td>Ethernet MAC Address</td>
+                  {% if diagnostics.E0 %}
+                  <td class="text-success text-right">{{ diagnostics.E0 }}</td>
+                  {% else %}
+                    <td class="text-danger text-right">N/A</td>
+                  {% endif %}
                 </tr>
                 <tr>
-                  <td>WLAN0 MAC</td>
-                  <td class="text-right">{{ diagnostics.W0 }}</td>
+                  <td>WiFi MAC Address</td>
+                  {% if diagnostics.W0 %}
+                  <td class="text-success text-right">{{ diagnostics.W0 }}</td>
+                  {% else %}
+                    <td class="text-danger text-right">N/A</td>
+                  {% endif %}
                 </tr>
                 <tr>
-                  <td>Raspberry Pi Serial</td>
+                  <td>Raspberry Pi Serial Number</td>
                   <td class="text-right">{{ diagnostics.RPI }}</td>
                 </tr>
                 <tr>
