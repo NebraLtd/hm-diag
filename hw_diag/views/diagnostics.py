@@ -11,7 +11,7 @@ from hw_diag.utilities.miner import get_public_keys_rust
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import get_ethernet_addresses
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utils.shell import get_environment_var
+from hw_diag.utilities.shell import get_environment_var
 
 
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
@@ -55,17 +55,15 @@ def get_initialisation_file():
     so we bypass the regular timer.
     """
     diagnostics = []
-
-    try:
-        diagnostics['OK'] = get_public_keys_rust()['key']
-        diagnostics['PK'] = get_public_keys_rust()['key']
-    except:
-        return False
-
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
 
+    try:
+        diagnostics['OK'] = get_public_keys_rust()['key']
+        diagnostics['PK'] = get_public_keys_rust()['key']
+    except KeyError:
+        return 'Internal Server Error', 500
 
     response = {
         "VA": diagnostics['VA'],
