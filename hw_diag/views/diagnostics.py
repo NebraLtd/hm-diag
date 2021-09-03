@@ -7,6 +7,11 @@ from flask import request
 from flask import jsonify
 
 from hw_diag.utilities.hardware import should_display_lte
+from hw_diag.utilities.miner import get_public_keys_rust
+from hw_diag.utilities.hardware import get_rpi_serial
+from hw_diag.utilities.hardware import get_ethernet_addresses
+from hw_diag.utilities.hardware import detect_ecc
+from hw_diag.utils.shell import get_environment_var
 
 
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
@@ -45,10 +50,22 @@ def get_diagnostics():
 
 @DIAGNOSTICS.route('/initFile.txt')
 def get_initialisation_file():
-    diagnostics = read_diagnostics_file()
+    """
+    This needs to be generated as quickly as possible,
+    so we bypass the regular timer.
+    """
+    diagnostics = []
 
-    if diagnostics.get('error'):
-        return 'Internal Server Error', 500
+    try:
+        diagnostics['OK'] = get_public_keys_rust()['key']
+        diagnostics['PK'] = get_public_keys_rust()['key']
+    except:
+        return False
+
+    get_rpi_serial(diagnostics)
+    get_ethernet_addresses(diagnostics)
+    get_environment_var(diagnostics)
+
 
     response = {
         "VA": diagnostics['VA'],
