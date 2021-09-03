@@ -11,8 +11,8 @@ from hw_diag.utilities.miner import get_gateway_mfr_test_result
 from hw_diag.utilities.miner import get_public_keys_rust
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import get_ethernet_addresses
-from hw_diag.utilities.hardware import detect_ecc
 from hw_diag.utilities.hardware import lora_module_test
+from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.shell import get_environment_var
 
 
@@ -60,14 +60,30 @@ def get_initialisation_file():
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
-
+    set_diagnostics_bt_lte(diagnostics)
     ecc_tests = get_gateway_mfr_test_result()
 
-    if not ecc_tests['result'] == 'pass':
+    if ecc_tests['result'] == 'pass':
+        diagnostics["ECC"] = True
+    else:
         return 'ECC tests failed', 500
 
-    if not lora_module_test():
+    if lora_module_test():
+        diagnostics["LOR"] = True
+    else:
         return 'LoRa Module is not ready', 500
+
+    if (
+            diagnostics["ECC"] is True
+            and diagnostics["E0"] is not None
+            and diagnostics["W0"] is not None
+            and diagnostics["BT"] is True
+            and diagnostics["LOR"] is True
+    ):
+        diagnostics["PF"] = True
+    else:
+        diagnostics["PF"] = False
+
 
     try:
         diagnostics['OK'] = get_public_keys_rust()['key']
