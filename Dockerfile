@@ -4,6 +4,7 @@ FROM arm32v6/alpine:3.12.4
 
 WORKDIR /opt/
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache \
     python3=3.8.10-r0 \
     i2c-tools=4.1-r3 \
