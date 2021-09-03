@@ -56,7 +56,7 @@ def get_initialisation_file():
     This needs to be generated as quickly as possible,
     so we bypass the regular timer.
     """
-    diagnostics = []
+    diagnostics = {}
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
