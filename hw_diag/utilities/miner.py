@@ -6,6 +6,9 @@ from time import sleep
 
 
 def get_public_keys_rust():
+    """
+    Run gateway_mfr and report back the key.
+    """
     try:
         run_gateway_mfr_keys = subprocess.run(
             ["/usr/local/bin/gateway_mfr", "key", "0"],
@@ -63,6 +66,27 @@ def get_public_keys():
         )
 
     return pk_file
+
+
+def get_gateway_mfr_test_result():
+    """
+    Run gateway_mfr test and report back.
+    """
+    try:
+        run_gateway_mfr_keys = subprocess.run(
+            ["/usr/local/bin/gateway_mfr", "test"],
+            capture_output=True,
+            check=True
+        )
+    except subprocess.CalledProcessError:
+        logging.error("gateway_mfr exited with a non-zero status")
+        return False
+
+    try:
+        return json.loads(run_gateway_mfr_keys.stdout)
+    except json.JSONDecodeError:
+        logging.error("Unable to parse JSON from gateway_mfr")
+    return False
 
 
 def get_miner_diagnostics():

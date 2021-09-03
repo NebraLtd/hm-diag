@@ -7,10 +7,12 @@ from flask import request
 from flask import jsonify
 
 from hw_diag.utilities.hardware import should_display_lte
+from hw_diag.utilities.miner import get_gateway_mfr_test_result
 from hw_diag.utilities.miner import get_public_keys_rust
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import get_ethernet_addresses
 from hw_diag.utilities.hardware import detect_ecc
+from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.shell import get_environment_var
 
 
@@ -58,6 +60,14 @@ def get_initialisation_file():
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
+
+    ecc_tests = get_gateway_mfr_test_result()
+
+    if not ecc_tests['result'] == 'pass':
+        return 'ECC tests failed', 500
+
+    if not lora_module_test():
+        return 'LoRa Module is not ready', 500
 
     try:
         diagnostics['OK'] = get_public_keys_rust()['key']
