@@ -13,7 +13,7 @@ RUN apk add --no-cache \
 RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
-RUN pip install -r --no-cache /tmp/build/requirements.txt
+RUN pip install --no-cache -r /tmp/build/requirements.txt
 RUN python3 setup.py install
 RUN rm -rf /tmp/build
 COPY bin/gateway_mfr /usr/local/bin
