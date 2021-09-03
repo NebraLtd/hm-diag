@@ -8,6 +8,10 @@ RUN apk add --no-cache \
     python3=3.8.10-r0 \
     i2c-tools=4.1-r3 \
     usbutils=012-r1 \
+    build-base \
+    python3-dev \
+    glib-dev \
+    dbus-dev \
     py3-pip=20.1.1-r0
 
 RUN mkdir /tmp/build
