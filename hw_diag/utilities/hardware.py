@@ -15,12 +15,13 @@ def should_display_lte(diagnostics):
 
 
 def set_diagnostics_bt_lte(diagnostics):
-    devices = {
-        'BT': '0a12',
-        'LTE': '2c7c'
-    }
+    devices = [
+        ['BT', '0a12'],
+        ['LTE', '2c7c'],  # Quectel
+        ['LTE', '68a2']  # Sierra Wireless MC7700
+    ]
 
-    for dev_type, dev_addr in devices.items():
+    for dev_type, dev_addr in devices:
         resp = os.popen(
             'grep %s /sys/bus/usb/devices/*/idVendor' % dev_addr
         ).read()
