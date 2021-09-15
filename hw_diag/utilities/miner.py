@@ -50,7 +50,7 @@ def get_miner_diagnostics():
     # return MC - MD - MH - MN list
     param_list = []
     try:
-        miner_bus = dbus.SystemBus()
+        miner_bus = dbus.SessionBus()
         miner_object = miner_bus.get_object('com.helium.Miner', '/')
         miner_interface = dbus.Interface(miner_object, 'com.helium.Miner')
         try:

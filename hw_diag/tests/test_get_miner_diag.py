@@ -8,10 +8,10 @@ from hw_diag.utilities.miner import get_miner_diagnostics # noqa
 
 
 class TestGetMinerDiag(unittest.TestCase):
-    @patch("dbus.SystemBus")
+    @patch("dbus.SessionBus")
     @patch("dbus.Interface")
     def test_right_response(self, _, null):
-        dbus.SystemBus.return_value = namedtuple(
+        dbus.SessionBus.return_value = namedtuple(
             "miner_bus",
             "get_object")(get_object=lambda x, y: [])
         dbus.Interface.return_value = namedtuple(
@@ -25,10 +25,10 @@ class TestGetMinerDiag(unittest.TestCase):
         res = get_miner_diagnostics()
         self.assertEqual(res, ['2', '6', '14', '10'])
 
-    @patch("dbus.SystemBus")
+    @patch("dbus.SessionBus")
     @patch("dbus.Interface")
     def test_wrong_response(self, _, null):
-        dbus.SystemBus.return_value = namedtuple(
+        dbus.SessionBus.return_value = namedtuple(
             "miner_bus",
             "get_object")(get_object=lambda x, y: [])
         dbus.Interface.side_effect = dbus.exceptions.DBusException()
