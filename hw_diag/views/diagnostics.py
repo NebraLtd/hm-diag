@@ -84,7 +84,6 @@ def get_initialisation_file():
     else:
         diagnostics["PF"] = False
 
-
     try:
         diagnostics['OK'] = get_public_keys_rust()['key']
         diagnostics['PK'] = get_public_keys_rust()['key']
