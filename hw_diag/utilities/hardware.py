@@ -18,7 +18,11 @@ def set_diagnostics_bt_lte(diagnostics):
     devices = [
         ['BT', '0a12'],
         ['LTE', '2c7c'],  # Quectel
-        ['LTE', '68a2']  # Sierra Wireless MC7700
+        ['LTE', '68a2'],  # Sierra Wireless MC7700
+        ['LTE', '1bc7'],  # Telit / Reyax
+        ['LTE', '1e0e'],  # SimCom SIM7100E
+        ['LTE', '12d1'],  # Huawei ME909s-120
+        ['LTE', '2cd2']   # MikroTik R11e-LTE6
     ]
 
     for dev_type, dev_addr in devices:
