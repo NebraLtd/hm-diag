@@ -6,11 +6,11 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 
+from hm_pyhelper.miner_param import get_ethernet_addresses
+from hm_pyhelper.miner_param import get_public_keys_rust
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.miner import get_gateway_mfr_test_result
-from hw_diag.utilities.miner import get_public_keys_rust
 from hw_diag.utilities.hardware import get_rpi_serial
-from hw_diag.utilities.hardware import get_ethernet_addresses
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.shell import get_environment_var

@@ -2,8 +2,8 @@ import logging
 import datetime
 import json
 
+from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
-from hw_diag.utilities.hardware import get_ethernet_addresses
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import detect_ecc
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte

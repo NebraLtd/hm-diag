@@ -5,27 +5,6 @@ import subprocess
 from time import sleep
 
 
-def get_public_keys_rust():
-    """
-    Run gateway_mfr and report back the key.
-    """
-    try:
-        run_gateway_mfr_keys = subprocess.run(
-            ["/usr/local/bin/gateway_mfr", "key", "0"],
-            capture_output=True,
-            check=True
-        )
-    except subprocess.CalledProcessError:
-        logging.error("gateway_mfr exited with a non-zero status")
-        return False
-
-    try:
-        return json.loads(run_gateway_mfr_keys.stdout)
-    except json.JSONDecodeError:
-        logging.error("Unable to parse JSON from gateway_mfr")
-    return False
-
-
 def get_public_keys():
     """
     get three public keys

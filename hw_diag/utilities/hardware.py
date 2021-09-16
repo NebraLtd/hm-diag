@@ -1,8 +1,8 @@
 import logging
 import os
 from time import sleep
-from hm_hardware_defs.variant import variant_definitions
 
+from hm_hardware_defs.variant import variant_definitions
 from hw_diag.utilities.shell import config_search_param
 
 
@@ -53,24 +53,6 @@ def detect_ecc(diagnostics):
             logging.error(e)
 
 
-def get_ethernet_addresses(diagnostics):
-    # Get ethernet MAC and WIFI address
-
-    # The order of the values in the lists is important!
-    # It determines which value will be available for which key
-    path_to_files = [
-        "/sys/class/net/eth0/address",
-        "/sys/class/net/wlan0/address"
-    ]
-    keys = ["E0", "W0"]
-    for (path, key) in zip(path_to_files, keys):
-        try:
-            diagnostics[key] = get_mac_addr(path)
-        except Exception as e:
-            diagnostics[key] = None
-            logging.error(e)
-
-
 def get_rpi_serial(diagnostics):
     """
     input:
@@ -89,26 +71,6 @@ def get_rpi_serial(diagnostics):
         raise e
 
     diagnostics["RPI"] = rpi_serial
-
-
-def get_mac_addr(path):
-    """
-    input: path to the file with the location of the mac address
-    output: A string containing a mac address
-    Possible exceptions:
-        FileNotFoundError - when the file is not found
-        PermissionError - in the absence of access rights to the file
-        TypeError - If the function argument is not a string.
-    """
-    if type(path) is not str:
-        raise TypeError("The path must be a string value")
-    try:
-        file = open(path)
-    except FileNotFoundError as e:
-        raise e
-    except PermissionError as e:
-        raise e
-    return file.readline().strip().upper()
 
 
 def lora_module_test():
