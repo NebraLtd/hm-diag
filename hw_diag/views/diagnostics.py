@@ -5,8 +5,9 @@ from flask import Blueprint
 from flask import render_template
 from flask import request
 from flask import jsonify
-from hm_pyhelper import miner_param
 
+from hm_pyhelper.miner_param import get_ethernet_addresses
+from hm_pyhelper.miner_param import get_public_keys_rust
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.miner import get_gateway_mfr_test_result
 from hw_diag.utilities.hardware import get_rpi_serial
@@ -57,7 +58,7 @@ def get_initialisation_file():
     """
     diagnostics = {}
     get_rpi_serial(diagnostics)
-    miner_param.get_ethernet_addresses(diagnostics)
+    get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
     set_diagnostics_bt_lte(diagnostics)
     ecc_tests = get_gateway_mfr_test_result()
@@ -84,8 +85,8 @@ def get_initialisation_file():
         diagnostics["PF"] = False
 
     try:
-        diagnostics['OK'] = miner_param.get_public_keys_rust()['key']
-        diagnostics['PK'] = miner_param.get_public_keys_rust()['key']
+        diagnostics['OK'] = get_public_keys_rust()['key']
+        diagnostics['PK'] = get_public_keys_rust()['key']
     except KeyError:
         return 'Internal Server Error', 500
 

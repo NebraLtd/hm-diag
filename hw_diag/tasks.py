@@ -2,7 +2,7 @@ import logging
 import datetime
 import json
 
-from hm_pyhelper import miner_param
+from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import detect_ecc
@@ -27,7 +27,7 @@ def perform_hw_diagnostics():
     now = datetime.datetime.utcnow()
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
 
-    miner_param.get_ethernet_addresses(diagnostics)
+    get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
     get_rpi_serial(diagnostics)
     detect_ecc(diagnostics)
