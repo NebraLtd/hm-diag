@@ -22,6 +22,7 @@ PEER_BOOK = [
     }
 ]
 
+
 class TestGetMinerDiag(unittest.TestCase):
 
     @patch('hw_diag.utilities.miner.client')
