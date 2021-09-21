@@ -23,9 +23,11 @@ setup(
         'hm_diag = hw_diag.app:main', ], },
 
     # Adds dependencies
-    install_requires=['flask',
-                      'Flask-APScheduler',
-                      'requests',
-                      'dbus-python',
+    install_requires=['Flask==2.0.1',
+                      'Flask-APScheduler==1.12.2',
+                      'requests==2.26.0',
+                      'dbus-python==1.2.16',
+                      'hm-pyhelper==0.4',
+                      'click==7.1.2'
                       ]
 )
