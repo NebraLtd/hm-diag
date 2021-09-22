@@ -2,15 +2,15 @@ import logging
 import datetime
 import json
 
+from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
-from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utilities.hardware import set_diagnostics_bt_lte
+from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import lora_module_test
+from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
-from hm_hardware_defs.variant import variant_definitions
 
 
 log = logging.getLogger()

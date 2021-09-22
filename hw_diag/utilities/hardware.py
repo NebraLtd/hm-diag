@@ -2,7 +2,7 @@ import logging
 import os
 from time import sleep
 
-from hm_hardware_defs.variant import variant_definitions
+from hm_pyhelper.hardware_definitions import variant_definitions
 from hw_diag.utilities.shell import config_search_param
 
 
