@@ -10,3 +10,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run ShellCheck against code base
       uses: ludeeus/action-shellcheck@master
+      with:
+        check_together: 'yes'

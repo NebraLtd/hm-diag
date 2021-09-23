@@ -3,6 +3,7 @@
 FROM arm32v6/alpine:3.12.4
 
 WORKDIR /opt/
+COPY *.sh ./
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache \
@@ -21,4 +22,5 @@ WORKDIR /tmp/build
 RUN pip install --no-cache -r /tmp/build/requirements.txt
 RUN python3 setup.py install
 RUN rm -rf /tmp/build
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
+WORKDIR /opt/
+ENTRYPOINT ["/opt/start-diag.sh"]
