@@ -11,6 +11,7 @@ from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
+from hw_diag.utilities.gcs_shipper import upload_diagnostics
 
 
 log = logging.getLogger()
@@ -91,5 +92,7 @@ def perform_hw_diagnostics():
 
     with open('diagnostic_data.json', 'w') as f:
         json.dump(diagnostics, f)
+
+    upload_diagnostics(diagnostics)
 
     log.info('Diagnostics complete')

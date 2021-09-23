@@ -1,0 +1,193 @@
+{ "BigQuery Schema":
+[
+  {
+    "mode": "REQUIRED",
+    "name": "last_updated_ts",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "last_updated",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "E0",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "W0",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "BN",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "ID",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "BA",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "FR",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "FW",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "VA",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "RPI",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ECC",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LOR",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "PK",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "OK",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "AN",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MC",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MD",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MH",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MN",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MR",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BCH",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MS",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BSP",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BT",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LTE",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RE",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PF",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FRIENDLY",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "APPNAME",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SPIBUS",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "RESET",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "MAC",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "STATUS",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "BUTTON",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ECCOB",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TYPE",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "CELLULAR",
+    "type": "BOOLEAN"
+  }
+]}
