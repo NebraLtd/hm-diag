@@ -2,17 +2,15 @@ import logging
 import datetime
 import json
 
+from hm_pyhelper.hardware_definitions import variant_definitions
+from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
-from hw_diag.utilities.hardware import get_ethernet_addresses
-from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utilities.hardware import set_diagnostics_bt_lte
+from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import lora_module_test
-from hw_diag.utilities.miner import get_public_keys
-from hw_diag.utilities.miner import write_public_keys_to_diag
-from hw_diag.utilities.miner import set_param_miner_diag
+from hw_diag.utilities.hardware import set_diagnostics_bt_lte
+from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
-from hm_hardware_defs.variant import variant_definitions
 
 
 log = logging.getLogger()
@@ -34,20 +32,8 @@ def perform_hw_diagnostics():
 
     diagnostics['LOR'] = lora_module_test()
 
-    # Get the Public Key, Onboarding Key & Helium Animal Name
-    try:
-        keys = get_public_keys()
-        write_public_keys_to_diag(keys, diagnostics)
-    except PermissionError as e:
-        logging.error(e)
-
-    set_param_miner_diag(diagnostics)
-
-    # If  symmetric NAT set miner to relayed.
-    if diagnostics['MN'] == "symmetric":
-        diagnostics['MR'] = True
-    else:
-        diagnostics['MR'] = False
+    # Fetch data from miner container.
+    diagnostics = fetch_miner_data(diagnostics)
 
     # Get the blockchain height from the Helium API
     value = "1"

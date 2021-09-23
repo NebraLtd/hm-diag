@@ -29,7 +29,7 @@ def get_app(name):
     # According to the original code we run the diagnostics
     # every 1 minutes, the frequency can be adjusted here...
     # TODO: Probably need to split this out into some conf file
-    @scheduler.task('cron', id='run_diagnostics', minute='*/1')
+    @scheduler.task('cron', id='run_diagnostics', minute='*/5')
     def run_diagnostics_task():
         perform_hw_diagnostics()
 
