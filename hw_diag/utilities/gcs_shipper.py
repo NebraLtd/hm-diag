@@ -23,7 +23,11 @@ def generate_hash(public_key):
     return sha256(hashable.encode('utf-8')).hexdigest()
 
 
-def upload_diagnostics(diagnostics):
+def upload_diagnostics(diagnostics, ship):
+    if not ship:
+        log.info("Diagnostics shipping not requested, skipping.")
+        return
+
     log.info('Submitting diagnostics to GCS bucket - %s' % BUCKET_NAME)
 
     # Hash the PK + DateTime to provide a unique, non identifiable name for the

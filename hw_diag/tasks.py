@@ -18,7 +18,7 @@ log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
 
-def perform_hw_diagnostics():
+def perform_hw_diagnostics(ship=False):
     log.info('Running periodic hardware diagnostics')
 
     diagnostics = {}
@@ -93,6 +93,6 @@ def perform_hw_diagnostics():
     with open('diagnostic_data.json', 'w') as f:
         json.dump(diagnostics, f)
 
-    upload_diagnostics(diagnostics)
+    upload_diagnostics(diagnostics, ship)
 
     log.info('Diagnostics complete')

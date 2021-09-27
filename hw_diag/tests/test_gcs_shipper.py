@@ -30,7 +30,7 @@ class TestUploadDiagnostics(unittest.TestCase):
         mock_requests.post = MagicMock()
         mock_requests.post.return_value = OKResponse()
         diagnostics = {'PK': 'my_key'}
-        retval = upload_diagnostics(diagnostics)
+        retval = upload_diagnostics(diagnostics, True)
         self.assertTrue(retval)
 
     @patch('hw_diag.utilities.gcs_shipper.requests')
@@ -38,5 +38,10 @@ class TestUploadDiagnostics(unittest.TestCase):
         mock_requests.post = MagicMock()
         mock_requests.post.return_value = ErrorResponse()
         diagnostics = {'PK': 'my_key'}
-        retval = upload_diagnostics(diagnostics)
+        retval = upload_diagnostics(diagnostics, True)
         self.assertFalse(retval)
+
+    def test_upload_diagnostics_should_not_ship(self):
+        diagnostics = {'PK': 'my_key'}
+        retval = upload_diagnostics(diagnostics, False)
+        self.assertIsNone(retval)
