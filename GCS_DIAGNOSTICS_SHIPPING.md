@@ -1,7 +1,7 @@
 # Google Cloud Storage Diagnostics Shipping
 
 HM-Diag provides the capability to periodically ship hotspot diagnostic
-statistics to Google Cloud Storage for centralised fleet management / 
+statistics to Google Cloud Storage for centralised fleet management /
 feedback for services such as the Nebra Dashboard. Once ingested to Google
 Cloud Storage then DataFlow can be used to marshall the statistics into
 BigQuery for easy consumption with an SQL-like query language.
@@ -34,7 +34,7 @@ BigQuery for easy consumption with an SQL-like query language.
 - Upload the contents of the bigquery folder of this repository (bq_funcs.js &
   bq_schema.json) into the DataFlow scratch space bucket. This will be used later
   by the DataFlow service.
-  
+
 ### Define GCS Bucket in Balena Fleet
 - Open the fleet of hotspots you'd like to submit diagnostics for and add the following
   variable to enable diagnostics shipping.
@@ -77,3 +77,12 @@ BigQuery for easy consumption with an SQL-like query language.
 - Switch to the DataFlow service and check the streaming job is running and has no errors.
 - Switch to the BigQuery service, select the diagnostics table and switch to the preview tab, you
   should see data from hotspots displayed in the table.
+
+### Convert to Pipeline
+
+Before you get started, you need to:
+
+* Enable the Pipelines and Cloud Schedule APIs
+* Setup App Engine basics (set region etc)
+
+Once the job has run successfully once, navigate to the job and select 'Import as Pipeline.' The default values should be fine. Just select Hourly and UTC as the time zone.
