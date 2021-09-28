@@ -74,11 +74,11 @@ def get_initialisation_file():
         return 'LoRa Module is not ready', 500
 
     if (
-            diagnostics["ECC"] is True
-            and diagnostics["E0"] is not None
-            and diagnostics["W0"] is not None
-            and diagnostics["BT"] is True
-            and diagnostics["LOR"] is True
+            diagnostics["ECC"]
+            and diagnostics["E0"]
+            and diagnostics["W0"]
+            and diagnostics["BT"]
+            and diagnostics["LOR"]
     ):
         diagnostics["PF"] = True
     else:
