@@ -7,28 +7,6 @@ from hm_pyhelper.miner_json_rpc import MinerClient
 
 client = MinerClient()
 
-
-def get_gateway_mfr_test_result():
-    """
-    Run gateway_mfr test and report back.
-    """
-    try:
-        run_gateway_mfr_keys = subprocess.run(
-            ["/usr/local/bin/gateway_mfr", "test"],
-            capture_output=True,
-            check=True
-        )
-    except subprocess.CalledProcessError:
-        logging.error("gateway_mfr exited with a non-zero status")
-        return False
-
-    try:
-        return json.loads(run_gateway_mfr_keys.stdout)
-    except json.JSONDecodeError:
-        logging.error("Unable to parse JSON from gateway_mfr")
-    return False
-
-
 def fetch_miner_data(diagnostics):
     # Fetch miner keys from miner container and append
     # them to the diagnostics dictionary.
