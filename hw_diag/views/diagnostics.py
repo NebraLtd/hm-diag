@@ -1,6 +1,6 @@
 import json
 import base64
-import os.path
+import os
 import logging
 
 from flask import Blueprint
