@@ -1,6 +1,6 @@
 # Docker Container that runs the Nebra Diagnostics Tool
 
-FROM arm32v6/alpine:3.12.4
+FROM balenalib/genericx86-64-ext-alpine:3.12-20210923
 
 WORKDIR /opt/
 
