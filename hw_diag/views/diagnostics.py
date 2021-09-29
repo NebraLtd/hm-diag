@@ -1,5 +1,7 @@
 import json
 import base64
+import os.path
+import logging
 
 from flask import Blueprint
 from flask import render_template
@@ -15,7 +17,9 @@ from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.shell import get_environment_var
 
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
+ECC_SUCCESSFUL_TOUCH_FILEPATH = "/var/data/gwmfr_ecc_provisioned"
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
@@ -49,6 +53,8 @@ def get_diagnostics():
         display_lte=display_lte
     )
 
+def is_gwmfr_running():
+    return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
 
 @DIAGNOSTICS.route('/initFile.txt')
 def get_initialisation_file():
@@ -56,6 +62,11 @@ def get_initialisation_file():
     This needs to be generated as quickly as possible,
     so we bypass the regular timer.
     """
+    
+    if is_gwmfr_running():
+        logging.info("hm-gwmfr is still runnning. initFile.txt will not be returned")
+        return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 500
+
     diagnostics = {}
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
