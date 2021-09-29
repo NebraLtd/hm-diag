@@ -25,8 +25,7 @@ def is_gwmfr_running():
     return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
 
 
-# noqa: C901
-def perform_hw_diagnostics(ship=False):
+def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
     if is_gwmfr_running():
