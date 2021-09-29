@@ -1,6 +1,7 @@
 import logging
 import datetime
 import json
+import os.path
 
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
@@ -17,9 +18,19 @@ from hw_diag.utilities.gcs_shipper import upload_diagnostics
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
+ECC_SUCCESSFUL_TOUCH_FILEPATH = "/var/data/gwmfr_ecc_provisioned"
 
-def perform_hw_diagnostics(ship=False):
+
+def is_gwmfr_running():
+    return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
+
+
+def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
+
+    if is_gwmfr_running():
+        log.info("gwmfr running. Diags will not be executed.")
+        return
 
     diagnostics = {}
 
