@@ -67,7 +67,7 @@ def get_initialisation_file():
 
     if is_gwmfr_running():
         logging.info("gwmfr runnning. initFile will not be returned.")
-        return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 500
+        return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 503
 
     diagnostics = {}
     get_rpi_serial(diagnostics)
