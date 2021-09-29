@@ -7,6 +7,7 @@ from hm_pyhelper.miner_json_rpc import MinerClient
 
 client = MinerClient()
 
+
 def fetch_miner_data(diagnostics):
     # Fetch miner keys from miner container and append
     # them to the diagnostics dictionary.

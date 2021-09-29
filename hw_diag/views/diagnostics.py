@@ -53,8 +53,10 @@ def get_diagnostics():
         display_lte=display_lte
     )
 
+
 def is_gwmfr_running():
     return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
+
 
 @DIAGNOSTICS.route('/initFile.txt')
 def get_initialisation_file():
@@ -62,9 +64,10 @@ def get_initialisation_file():
     This needs to be generated as quickly as possible,
     so we bypass the regular timer.
     """
-    
+
     if is_gwmfr_running():
-        logging.info("hm-gwmfr is still runnning. initFile.txt will not be returned")
+        logging.info("hm-gwmfr is still runnning. \
+            initFile.txt will not be returned.")
         return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 500
 
     diagnostics = {}
