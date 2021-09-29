@@ -79,12 +79,12 @@ def get_initialisation_file():
     if ecc_tests['result'] == 'pass':
         diagnostics["ECC"] = True
     else:
-        return 'ECC tests failed', 500
+        return 'ECC tests failed', 503
 
     if lora_module_test():
         diagnostics["LOR"] = True
     else:
-        return 'LoRa Module is not ready', 500
+        return 'LoRa Module is not ready', 503
 
     if (
             diagnostics["ECC"] is True
