@@ -29,7 +29,7 @@ def perform_hw_diagnostics(ship=False):
     log.info('Running periodic hardware diagnostics')
 
     if is_gwmfr_running():
-        log.info("hm-gwmfr is still runnning. Diagnostics will not be executed.")
+        log.info("gwmfr running. Diags will not be executed.")
         return
 
     diagnostics = {}

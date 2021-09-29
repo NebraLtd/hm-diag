@@ -66,8 +66,7 @@ def get_initialisation_file():
     """
 
     if is_gwmfr_running():
-        logging.info("hm-gwmfr is still runnning. \
-            initFile.txt will not be returned.")
+        logging.info("gwmfr runnning. initFile will not be returned.")
         return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 500
 
     diagnostics = {}
