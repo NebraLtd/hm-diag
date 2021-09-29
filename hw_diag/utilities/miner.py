@@ -1,7 +1,3 @@
-import json
-import logging
-import subprocess
-
 from hm_pyhelper.miner_json_rpc import MinerClient
 
 
