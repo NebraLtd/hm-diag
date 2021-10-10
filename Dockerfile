@@ -12,7 +12,6 @@ RUN apk add --no-cache \
     build-base \
     python3-dev \
     glib-dev \
-    dbus-dev \
     py3-pip=20.1.1-r0
 
 RUN mkdir /tmp/build
