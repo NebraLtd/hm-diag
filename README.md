@@ -1,5 +1,4 @@
-# hm-diag
-Helium Miner Diagnostics
+# hm-diag: Helium Miner Diagnostics Container
 
 **hm-diag** is a small website that displays diagnostic information about a hotspot.
 The website is only accessible if you are on the same network as the hotspot.
