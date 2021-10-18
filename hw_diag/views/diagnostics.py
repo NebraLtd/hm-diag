@@ -62,6 +62,7 @@ def get_initialisation_file():
     get_environment_var(diagnostics)
     set_diagnostics_bt_lte(diagnostics)
     ecc_tests = get_gateway_mfr_test_result()
+    public_keys = get_public_keys_rust()
 
     if ecc_tests['result'] == 'pass':
         diagnostics["ECC"] = True
@@ -85,8 +86,8 @@ def get_initialisation_file():
         diagnostics["PF"] = False
 
     try:
-        diagnostics['OK'] = get_public_keys_rust()['key']
-        diagnostics['PK'] = get_public_keys_rust()['key']
+        diagnostics['OK'] = public_keys['key']
+        diagnostics['PK'] = public_keys['key']
     except KeyError:
         return 'Internal Server Error', 500
 
