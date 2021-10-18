@@ -1,5 +1,4 @@
-# hm-diag
-Helium Miner Diagnostics
+# hm-diag: Helium Miner Diagnostics Container
 
 **hm-diag** is a small website that displays diagnostic information about a hotspot.
 The website is only accessible if you are on the same network as the hotspot.
@@ -86,3 +85,11 @@ This is no longer [the recommended way](https://www.balena.io/docs/learn/deploy/
 ## Access from other networks
 
 Balena will generate a public URL for a device if [PUBLIC DEVICE URL](https://www.balena.io/docs/learn/manage/actions/#enable-public-device-url) is toggled from the Balena device dashboard. This is not generally recommended, except for debugging.
+
+## Pre built containers
+
+This repo automatically builds docker containers and uploads them to two repositories for easy access:
+- [hm-diag on DockerHub](https://hub.docker.com/r/nebraltd/hm-diag)
+- [hm-diag on GitHub Packages](https://github.com/NebraLtd/hm-diag/pkgs/container/hm-diag)
+
+The images are tagged using the docker long and short commit SHAs for that release. The current version deployed to miners can be found in the [helium-miner-software repo](https://github.com/NebraLtd/helium-miner-software/blob/production/docker-compose.yml).
