@@ -5,9 +5,9 @@ FROM arm32v6/alpine:3.12.4
 WORKDIR /opt/
 
 HEALTHCHECK \
-    --interval=30s \
-    --timeout=10s \
-    --start-period=10s \
+    --interval=120s \
+    --timeout=5s \
+    --start-period=15s \
     --retries=10 \
   CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
