@@ -54,10 +54,6 @@ def get_diagnostics():
     )
 
 
-def is_gwmfr_running():
-    return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
-
-
 @DIAGNOSTICS.route('/initFile.txt')
 def get_initialisation_file():
     """
