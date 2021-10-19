@@ -61,10 +61,6 @@ def get_initialisation_file():
     so we bypass the regular timer.
     """
 
-    if is_gwmfr_running():
-        logging.info("gwmfr runnning. initFile will not be returned.")
-        return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 503
-
     diagnostics = {}
     get_rpi_serial(diagnostics)
     get_ethernet_addresses(diagnostics)
