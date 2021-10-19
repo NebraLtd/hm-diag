@@ -19,7 +19,6 @@ from hw_diag.utilities.shell import get_environment_var
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
-ECC_SUCCESSFUL_TOUCH_FILEPATH = "/var/data/gwmfr_ecc_provisioned"
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
@@ -54,20 +53,12 @@ def get_diagnostics():
     )
 
 
-def is_gwmfr_running():
-    return not os.path.isfile(ECC_SUCCESSFUL_TOUCH_FILEPATH)
-
-
 @DIAGNOSTICS.route('/initFile.txt')
 def get_initialisation_file():
     """
     This needs to be generated as quickly as possible,
     so we bypass the regular timer.
     """
-
-    if is_gwmfr_running():
-        logging.info("gwmfr runnning. initFile will not be returned.")
-        return 'hm-gwmfr is still running. ECC cannot be accessed yet.', 503
 
     diagnostics = {}
     get_rpi_serial(diagnostics)

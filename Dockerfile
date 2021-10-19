@@ -4,6 +4,13 @@ FROM arm32v6/alpine:3.12.4
 
 WORKDIR /opt/
 
+HEALTHCHECK \
+    --interval=120s \
+    --timeout=5s \
+    --start-period=15s \
+    --retries=10 \
+  CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
+
 # hadolint ignore=DL3018
 RUN apk add --no-cache \
     python3=3.8.10-r0 \
