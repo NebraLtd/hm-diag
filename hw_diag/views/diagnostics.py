@@ -19,7 +19,6 @@ from hw_diag.utilities.shell import get_environment_var
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
-ECC_SUCCESSFUL_TOUCH_FILEPATH = "/var/data/gwmfr_ecc_provisioned"
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
