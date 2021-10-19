@@ -1,7 +1,6 @@
 import logging
 import datetime
 import json
-import os.path
 
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
