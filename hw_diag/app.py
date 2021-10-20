@@ -34,16 +34,6 @@ def get_app(name):
     scheduler.init_app(app)
     scheduler.start()
 
-    # According to the original code we run the diagnostics
-    # every 1 minutes, the frequency can be adjusted here...
-    # TODO: Probably need to split this out into some conf file
-    @scheduler.task(
-        'cron',
-        id='run_diagnostics',
-        minute='5,10,15,20,25,30,35,40,45,50,55')
-    def run_diagnostics_task():
-        perform_hw_diagnostics(ship=False)
-
     @scheduler.task('cron', id='ship_diagnostics', minute='0')
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)

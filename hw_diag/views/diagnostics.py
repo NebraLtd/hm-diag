@@ -2,6 +2,9 @@ import json
 import base64
 import os
 import logging
+from os import path
+from datetime import datetime, timedelta
+
 
 from flask import Blueprint
 from flask import render_template
@@ -16,6 +19,7 @@ from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.shell import get_environment_var
+from hw_diag.tasks import perform_hw_diagnostics
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
@@ -23,6 +27,13 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
 def read_diagnostics_file():
+    cache_from = datetime.fromtimestamp(path.getctime('diagnostic_data.json'))
+    cache_cutoff = datetime.now() - timedelta(minutes=5)
+
+    # Re-generate the cache if it is older than cache_cutoff
+    if cache_from < cache_cutoff:
+        perform_hw_diagnostics()
+
     diagnostics = {}
     try:
         with open('diagnostic_data.json', 'r') as f:
