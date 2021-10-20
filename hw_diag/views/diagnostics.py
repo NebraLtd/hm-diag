@@ -27,15 +27,17 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
 def read_diagnostics_file():
-    cache_from = datetime.fromtimestamp(path.getctime('diagnostic_data.json'))
-    cache_cutoff = datetime.now() - timedelta(minutes=5)
-
-    # Re-generate the cache if it is older than cache_cutoff
-    if cache_from < cache_cutoff:
-        perform_hw_diagnostics()
-
     diagnostics = {}
+
     try:
+        # Re-generate the cache if it is older than cache_cutoff
+        cache_from = datetime.fromtimestamp(
+                path.getctime('diagnostic_data.json')
+        )
+        cache_cutoff = datetime.now() - timedelta(minutes=5)
+        if cache_from < cache_cutoff:
+            perform_hw_diagnostics()
+
         with open('diagnostic_data.json', 'r') as f:
             diagnostics = json.load(f)
     except FileNotFoundError:
