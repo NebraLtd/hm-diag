@@ -41,7 +41,11 @@ def read_diagnostics_file():
 @cache.cached(timeout=60)
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
-    return jsonify(diagnostics)
+    response = jsonify(diagnostics)
+    response.headers.set('Content-Disposition',
+                         'attachment;filename=nebra-diag.json'
+                         )
+    return response
 
 
 @DIAGNOSTICS.route('/')
