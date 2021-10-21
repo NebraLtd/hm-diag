@@ -2,9 +2,6 @@ import json
 import base64
 import os
 import logging
-from os import path
-from datetime import datetime, timedelta
-
 
 from flask import Blueprint
 from flask import render_template
