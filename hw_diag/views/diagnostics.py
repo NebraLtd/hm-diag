@@ -8,6 +8,7 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 
+from hw_diag.cache import cache
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.miner_param import get_gateway_mfr_test_result
@@ -16,6 +17,7 @@ from hw_diag.utilities.hardware import get_rpi_serial
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.shell import get_environment_var
+from hw_diag.tasks import perform_hw_diagnostics
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
@@ -24,7 +26,9 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 def read_diagnostics_file():
     diagnostics = {}
+
     try:
+        perform_hw_diagnostics()
         with open('diagnostic_data.json', 'r') as f:
             diagnostics = json.load(f)
     except FileNotFoundError:
@@ -34,6 +38,7 @@ def read_diagnostics_file():
 
 
 @DIAGNOSTICS.route('/')
+@cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
 
@@ -54,6 +59,7 @@ def get_diagnostics():
 
 
 @DIAGNOSTICS.route('/initFile.txt')
+@cache.cached(timeout=15)
 def get_initialisation_file():
     """
     This needs to be generated as quickly as possible,
