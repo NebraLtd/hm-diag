@@ -26,9 +26,9 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 def read_diagnostics_file():
     diagnostics = {}
-    perform_hw_diagnostics()
 
     try:
+        perform_hw_diagnostics()
         with open('diagnostic_data.json', 'r') as f:
             diagnostics = json.load(f)
     except FileNotFoundError:
