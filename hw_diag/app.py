@@ -2,10 +2,10 @@ import logging
 import os
 
 from flask import Flask
-from flask_caching import Cache
 from flask_apscheduler import APScheduler
 from retry import retry
 
+from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hm_pyhelper.miner_param import provision_key
@@ -19,13 +19,6 @@ if DEBUG:
     log.setLevel(logging.DEBUG)
 
 
-config = {
-    "DEBUG": DEBUG,
-    "CACHE_TYPE": "SimpleCache",
-    "CACHE_DEFAULT_TIMEOUT": 300
-}
-
-
 @retry(ValueError, tries=10, delay=1, backoff=2, logger=log)
 def perform_key_provisioning():
     if not provision_key():
@@ -35,8 +28,7 @@ def perform_key_provisioning():
 def get_app(name):
     app = Flask(name)
 
-    cache = Cache(app)
-    app.config.from_mapping(config)
+    cache.init_app(app)
 
     # Configure the backend scheduled tasks
     scheduler = APScheduler()

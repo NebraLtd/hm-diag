@@ -11,6 +11,7 @@ from flask import render_template
 from flask import request
 from flask import jsonify
 
+from hw_diag.cache import cache
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.miner_param import get_gateway_mfr_test_result
