@@ -30,14 +30,7 @@ def read_diagnostics_file():
     diagnostics = {}
 
     try:
-        # Re-generate the cache if it is older than cache_cutoff
-        cache_from = datetime.fromtimestamp(
-                path.getctime('diagnostic_data.json')
-        )
-        cache_cutoff = datetime.now() - timedelta(minutes=5)
-        if cache_from < cache_cutoff:
-            perform_hw_diagnostics()
-
+        perform_hw_diagnostics()
         with open('diagnostic_data.json', 'r') as f:
             diagnostics = json.load(f)
     except FileNotFoundError:
@@ -47,6 +40,7 @@ def read_diagnostics_file():
 
 
 @DIAGNOSTICS.route('/')
+@cache.cached(timeout=120)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
 
@@ -67,6 +61,7 @@ def get_diagnostics():
 
 
 @DIAGNOSTICS.route('/initFile.txt')
+@cache.cached(timeout=15)
 def get_initialisation_file():
     """
     This needs to be generated as quickly as possible,
