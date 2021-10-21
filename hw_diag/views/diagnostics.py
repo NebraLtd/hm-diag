@@ -37,11 +37,19 @@ def read_diagnostics_file():
     return diagnostics
 
 
+@DIAGNOSTICS.route('/json')
+@cache.cached(timeout=60)
+def get_diagnostics_json():
+    diagnostics = read_diagnostics_file()
+    return jsonify(diagnostics)
+
+
 @DIAGNOSTICS.route('/')
 @cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
 
+    # Delete this in favor of /json
     if request.args.get('json'):
         response = jsonify(diagnostics)
         response.headers.set('Content-Disposition',
