@@ -26,9 +26,9 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 def read_diagnostics_file():
     diagnostics = {}
+    perform_hw_diagnostics()
 
     try:
-        perform_hw_diagnostics()
         with open('diagnostic_data.json', 'r') as f:
             diagnostics = json.load(f)
     except FileNotFoundError:
@@ -38,7 +38,7 @@ def read_diagnostics_file():
 
 
 @DIAGNOSTICS.route('/')
-@cache.cached(timeout=120)
+@cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
 
