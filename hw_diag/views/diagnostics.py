@@ -5,7 +5,6 @@ import logging
 
 from flask import Blueprint
 from flask import render_template
-from flask import request
 from flask import jsonify
 
 from hw_diag.cache import cache
