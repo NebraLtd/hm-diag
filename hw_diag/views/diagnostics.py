@@ -94,7 +94,7 @@ def get_initialisation_file():
     if lora_module_test():
         diagnostics["LOR"] = True
     else:
-        return 'LoRa Module is not ready', 503
+        diagnostics["LOR"] = False
 
     if (
             diagnostics["ECC"]
@@ -122,7 +122,8 @@ def get_initialisation_file():
         "OK": diagnostics['OK'],
         "PK": diagnostics['PK'],
         "PF": diagnostics["PF"],
-        "ID": diagnostics["ID"]
+        "ID": diagnostics["ID"],
+        "LOR": diagnostics ["LOR"]
     }
 
     response_b64 = base64.b64encode(str(json.dumps(response)).encode('ascii'))
