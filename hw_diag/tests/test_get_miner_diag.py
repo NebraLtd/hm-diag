@@ -35,14 +35,11 @@ class TestGetMinerDiag(unittest.TestCase):
         mock_client.get_peer_book.return_value = deepcopy(PEER_BOOK)
 
         expected_data = {
-            'AN': 'wild-purple-tuna',
             'MC': True,
             'MD': True,
             'MH': 1045324,
             'MN': 'static',
-            'MR': False,
-            'OK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9',
-            'PK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
+            'MR': False
         }
 
         result = fetch_miner_data({})
@@ -59,14 +56,11 @@ class TestGetMinerDiag(unittest.TestCase):
         mock_client.get_peer_book.return_value[0]['nat'] = 'symmetric'
 
         expected_data = {
-            'AN': 'wild-purple-tuna',
             'MC': True,
             'MD': True,
             'MH': 1045324,
             'MN': 'symmetric',
-            'MR': True,
-            'OK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9',
-            'PK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
+            'MR': True
         }
 
         result = fetch_miner_data({})
@@ -83,14 +77,11 @@ class TestGetMinerDiag(unittest.TestCase):
         mock_client.get_peer_book.return_value[0]['connection_count'] = 0
 
         expected_data = {
-            'AN': 'wild-purple-tuna',
             'MC': False,
             'MD': True,
             'MH': 1045324,
             'MN': 'static',
-            'MR': False,
-            'OK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9',
-            'PK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
+            'MR': False
         }
 
         result = fetch_miner_data({})
@@ -108,14 +99,11 @@ class TestGetMinerDiag(unittest.TestCase):
         mock_client.get_peer_book.return_value[0]['listen_addr_count'] = 0
 
         expected_data = {
-            'AN': 'wild-purple-tuna',
             'MC': False,
             'MD': False,
             'MH': 1045324,
             'MN': 'static',
-            'MR': False,
-            'OK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9',
-            'PK': '11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
+            'MR': False
         }
 
         result = fetch_miner_data({})

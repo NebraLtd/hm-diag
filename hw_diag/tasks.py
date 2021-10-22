@@ -12,6 +12,7 @@ from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
+from hm_pyhelper.miner_param import get_public_keys_rust
 
 
 log = logging.getLogger()
@@ -30,8 +31,12 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     get_environment_var(diagnostics)
     get_rpi_serial(diagnostics)
     detect_ecc(diagnostics)
+    public_keys = get_public_keys_rust()
 
     diagnostics['LOR'] = lora_module_test()
+    diagnostics['OK'] = public_keys['key']
+    diagnostics['PK'] = public_keys['key']
+    diagnostics['AN'] = public_keys['name']
 
     # Fetch data from miner container.
     diagnostics = fetch_miner_data(diagnostics)
