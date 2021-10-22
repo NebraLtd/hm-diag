@@ -1,6 +1,10 @@
 # Docker Container that runs the Nebra Diagnostics Tool
 
-FROM arm32v6/alpine:3.12.4
+ARG SYSTEM_TIMEZONE=Europe/London
+
+FROM balenalib/raspberry-pi-debian-python:buster-run-20210705
+
+ARG SYSTEM_TIMEZONE
 
 WORKDIR /opt/
 
@@ -11,20 +15,26 @@ HEALTHCHECK \
     --retries=10 \
   CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-    python3=3.8.10-r0 \
-    i2c-tools=4.1-r3 \
-    usbutils=012-r1 \
-    build-base \
-    python3-dev \
-    glib-dev \
-    py3-pip=20.1.1-r0
+# hadolint ignore=DL3008
+RUN \
+    apt-get update && \
+    DEBIAN_FRONTEND="noninteractive" \
+    TZ="$SYSTEM_TIMEZONE" \
+    apt-get install -y \
+      i2c-tools \
+      usbutils \
+      --no-install-recommends && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
-RUN pip install --no-cache -r /tmp/build/requirements.txt
-RUN python3 setup.py install
-RUN rm -rf /tmp/build
+
+RUN \
+    pip3 install --no-cache-dir -r /tmp/build/requirements.txt && \
+    python3 setup.py install && \
+    rm -rf /tmp/build
+
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
