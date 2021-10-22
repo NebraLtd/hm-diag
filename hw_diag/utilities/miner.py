@@ -9,7 +9,7 @@ def fetch_miner_data(diagnostics):
         peerbook = client.get_peer_book()[0]
         height = client.get_height()
     except Exception as err:
-        raise Exception("Unable to fetch keys from miner container"
+        raise Exception("Unable to fetch miner peerbook from miner container "
                         "via JSON RPC API. Exception: %s" % str(err))
 
     diagnostics['MC'] = peerbook.get('connection_count') > 1
