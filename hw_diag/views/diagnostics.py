@@ -123,7 +123,7 @@ def get_initialisation_file():
         "PK": diagnostics['PK'],
         "PF": diagnostics["PF"],
         "ID": diagnostics["ID"],
-        "LOR": diagnostics ["LOR"]
+        "LOR": diagnostics["LOR"]
     }
 
     response_b64 = base64.b64encode(str(json.dumps(response)).encode('ascii'))
