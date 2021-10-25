@@ -83,13 +83,7 @@ def get_initialisation_file():
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
     set_diagnostics_bt_lte(diagnostics)
-    ecc_tests = get_gateway_mfr_test_result()
     public_keys = get_public_keys_rust()
-
-    if ecc_tests['result'] == 'pass':
-        diagnostics["ECC"] = True
-    else:
-        return 'ECC tests failed', 503
 
     if lora_module_test():
         diagnostics["LOR"] = True
@@ -97,8 +91,7 @@ def get_initialisation_file():
         return 'LoRa Module is not ready', 503
 
     if (
-            diagnostics["ECC"]
-            and diagnostics["E0"]
+            diagnostics["E0"]
             and diagnostics["W0"]
             and diagnostics["BT"]
             and diagnostics["LOR"]
