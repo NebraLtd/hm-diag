@@ -2,8 +2,6 @@
 
 FROM balenalib/raspberry-pi-debian-python:buster-run-20211014
 
-ARG SYSTEM_TIMEZONE
-
 WORKDIR /opt/
 
 HEALTHCHECK \
