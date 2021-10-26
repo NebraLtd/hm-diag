@@ -2,7 +2,7 @@
 
 ARG SYSTEM_TIMEZONE=Europe/London
 
-FROM balenalib/raspberry-pi-debian-python:buster-run-20210705
+FROM balenalib/raspberry-pi-debian-python:buster-run-20211014
 
 ARG SYSTEM_TIMEZONE
 
