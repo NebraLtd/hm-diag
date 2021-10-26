@@ -12,7 +12,7 @@ HEALTHCHECK \
   CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
 RUN \
-    install_packags
+    install_packages
       i2c-tools \
       usbutils
 
