@@ -5,7 +5,6 @@ import logging
 
 from flask import Blueprint
 from flask import render_template
-from flask import request
 from flask import jsonify
 
 from hw_diag.cache import cache
@@ -52,15 +51,6 @@ def get_diagnostics_json():
 @cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
-
-    # Delete this in favor of /json
-    if request.args.get('json'):
-        response = jsonify(diagnostics)
-        response.headers.set('Content-Disposition',
-                             'attachment;filename=nebra-diag.json'
-                             )
-        return response
-
     display_lte = should_display_lte(diagnostics)
 
     return render_template(

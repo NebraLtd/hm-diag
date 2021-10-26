@@ -1,6 +1,5 @@
 import unittest
 import flask
-from werkzeug.datastructures import ImmutableMultiDict
 from unittest.mock import patch, mock_open
 
 
@@ -30,16 +29,12 @@ class TestGetDiagnostics(unittest.TestCase):
 
     def test_get_json_output(self):
         # Check the diagnostics JSON output.
-        url = '/?json=true'
+        url = '/json'
         # Server perspective
         with self.app.test_request_context(url):
             resp = flask.Response({})
             resp = self.app.process_response(resp)
-            self.assertEqual(flask.request.path, '/')
-            self.assertEqual(
-                flask.request.args,
-                ImmutableMultiDict([('json', 'true')])
-            )
+            self.assertEqual(flask.request.path, '/json')
             self.assertIsInstance(resp, flask.Response)
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.status, '200 OK')
