@@ -1,0 +1,2 @@
+class EccMalfunctionException(Exception):
+    pass
