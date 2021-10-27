@@ -49,40 +49,26 @@ BigQuery for easy consumption with an SQL-like query language.
   + Data Location: The preferred region for the data set.
   + Encryption: Google Managed Key
 
-### Configure DataFlow Streaming Job
-- Use the left-hand drawer to navigate to the DataFlow service.
-- Click "Create Job From Template" and configure the job as follows:
-  + Name: hotspot_diagnostics_ingestion_stream
-  + Region: Should be the same region as your BigQuery data set from the previous step
-  + Template: Text Files on Cloud Storage to BigQuery
-- Configure the job parameters as follows:
-  + JavaScript UDF path in Cloud Storage: gs://helium-miner-data-scratch/bq_funcs.js
-  + JSON Path: gs://helium-miner-data-scratch/bq_schema.json
-  + JavaScript UDF Name: transform
-  + BigQuery Output Table: Your BigQuery table name in the following format;
-    * <your_project_id>:<your_dataset_name>.diagnostics
-  + Cloud Storage Input Path: gs://helium-miner-data/*
-  + Temporary BigQuery Directory: gs://helium-miner-data-scratch/bq_temp
-  + Temporary Location: gs://helium-miner-data-scratch/dataflow_temp
-  + Encryption: Google Managed Key
-- Click "Show Optional Parameters" and update the following:
-  + Max Workers: 1 for dev, for production workloads select suitable number for scale of deployment.
-  + Machine Type: e2-medium
-    * Selected for cost efficiency, although largers nodes may be beneficial for large deployments.
-- Click Run Job to start the DataFlow ingestion stream.
+### Configure Cloud Function for Ingestion
+- Use the left-hand drawer to navigate to the Cloud Functions service.
+- Click Create Function Button
+- Complete the form giving the function suitable parameters:
+  + Name - Ingest Diagnostics GCS to BigQuery
+  + Region - Should be same region as the data set and GCS buckets
+  + Trigger Type - Cloud Storage
+  + Event Type - Finalise / Create
+  + Bucket - helium-miner-data
+- Click Save and Next
+- On the function page select:
+  + Runtime - Python3.9
+  + Entry Point - import_diagnostics_data
+  + Copy the contents of import_script.py to the main.py file in the inline editor.
+    + Update the GCS bucket name, and Big Query dataset as required.
+  + Copy the contents of requirements.txt to the requirements.txt file in the inline editor.
+- Click Deploy
+
 
 ### Check Functionality
-- Switch to the Cloud Storage service and inspect your inbound data bucket, you should see
-  JSON files being written by hotspots with a 64 character hash as the file names.
-- Switch to the DataFlow service and check the streaming job is running and has no errors.
-- Switch to the BigQuery service, select the diagnostics table and switch to the preview tab, you
-  should see data from hotspots displayed in the table.
-
-### Convert to Pipeline
-
-Before you get started, you need to:
-
-* Enable the Pipelines and Cloud Schedule APIs
-* Setup App Engine basics (set region etc)
-
-Once the job has run successfully once, navigate to the job and select 'Import as Pipeline.' The default values should be fine. Just select Hourly and UTC as the time zone.
+- Wait for miners to submit diagnostics data to the bucket.
+- Observe the logs for the cloud function to ensure no tracebacks / exceptions.
+- Check BigQuery to ensure data is inserted as expected.
