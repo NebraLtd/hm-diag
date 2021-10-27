@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 
 from flask import Flask
 from flask_apscheduler import APScheduler
@@ -36,7 +37,11 @@ def get_app(name):
     scheduler.init_app(app)
     scheduler.start()
 
-    @scheduler.task('cron', id='ship_diagnostics', minute='0')
+    @scheduler.task(
+        'cron',
+        id='ship_diagnostics',
+        minute=str(random.randint(0,59))
+    )
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
 
