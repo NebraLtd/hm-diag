@@ -76,6 +76,14 @@ Because the stack is tightly intertwined with Balena, the easiest way to test th
 
 If you are on the same network as the Raspberry Pi, enter `LOCAL IP ADDRESS` from Balena into the browser.
 
+### Testing
+
+```
+pip install -r test-requirements.txt
+pytest
+flake8 hw_diag
+```
+
 ### Deprecated deployment
 This is no longer [the recommended way](https://www.balena.io/docs/learn/deploy/deployment/#overview) of doing Balena deployments.
 

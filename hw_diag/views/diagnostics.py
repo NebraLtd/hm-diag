@@ -8,14 +8,16 @@ from flask import render_template
 from flask import jsonify
 
 from hw_diag.cache import cache
-from hm_pyhelper.miner_param import get_ethernet_addresses
-from hm_pyhelper.miner_param import get_public_keys_rust
-from hm_pyhelper.miner_param import get_gateway_mfr_test_result
+from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
+from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
+from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
+from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
+from hw_diag.diagnostics.rpi_serial_diagnostic import RpiSerialDiagnostic
+from hw_diag.diagnostics.bt_lte_diagnostic import BtLteDiagnostics
+from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
+from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
+from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
 from hw_diag.utilities.hardware import should_display_lte
-from hw_diag.utilities.hardware import get_rpi_serial
-from hw_diag.utilities.hardware import lora_module_test
-from hw_diag.utilities.hardware import set_diagnostics_bt_lte
-from hw_diag.utilities.shell import get_environment_var
 from hw_diag.tasks import perform_hw_diagnostics
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -68,54 +70,21 @@ def get_initialisation_file():
     so we bypass the regular timer.
     """
 
-    diagnostics = {}
-    get_rpi_serial(diagnostics)
-    get_ethernet_addresses(diagnostics)
-    get_environment_var(diagnostics)
-    set_diagnostics_bt_lte(diagnostics)
-    ecc_tests = get_gateway_mfr_test_result()
-    public_keys = get_public_keys_rust()
+    diagnostics = [
+        RpiSerialDiagnostic(),
+        EccDiagnostic(),
+        MacDiagnostics(),
+        EnvVarDiagnostics(),
+        BtLteDiagnostics(),
+        LoraDiagnostic(),
+        KeyDiagnostics(),
+        # Must be last, it depends on previous results
+        PfDiagnostic()
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
 
-    if ecc_tests['result'] == 'pass':
-        diagnostics["ECC"] = True
-    else:
-        return 'ECC tests failed', 503
-
-    if lora_module_test():
-        diagnostics["LOR"] = True
-    else:
-        return 'LoRa Module is not ready', 503
-
-    if (
-            diagnostics["ECC"]
-            and diagnostics["E0"]
-            and diagnostics["W0"]
-            and diagnostics["BT"]
-            and diagnostics["LOR"]
-    ):
-        diagnostics["PF"] = True
-    else:
-        diagnostics["PF"] = False
-
-    try:
-        diagnostics['OK'] = public_keys['key']
-        diagnostics['PK'] = public_keys['key']
-        diagnostics['AN'] = public_keys['name']
-    except KeyError:
-        return 'Internal Server Error', 500
-
-    response = {
-        "VA": diagnostics['VA'],
-        "AN": diagnostics['AN'],
-        "FR": diagnostics['FR'],
-        "E0": diagnostics['E0'],
-        "W0": diagnostics['W0'],
-        "RPI": diagnostics['RPI'],
-        "OK": diagnostics['OK'],
-        "PK": diagnostics['PK'],
-        "PF": diagnostics["PF"],
-        "ID": diagnostics["ID"]
-    }
-
+    keys_to_extract = ["VA", "FR", "E0", "W0", "RPI", "OK", "PK", "PF", "ID"]
+    response = diagnostics_report.get_report_subset(keys_to_extract)
     response_b64 = base64.b64encode(str(json.dumps(response)).encode('ascii'))
     return response_b64
