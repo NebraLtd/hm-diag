@@ -1,13 +1,16 @@
 import json
-import logging
 from google.cloud import storage
 from google.cloud import bigquery
+from hm_pyhelper.logger import get_logger
 
 
-BUCKET_NAME = 'dev-rob-data-ingest'
-PROJECT_ID = 'nebra-hotspot-development'
-DATASET_NAME = 'diagnostics_data'
-TABLE_NAME = 'diagnostics'
+logging = get_logger(__name__)
+
+
+BUCKET_NAME = ''
+PROJECT_ID = ''
+DATASET_NAME = ''
+TABLE_NAME = ''
 TABLE_ID = '%s.%s.%s' % (PROJECT_ID, DATASET_NAME, TABLE_NAME)
 
 
