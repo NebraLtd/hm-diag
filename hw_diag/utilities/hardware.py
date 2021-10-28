@@ -3,6 +3,8 @@ import os
 from time import sleep
 
 from hm_pyhelper.hardware_definitions import variant_definitions
+
+from hw_diag.lock_singleton import ecc_lock
 from hw_diag.utilities.shell import config_search_param
 
 
@@ -37,6 +39,7 @@ def set_diagnostics_bt_lte(diagnostics):
     return diagnostics
 
 
+@ecc_lock
 def detect_ecc(diagnostics):
     # The order of the values in the lists is important!
     # It determines which value will be available for which key

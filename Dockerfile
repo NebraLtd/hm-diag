@@ -14,7 +14,8 @@ HEALTHCHECK \
 RUN \
     install_packages \
       i2c-tools \
-      usbutils
+      usbutils \
+      build-essential
 
 RUN mkdir /tmp/build
 COPY ./ /tmp/build
