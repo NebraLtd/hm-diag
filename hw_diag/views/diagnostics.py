@@ -100,11 +100,13 @@ def get_initialisation_file():
     try:
         diagnostics['OK'] = public_keys['key']
         diagnostics['PK'] = public_keys['key']
+        diagnostics['AN'] = public_keys['name']
     except KeyError:
         return 'Internal Server Error', 500
 
     response = {
         "VA": diagnostics['VA'],
+        "AN": diagnostics['AN'],
         "FR": diagnostics['FR'],
         "E0": diagnostics['E0'],
         "W0": diagnostics['W0'],
