@@ -2,6 +2,7 @@ import logging
 import os
 from time import sleep
 
+from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hw_diag.utilities.shell import config_search_param
 
@@ -94,3 +95,15 @@ def lora_module_test():
             sleep(10)
 
     return result
+
+
+def get_public_keys_and_ignore_errors():
+    public_keys = get_public_keys_rust()
+    if not public_keys:
+        error_msg = "ECC failure"
+        public_keys = {
+            'name': error_msg,
+            'key': error_msg
+        }
+
+    return public_keys
