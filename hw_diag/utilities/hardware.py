@@ -99,7 +99,6 @@ def lora_module_test():
 
 def get_public_keys_and_ignore_errors():
     public_keys = get_public_keys_rust()
-    print("Public keys %s is %s" % (public_keys, not public_keys))
     if not public_keys:
         error_msg = "ECC failure"
         public_keys = {
