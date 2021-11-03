@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from hw_diag.diagnostics.diagnostic import Diagnostic
 from hw_diag.diagnostics.diagnostics_report import \
@@ -28,4 +29,16 @@ class TestDiagnostic(unittest.TestCase):
             DIAGNOSTICS_ERRORS_KEY: ['key'],
             'key': 'foo',
             'friendly_name': 'foo'
+        })
+
+    def test_deserialization(self):
+        report_str = '{"diagnostics_passed": false, "errors": ["ECC"], "ECC": false, "foo": "bar"}'
+        report_dict = json.loads(report_str)
+        diagnostics_report = DiagnosticsReport(**report_dict)
+
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            'ECC': False,
+            'foo': 'bar'
         })
