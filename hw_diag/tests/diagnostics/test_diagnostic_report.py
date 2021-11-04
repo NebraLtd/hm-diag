@@ -1,8 +1,8 @@
 import unittest
 import json
 
-from hw_diag.diagnostics.diagnostic import Diagnostic
-from hw_diag.diagnostics.diagnostics_report import \
+from hm_pyhelper.diagnostics.diagnostics import Diagnostic
+from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
 
 
