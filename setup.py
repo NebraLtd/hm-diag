@@ -6,7 +6,13 @@ import os
 base_name = 'hw_diag'
 
 # allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+here = os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir))
+os.chdir(here)
+
+requires = [
+    line.strip()
+    for line in open(os.path.join(here, "requirements.txt"), "r").readlines()
+]
 
 setup(
     name=base_name,
@@ -19,20 +25,12 @@ setup(
     long_description="",
     zip_safe=False,
 
-    entry_points={'console_scripts': [
-        'hm_diag = hw_diag.app:main', ], },
+    entry_points={
+        'console_scripts': [
+            'hm_diag = hw_diag.app:main',
+        ],
+    },
 
     # Adds dependencies
-    install_requires=['Flask==2.0.1',
-                      'Flask-APScheduler==1.12.2',
-                      'Flask-Caching==1.10.1',
-                      'requests==2.26.0',
-                      'hm-pyhelper==0.4',
-                      'click==7.1.2',
-                      'certifi==2021.5.30',
-                      'gunicorn==20.1.0',
-                      'hm-pyhelper==0.8.13',
-                      'retry==0.9.2',
-                      'sentry-sdk==1.1.0'
-                      ]
+    install_requires=requires
 )
