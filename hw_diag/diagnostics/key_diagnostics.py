@@ -22,10 +22,15 @@ class KeyDiagnostic(Diagnostic):
         self.key_path = key_path
 
     def perform_test(self, diagnostics_report):
-        public_keys = get_public_keys_rust()
+        # Try to get key, but there may be ECC lock or other failure
+        try:
+            public_keys = get_public_keys_rust()
+        except Exception as e:
+            diagnostics_report.record_failure(e, self)
+
+        # Record key value, or report failure if unable to parse
         try:
             diagnostics_report.record_result(public_keys[self.key_path], self)
-
         except KeyError:
             err_msg = "Key %s not found" % self.key_path
             diagnostics_report.record_failure(err_msg, self)
