@@ -19,9 +19,11 @@ from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
 from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.tasks import perform_hw_diagnostics
+from hm_pyhelper.logger import get_logger
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
+LOGGER = get_logger(__name__)
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
@@ -83,8 +85,8 @@ def get_initialisation_file():
     ]
     diagnostics_report = DiagnosticsReport(diagnostics)
     diagnostics_report.perform_diagnostics()
+    LOGGER.debug("Full diagnostics report is: %s" % diagnostics_report)
 
-    keys_to_extract = ["VA", "FR", "E0", "W0", "RPI", "OK", "PK", "PF", "ID"]
-    response = diagnostics_report.get_report_subset(keys_to_extract)
-    response_b64 = base64.b64encode(str(json.dumps(response)).encode('ascii'))
+    diagnostics_str = str(json.dumps(diagnostics_report))
+    response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
