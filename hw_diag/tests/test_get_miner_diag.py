@@ -1,7 +1,4 @@
 import unittest
-import pytest
-
-from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
 
 from unittest.mock import patch
 from unittest.mock import MagicMock
@@ -89,25 +86,3 @@ class TestGetMinerDiag(unittest.TestCase):
 
         result = fetch_miner_data({})
         self.assertEqual(result, expected_data)
-
-    @patch('hw_diag.utilities.miner.client')
-    def test_fetch_miner_data_exception(self, mock_client):
-        with pytest.raises(MinerFailedFetchData):
-            mock_client.get_peer_addr = MagicMock()
-            mock_client.get_peer_addr.return_value = PEER_ADDR
-            mock_client.get_peer_book = MagicMock()
-            mock_client.get_height = MagicMock()
-            mock_client.get_height.return_value = HEIGHT
-            mock_client.get_peer_book.return_value = deepcopy(PEER_BOOK)
-            mock_client.get_peer_book.return_value[0]['connection_count'] = 0
-            mock_client.get_peer_book.return_value[0]['listen_addr_count'] = 0
-
-            expected_data = {
-                'MC': False,
-                'MD': False,
-                'MH': 1045324,
-                'MN': 'static',
-                'MR': False
-            }
-
-            result = fetch_miner_data({'MC': 'testexception'})

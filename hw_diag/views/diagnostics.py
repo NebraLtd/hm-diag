@@ -37,6 +37,10 @@ def read_diagnostics_file():
     except FileNotFoundError:
         msg = 'Diagnostics have not yet run, please try again in a few minutes'
         diagnostics = {'error': msg}
+    except Exception as e:
+        msg = 'Diagnostics has encountered an error: %s'
+        diagnostics = {'error': msg % str(e)}
+
     return diagnostics
 
 

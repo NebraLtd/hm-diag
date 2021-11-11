@@ -11,12 +11,6 @@ HEALTHCHECK \
     --retries=10 \
   CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
-RUN apt-get update && \
-    apt-get -y install gcc mono-mcs && \
-    apt-get -y install python3-dev && \
-    apt-get -y install git && \
-    rm -rf /var/lib/apt/lists/*
-
 RUN \
     install_packages \
       i2c-tools \
@@ -25,10 +19,6 @@ RUN \
 RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
-
-# Github pull pyhelper
-# RUN \
-#     pip3 install --no-cache-dir git+https://github.com/NebraLtd/hm-pyhelper@sebastianmaj/miner-json-rpc-exceptions
 
 RUN \
     pip3 install --no-cache-dir -r /tmp/build/requirements.txt && \
