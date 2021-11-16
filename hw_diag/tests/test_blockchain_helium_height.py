@@ -1,4 +1,3 @@
-import os
 import unittest
 from requests.exceptions import ConnectTimeout, ReadTimeout
 from unittest.mock import patch, Mock
