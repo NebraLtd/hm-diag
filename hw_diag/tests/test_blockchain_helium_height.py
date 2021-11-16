@@ -20,8 +20,6 @@ class TestHelium(unittest.TestCase):
     the_response.json.return_value = get_data
     the_response.status_code = 200
 
-    os.environ['DEFAULT_TIMEOUT'] = '5'
-
     @patch('requests.get', return_value=the_response)
     def test_successful_request(self, _):
         res = get_helium_blockchain_height()
