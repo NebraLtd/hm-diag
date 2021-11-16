@@ -1,5 +1,5 @@
 import unittest
-from requests.exceptions import Timeout
+from requests.exceptions import ConnectTimeout, ReadTimeout
 from unittest.mock import patch, Mock
 from requests.models import Response
 import sys
@@ -47,6 +47,12 @@ class TestHelium(unittest.TestCase):
 
     @patch(
         "requests.get",
-        side_effect=Timeout("Timeout Error"))
-    def test_timeout_exception(self, _):
-        self.assertRaises(Timeout, get_helium_blockchain_height)
+        side_effect=ConnectTimeout("Connect Timeout Error"))
+    def test_connecttimeout_exception(self, _):
+        self.assertRaises(ConnectTimeout, get_helium_blockchain_height)
+
+    @patch(
+        "requests.get",
+        side_effect=ReadTimeout("Connect Timeout Error"))
+    def test_readtimeout_exception(self, _):
+        self.assertRaises(ReadTimeout, get_helium_blockchain_height)
