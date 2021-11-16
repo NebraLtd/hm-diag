@@ -5,11 +5,7 @@ from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
 from hw_diag.diagnostics.rpi_serial_diagnostic import RpiSerialDiagnostic
 
-VALID_CPU_PROC = """Hardware	: BCM2835
-Revision	: a02100
-Serial		: 00000000ddd1a4c2
-Model		: Raspberry Pi Compute Module 3 Plus Rev 1.0
-"""
+VALID_CPU_PROC = """00000000ddd1a4c2"""
 
 
 class TestRpiSerialDiagnostic(unittest.TestCase):

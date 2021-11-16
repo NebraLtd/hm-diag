@@ -60,12 +60,12 @@ def get_rpi_serial(diagnostics):
         diagnostics - dict
     Possible exceptions:
         TypeError - if the path is not str.
-        FileNotFoundError - "/proc/cpuinfo" not found
+        FileNotFoundError - "/proc/device-tree/serial-number" not found
         PermissionError - No file permissions
     Writes the received value to the dictionary
     """
     try:
-        rpi_serial = open("/proc/cpuinfo").readlines()[-2].strip()[10:]
+        rpi_serial = open("/proc/device-tree/serial-number").readline()
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:

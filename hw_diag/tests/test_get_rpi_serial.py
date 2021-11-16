@@ -7,9 +7,7 @@ from hw_diag.utilities.hardware import get_rpi_serial  # noqa
 
 class TestGetPublicKeys(unittest.TestCase):
 
-    TEST_DATA = """Revision        : a020d3
-Serial\t\t: 00000000a3e7kg80
-Model           : Raspberry Pi 3 Model B Plus Rev 1.3 """
+    TEST_DATA = """00000000a3e7kg80"""
 
     right_value = {'RPI': '00000000a3e7kg80'}
     diag = {}

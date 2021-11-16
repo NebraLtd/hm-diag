@@ -3,7 +3,7 @@ from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 
 KEY = 'RPI'
 FRIENDLY_NAME = "raspberry_pi_serial_number"
-SERIAL_FILEPATH = "/proc/cpuinfo"
+SERIAL_FILEPATH = "/proc/device-tree/serial-number"
 
 
 class RpiSerialDiagnostic(Diagnostic):
@@ -13,7 +13,7 @@ class RpiSerialDiagnostic(Diagnostic):
 
     def perform_test(self, diagnostics_report):
         try:
-            rpi_serial = open(SERIAL_FILEPATH).readlines()[-2].strip()[10:]
+            rpi_serial = open(SERIAL_FILEPATH).readline()
             diagnostics_report.record_result(rpi_serial, self)
 
         except FileNotFoundError as e:
