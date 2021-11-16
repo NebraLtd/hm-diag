@@ -1,11 +1,11 @@
 import unittest
+from requests.exceptions import Timeout
 from unittest.mock import patch, Mock
 from requests.models import Response
 import sys
 import json
 sys.path.append("..")
 from hw_diag.utilities.blockchain import get_helium_blockchain_height # noqa
-from requests.exceptions import Timeout
 
 
 class TestHelium(unittest.TestCase):
