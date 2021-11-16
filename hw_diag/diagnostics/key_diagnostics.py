@@ -1,6 +1,7 @@
+from hm_pyhelper.exceptions import ECCMalfunctionException
+from hm_pyhelper.lock_singleton import ResourceBusyError
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
-
 
 KEY_MAPPINGS = [
     {
@@ -25,6 +26,14 @@ class KeyDiagnostic(Diagnostic):
         # Try to get key, but there may be ECC lock or other failure
         try:
             public_keys = get_public_keys_rust()
+        except ECCMalfunctionException as e:
+            diagnostics_report.record_failure(e, self)
+        except UnboundLocalError as e:
+            diagnostics_report.record_failure(e, self)
+        except (FileNotFoundError, NotADirectoryError) as e:
+            diagnostics_report.record_failure(e, self)
+        except ResourceBusyError as e:
+            diagnostics_report.record_failure(e, self)
         except Exception as e:
             diagnostics_report.record_failure(e, self)
 

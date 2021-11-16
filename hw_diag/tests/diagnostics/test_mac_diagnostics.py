@@ -51,3 +51,35 @@ class TestMacDiagnostics(unittest.TestCase):
             'W0': 'foo',
             'wifi_mac_address': 'foo'
         })
+
+    @patch("hw_diag.diagnostics.mac_diagnostics.get_mac_address",
+           side_effect=FileNotFoundError("File Not Found Error"))
+    def test_macs_file_exception(self, mock):
+        diagnostic = MacDiagnostics()
+        diagnostics_report = DiagnosticsReport([diagnostic])
+        diagnostics_report.perform_diagnostics()
+
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            'E0': 'File Not Found Error',
+            'eth_mac_address': 'File Not Found Error',
+            'W0': 'File Not Found Error',
+            'wifi_mac_address': 'File Not Found Error'
+        })
+
+    @patch("hw_diag.diagnostics.mac_diagnostics.get_mac_address",
+           side_effect=PermissionError("Permission Error"))
+    def test_macs_permission_exception(self, mock):
+        diagnostic = MacDiagnostics()
+        diagnostics_report = DiagnosticsReport([diagnostic])
+        diagnostics_report.perform_diagnostics()
+
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            'E0': 'Permission Error',
+            'eth_mac_address': 'Permission Error',
+            'W0': 'Permission Error',
+            'wifi_mac_address': 'Permission Error'
+        })
