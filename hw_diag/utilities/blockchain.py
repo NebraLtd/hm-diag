@@ -1,4 +1,5 @@
 import requests
+import os
 
 
 def get_helium_blockchain_height():
@@ -9,18 +10,14 @@ def get_helium_blockchain_height():
     Possible exceptions:
     TypeError - if the key ['data']['height'] in response is not found.
     """
-    try:
-        result = requests.get('https://api.helium.io/v1/blocks/height',
-                              timeout=5)
-        if result.status_code == 200:
-            result = result.json()
-            try:
-                result = result['data']['height']
-            except KeyError:
-                raise KeyError(
-                    "Not found value from key ['data']['height'] in json"
-                )
-            return result
-    except (requests.exceptions.ConnectTimeout,
-            requests.exceptions.ReadTimeout):
-        raise
+    result = requests.get('https://api.helium.io/v1/blocks/height',
+                            timeout=os.environ['DEFAULT_TIMEOUT'])
+    if result.status_code == 200:
+        result = result.json()
+        try:
+            result = result['data']['height']
+        except KeyError:
+            raise KeyError(
+                "Not found value from key ['data']['height'] in json"
+            )
+        return result

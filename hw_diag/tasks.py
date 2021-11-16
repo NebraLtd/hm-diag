@@ -55,7 +55,9 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     except KeyError as e:
         logging.warning(e)
     except (ConnectTimeout, ReadTimeout) as e:
-        logging.exception(e)
+        err_str = ("Request to Helium API timed out."
+            " Will fallback to block height of 1.")
+        logging.exception(err_str)
     diagnostics['BCH'] = value
 
     # Check if the miner height
@@ -69,7 +71,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diag_mh = int(diagnostics['MH'])
     diag_bch = int(diagnostics['BCH'])
     diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
-    
+
     if value == "Not Available":
         diagnostics['BSP'] = "Not Available"
 
