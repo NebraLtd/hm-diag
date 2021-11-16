@@ -5,6 +5,7 @@ import sys
 import json
 sys.path.append("..")
 from hw_diag.utilities.blockchain import get_helium_blockchain_height # noqa
+from requests.exceptions import Timeout
 
 
 class TestHelium(unittest.TestCase):
@@ -43,3 +44,9 @@ class TestHelium(unittest.TestCase):
     @patch('requests.get', return_value=the_response)
     def test_wrong_data(self, _):
         self.assertRaises(KeyError, get_helium_blockchain_height)
+
+    @patch(
+        "requests.get",
+        side_effect=Timeout("Timeout Error"))
+    def test_timeout_exception(self, _):
+        self.assertRaises(Timeout, get_helium_blockchain_height)
