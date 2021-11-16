@@ -49,7 +49,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         log.exception(e)
 
     # Get the blockchain height from the Helium API
-    value = "1"
+    value = "Not Available"
     try:
         value = get_helium_blockchain_height()
     except KeyError as e:
@@ -69,6 +69,9 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diag_mh = int(diagnostics['MH'])
     diag_bch = int(diagnostics['BCH'])
     diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
+    
+    if value == "Not Available":
+        diagnostics['BSP'] = "Not Available"
 
     set_diagnostics_bt_lte(diagnostics)
 
