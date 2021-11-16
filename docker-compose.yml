@@ -6,7 +6,7 @@ services:
     build: .
     environment:
       - 'FIRMWARE_VERSION=2021.08.02.0'
-      - 'DEFAULT_TIMEOUT=5'
+      - 'HELIUM_API_TIMEOUT_SECONDS=5'
     volumes:
       - 'pktfwdr:/var/pktfwd'
       - 'miner-storage:/var/data'

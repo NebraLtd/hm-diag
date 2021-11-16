@@ -1,3 +1,4 @@
+import os
 import unittest
 from requests.exceptions import ConnectTimeout, ReadTimeout
 from unittest.mock import patch, Mock
@@ -18,6 +19,8 @@ class TestHelium(unittest.TestCase):
     the_response = Mock(spec=Response)
     the_response.json.return_value = get_data
     the_response.status_code = 200
+
+    os.environ['DEFAULT_TIMEOUT'] = '5'
 
     @patch('requests.get', return_value=the_response)
     def test_successful_request(self, _):
