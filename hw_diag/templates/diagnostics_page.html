@@ -48,13 +48,19 @@
                   <td>Sync Percentage</td>
                   {% if diagnostics.BSP > 99.98 %}
                     <td class="text-right">100%</td>
+                  {% elif diagnostics.BSP == -100.00 %}
+                    <td class="text-right">Not Available</td>
                   {% else %}
                     <td class="text-right">{{ '%0.2f' % diagnostics.BSP|float }}%</td>
                   {% endif %}
                 </tr>
                 <tr>
                   <td>Height Status</td>
-                  <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
+                  {% if diagnostics.MH == -1 %}
+                    <td class="text-right">Not Available</td>
+                  {% else %}
+                    <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Firmware Version</td>

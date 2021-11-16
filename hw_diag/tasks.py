@@ -14,6 +14,7 @@ from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
 from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
+from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
 log = logging.getLogger()
@@ -53,6 +54,10 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         value = get_helium_blockchain_height()
     except KeyError as e:
         logging.warning(e)
+    except (ConnectTimeout, ReadTimeout):
+        err_str = ("Request to Helium API timed out."
+                   " Will fallback to block height of 1.")
+        logging.exception(err_str)
     diagnostics['BCH'] = value
 
     # Check if the miner height
