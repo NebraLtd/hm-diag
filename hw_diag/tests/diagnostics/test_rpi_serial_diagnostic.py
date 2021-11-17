@@ -20,7 +20,7 @@ class TestRpiSerialDiagnostic(unittest.TestCase):
             DIAGNOSTICS_PASSED_KEY: True,
             DIAGNOSTICS_ERRORS_KEY: [],
             'RPI': '00000000ddd1a4c2',
-            'raspberry_pi_serial_number': '00000000ddd1a4c2'
+            'serial_number': '00000000ddd1a4c2'
         })
 
     @patch("builtins.open", new_callable=mock_open)
@@ -34,7 +34,7 @@ class TestRpiSerialDiagnostic(unittest.TestCase):
             DIAGNOSTICS_PASSED_KEY: False,
             DIAGNOSTICS_ERRORS_KEY: ['RPI'],
             'RPI': 'File not found',
-            'raspberry_pi_serial_number': 'File not found'
+            'serial_number': 'File not found'
         })
 
     @patch("builtins.open", new_callable=mock_open)
@@ -48,5 +48,5 @@ class TestRpiSerialDiagnostic(unittest.TestCase):
             DIAGNOSTICS_PASSED_KEY: False,
             DIAGNOSTICS_ERRORS_KEY: ['RPI'],
             'RPI': 'Bad permissions',
-            'raspberry_pi_serial_number': 'Bad permissions'
+            'serial_number': 'Bad permissions'
         })

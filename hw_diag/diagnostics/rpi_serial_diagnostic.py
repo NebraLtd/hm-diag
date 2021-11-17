@@ -2,7 +2,7 @@
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 
 KEY = 'RPI'
-FRIENDLY_NAME = "raspberry_pi_serial_number"
+FRIENDLY_NAME = "serial_number"
 SERIAL_FILEPATH = "/proc/device-tree/serial-number"
 
 
