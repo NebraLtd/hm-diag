@@ -21,9 +21,7 @@ class TestPfDiagnostic(unittest.TestCase):
             'BT': True,
             'E0': True,
             'ECC': True,
-            'LOR': True,
             'PF': True,
-            'W0': True,
         })
 
     def test_failure(self):
