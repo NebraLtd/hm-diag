@@ -12,7 +12,7 @@ from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
 from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
-from hw_diag.diagnostics.rpi_serial_diagnostic import RpiSerialDiagnostic
+from hw_diag.diagnostics.serial_number_diagnostic import SerialNumberDiagnostic
 from hw_diag.diagnostics.bt_lte_diagnostic import BtLteDiagnostics
 from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
 from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
@@ -77,7 +77,7 @@ def get_initialisation_file():
     """
 
     diagnostics = [
-        RpiSerialDiagnostic(),
+        SerialNumberDiagnostic(),
         EccDiagnostic(),
         MacDiagnostics(),
         EnvVarDiagnostics(),

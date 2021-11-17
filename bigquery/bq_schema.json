@@ -52,7 +52,7 @@
   },
   {
     "mode": "REQUIRED",
-    "name": "RPI",
+    "name": "serial_number",
     "type": "STRING"
   },
   {

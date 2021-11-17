@@ -28,14 +28,19 @@ class KeyDiagnostic(Diagnostic):
             public_keys = get_public_keys_rust()
         except ECCMalfunctionException as e:
             diagnostics_report.record_failure(e, self)
+            return
         except UnboundLocalError as e:
             diagnostics_report.record_failure(e, self)
+            return
         except (FileNotFoundError, NotADirectoryError) as e:
             diagnostics_report.record_failure(e, self)
+            return
         except ResourceBusyError as e:
             diagnostics_report.record_failure(e, self)
+            return
         except Exception as e:
             diagnostics_report.record_failure(e, self)
+            return
 
         # Record key value, or report failure if unable to parse
         try:

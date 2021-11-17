@@ -46,7 +46,7 @@ As part of the code the system produces a JSON file which then is used to carry 
 | PK | The public key of the miner |
 | RE | The detected region plan from the miner (or override) |
 | RESET | The reset pin to use for the LoRa Module |
-| RPI | The serial number of the onboard Raspberry Pi or other SBC |
+| serial_number | The serial number of the onboard Raspberry Pi or other SBC |
 | SPIBUS | The SPI Bus to use for the LoRa Module |
 | STATUS | The GPIO Pin of the status LED |
 | TYPE | If it is a Full or Light Hotspot |

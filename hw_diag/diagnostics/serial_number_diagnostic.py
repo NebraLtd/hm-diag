@@ -1,20 +1,20 @@
 
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 
-KEY = 'RPI'
+KEY = 'serial_number'
 FRIENDLY_NAME = "serial_number"
 SERIAL_FILEPATH = "/proc/device-tree/serial-number"
 
 
-class RpiSerialDiagnostic(Diagnostic):
+class SerialNumberDiagnostic(Diagnostic):
     def __init__(self):
-        super(RpiSerialDiagnostic, self). \
+        super(SerialNumberDiagnostic, self). \
             __init__(KEY, FRIENDLY_NAME)
 
     def perform_test(self, diagnostics_report):
         try:
-            rpi_serial = open(SERIAL_FILEPATH).readline()
-            diagnostics_report.record_result(rpi_serial, self)
+            serial_number = open(SERIAL_FILEPATH).readline()
+            diagnostics_report.record_result(serial_number, self)
 
         except FileNotFoundError as e:
             diagnostics_report.record_failure(e, self)

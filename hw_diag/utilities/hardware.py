@@ -54,7 +54,7 @@ def detect_ecc(diagnostics):
             logging.error(e)
 
 
-def get_rpi_serial(diagnostics):
+def get_serial_number(diagnostics):
     """
     input:
         diagnostics - dict
@@ -65,13 +65,13 @@ def get_rpi_serial(diagnostics):
     Writes the received value to the dictionary
     """
     try:
-        rpi_serial = open("/proc/device-tree/serial-number").readline()
+        serial_number = open("/proc/device-tree/serial-number").readline()
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:
         raise e
 
-    diagnostics["RPI"] = rpi_serial
+    diagnostics["serial_number"] = serial_number
 
 
 def lora_module_test():

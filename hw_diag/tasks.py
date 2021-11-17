@@ -6,7 +6,7 @@ from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utilities.hardware import get_rpi_serial
+from hw_diag.utilities.hardware import get_serial_number
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
@@ -30,7 +30,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
-    get_rpi_serial(diagnostics)
+    get_serial_number(diagnostics)
     detect_ecc(diagnostics)
     public_keys = get_public_keys_and_ignore_errors()
 
@@ -48,7 +48,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         log.exception(e)
 
     # Get the blockchain height from the Helium API
-    value = "1"
+    value = None
     try:
         value = get_helium_blockchain_height()
     except KeyError as e:
@@ -57,15 +57,19 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     # Check if the miner height
     # is within 500 blocks and if so say it's synced
-    if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
-        diagnostics['MS'] = True
-    else:
-        diagnostics['MS'] = False
+    if diagnostics['MH'] is not None and diagnostics['BCH'] is not None:
+        if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
+            diagnostics['MS'] = True
+        else:
+            diagnostics['MS'] = False
 
-    # Calculate a percentage for block sync
-    diag_mh = int(diagnostics['MH'])
-    diag_bch = int(diagnostics['BCH'])
-    diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
+        # Calculate a percentage for block sync
+        diag_mh = int(diagnostics['MH'])
+        diag_bch = int(diagnostics['BCH'])
+        diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
+    else:
+        diagnostics['BSP'] = None
+        diagnostics['MS'] = None
 
     set_diagnostics_bt_lte(diagnostics)
 

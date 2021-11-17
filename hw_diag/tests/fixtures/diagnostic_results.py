@@ -8,7 +8,7 @@ SAMPLE_DIAGNOSTICS = {
     "FR": "868",
     "FW": "2021.07.13.1",
     "VA": "NEBHNT-IN1",
-    "RPI": "000000009e3cb787",
+    "serial_number": "000000009e3cb787",
     "BT": True,
     "LTE": False,
     "LOR": True,

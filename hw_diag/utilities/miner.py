@@ -14,7 +14,7 @@ def fetch_miner_data(diagnostics):
         LOGGER.exception(err)
         diagnostics['MC'] = "Failed to Fetch"
         diagnostics['MD'] = "Failed to Fetch"
-        diagnostics['MH'] = -1
+        diagnostics['MH'] = None
         diagnostics['MN'] = "Failed to Fetch"
         diagnostics['MR'] = "Failed to Fetch"
         return diagnostics
@@ -22,7 +22,7 @@ def fetch_miner_data(diagnostics):
         LOGGER.exception(err)
         diagnostics['MC'] = "Failed to Fetch"
         diagnostics['MD'] = "Failed to Fetch"
-        diagnostics['MH'] = -1
+        diagnostics['MH'] = None
         diagnostics['MN'] = "Failed to Fetch"
         diagnostics['MR'] = "Failed to Fetch"
         return diagnostics
