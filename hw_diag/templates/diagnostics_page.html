@@ -46,9 +46,9 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  {% if diagnostics.BSP > 99.98 %}
+                  {% if diagnostics.BSP and diagnostics.BSP > 99.98 %}
                     <td class="text-right">100%</td>
-                  {% elif diagnostics.BSP == -100.00 %}
+                  {% elif diagnostics.BSP and diagnostics.BSP == -100.00 %}
                     <td class="text-right">Not Available</td>
                   {% elif not diagnostics.BSP %}
                     <td class="text-right">API Not Available</td>
