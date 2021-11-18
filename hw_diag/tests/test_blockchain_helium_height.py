@@ -31,7 +31,7 @@ class TestHelium(unittest.TestCase):
     @patch('requests.get', return_value=the_response2)
     def test_unsuccessful_request(self, _):
         res = get_helium_blockchain_height()
-        self.assertEqual(res, None)
+        self.assertEqual(res, -1)
 
     data = """{
          }"""
