@@ -1,6 +1,11 @@
 import requests
 import os
 
+HELIUM_MINER_HEIGHT_URL = os.getenv(
+    'HELIUM_MINER_HEIGHT_URL',
+    'https://api.helium.io/v1/blocks/height'
+)
+
 
 def get_helium_blockchain_height():
     """
@@ -10,7 +15,7 @@ def get_helium_blockchain_height():
     Possible exceptions:
     TypeError - if the key ['data']['height'] in response is not found.
     """
-    result = requests.get('https://api.helium.io/v1/blocks/height',
+    result = requests.get(HELIUM_MINER_HEIGHT_URL,
                           timeout=os.getenv('HELIUM_API_TIMEOUT_SECONDS', 5))
     if result.status_code == 200:
         result = result.json()
@@ -23,4 +28,4 @@ def get_helium_blockchain_height():
         return result
     else:
         print("Request failed %s" % result)
-        return -1
+        return None
