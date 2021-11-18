@@ -57,7 +57,10 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     # Check if the miner height
     # is within 500 blocks and if so say it's synced
-    if diagnostics['MH'] is not None and diagnostics['BCH'] is not None:
+    if (
+        diagnostics['MH'] is not None 
+        and diagnostics['BCH'] is not None
+    ):
         if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
             diagnostics['MS'] = True
         else:
