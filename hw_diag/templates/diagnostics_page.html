@@ -46,7 +46,9 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  {% if diagnostics.BSP > 99.98 %}
+                  {% if not diagnostics.BSP %}
+                    <td class="text-right">Helium API Not Available</td>
+                  {% elif diagnostics.BSP > 99.98 %}
                     <td class="text-right">100%</td>
                   {% elif diagnostics.BSP == -100.00 %}
                     <td class="text-right">Not Available</td>
@@ -56,8 +58,10 @@
                 </tr>
                 <tr>
                   <td>Height Status</td>
-                  {% if diagnostics.MH == -1 %}
+                  {% if not diagnostics.MH %}
                     <td class="text-right">Not Available</td>
+                  {% elif not diagnostics.BCH %}
+                    <td class="text-right">Helium API Not Available</td>
                   {% else %}
                     <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
                   {% endif %}
