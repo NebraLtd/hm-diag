@@ -2,7 +2,7 @@ from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 
 KEY = 'PF'
 FRIENDLY_NAME = "legacy_pass_fail"
-CHECK_KEYS = ["ECC", "E0", "BT"]
+CHECK_KEYS = ["ECC", "E0", "BT", "LOR"]
 
 
 class PfDiagnostic(Diagnostic):
