@@ -20,10 +20,9 @@ class TestPfDiagnostic(unittest.TestCase):
             'legacy_pass_fail': True,
             'BT': True,
             'E0': True,
-            'ECC': True,
             'LOR': True,
+            'ECC': True,
             'PF': True,
-            'W0': True,
         })
 
     def test_failure(self):

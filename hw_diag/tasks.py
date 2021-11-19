@@ -14,6 +14,7 @@ from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
 from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
+from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
 log = logging.getLogger()
@@ -53,26 +54,28 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         value = get_helium_blockchain_height()
     except KeyError as e:
         logging.warning(e)
+    except (ConnectTimeout, ReadTimeout):
+        err_str = ("Request to Helium API timed out."
+                   " Will fallback to block height of 1.")
+        logging.exception(err_str)
     diagnostics['BCH'] = value
 
     # Check if the miner height
     # is within 500 blocks and if so say it's synced
-    if (
-        diagnostics['MH'] is not None
-        and diagnostics['BCH'] is not None
-    ):
-        if int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
-            diagnostics['MS'] = True
-        else:
-            diagnostics['MS'] = False
+    if diagnostics['BCH'] is None or diagnostics['MH'] is None:
+        diagnostics['MS'] = False
+    elif int(diagnostics['MH']) > (int(diagnostics['BCH']) - 500):
+        diagnostics['MS'] = True
+    else:
+        diagnostics['MS'] = False
 
-        # Calculate a percentage for block sync
+    # Calculate a percentage for block sync
+    if diagnostics['BCH'] is None or diagnostics['MH'] is None:
+        diagnostics['BSP'] = None
+    else:
         diag_mh = int(diagnostics['MH'])
         diag_bch = int(diagnostics['BCH'])
         diagnostics['BSP'] = round(diag_mh / diag_bch * 100, 3)
-    else:
-        diagnostics['BSP'] = None
-        diagnostics['MS'] = None
 
     set_diagnostics_bt_lte(diagnostics)
 
