@@ -16,9 +16,10 @@ def get_helium_blockchain_height():
     TypeError - if the key ['data']['height'] in response is not found.
     """
     headers = {
-                ("user-agent': 'Mozilla/5.0 (X11; U;"
-                 " Linux i686; it; rv:1.9.0.10)"
-                 " Gecko/2009042513 Ubuntu/8.04 (hardy) Firefox/3.0.10"),
+                "user-agent": ("Mozilla/5.0 (X11; U;"
+                               " Linux i686; it; rv:1.9.0.10)"
+                               " Gecko/2009042513 Ubuntu/8.04"
+                               " (hardy) Firefox/3.0.10"),
               }
     result = requests.get(HELIUM_MINER_HEIGHT_URL,
                           headers=headers,
