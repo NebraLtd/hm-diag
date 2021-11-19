@@ -37,6 +37,8 @@ def upload_diagnostics(diagnostics, ship):
     upload_url = '%s&name=%s' % (URL, file_name)
     headers = {'Content-Type': 'application/json'}
     diagnostics['last_updated_ts'] = datetime.datetime.utcnow().timestamp()
+    if 'serial_number' in diagnostics:
+        diagnostics['raspberry_pi_serial_number'] = diagnostics['serial_number']
     content = json.dumps(diagnostics)
 
     try:
