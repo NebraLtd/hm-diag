@@ -3,7 +3,8 @@ import unittest
 from unittest.mock import patch
 from unittest.mock import MagicMock
 
-from hw_diag.utilities.gcs_shipper import generate_hash
+from hw_diag.utilities.gcs_shipper import convert_diagnostics_to_gcs_payload,\
+                                          generate_hash
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
 
 
@@ -45,3 +46,12 @@ class TestUploadDiagnostics(unittest.TestCase):
         diagnostics = {'PK': 'my_key'}
         retval = upload_diagnostics(diagnostics, False)
         self.assertIsNone(retval)
+
+    def test_diagnostics_to_gcs_payload(self):
+        diagnostics = {
+            "serial_number": "00000000baa3ac7c",
+        }
+        diagnostics = convert_diagnostics_to_gcs_payload(diagnostics)
+        self.assertTrue('RPI' in diagnostics and
+                        'last_updated_ts' in diagnostics and
+                        'serial_number' not in diagnostics)

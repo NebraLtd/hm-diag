@@ -23,6 +23,14 @@ def generate_hash(public_key):
     return sha256(hashable.encode('utf-8')).hexdigest()
 
 
+def convert_diagnostics_to_gcs_payload(diagnostics):
+    if 'serial_number' in diagnostics:
+        diagnostics['RPI'] = diagnostics['serial_number']
+        del diagnostics['serial_number']
+    diagnostics['last_updated_ts'] = datetime.datetime.utcnow().timestamp()
+    return diagnostics
+
+
 def upload_diagnostics(diagnostics, ship):
     if not ship:
         log.info("Diagnostics shipping not requested, skipping.")
@@ -36,9 +44,7 @@ def upload_diagnostics(diagnostics, ship):
 
     upload_url = '%s&name=%s' % (URL, file_name)
     headers = {'Content-Type': 'application/json'}
-    diagnostics['last_updated_ts'] = datetime.datetime.utcnow().timestamp()
-    if 'serial_number' in diagnostics:
-        diagnostics['raspberry_pi_serial_number'] = diagnostics['serial_number']
+    diagnostics = convert_diagnostics_to_gcs_payload(diagnostics)
     content = json.dumps(diagnostics)
 
     try:
