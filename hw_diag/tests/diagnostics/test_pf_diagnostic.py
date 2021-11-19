@@ -20,6 +20,7 @@ class TestPfDiagnostic(unittest.TestCase):
             'legacy_pass_fail': True,
             'BT': True,
             'E0': True,
+            'LOR': True,
             'ECC': True,
             'PF': True,
         })
