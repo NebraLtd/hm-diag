@@ -3,7 +3,7 @@ import os
 from time import sleep
 
 from hm_pyhelper.miner_param import get_public_keys_rust
-from hm_pyhelper.hardware_definitions import variant_definitions
+from hm_pyhelper.hardware_definitions import variant_definitions, is_rockpi
 from hw_diag.utilities.shell import config_search_param
 
 
@@ -41,9 +41,15 @@ def set_diagnostics_bt_lte(diagnostics):
 def detect_ecc(diagnostics):
     # The order of the values in the lists is important!
     # It determines which value will be available for which key
-    commands = [
-        'i2cdetect -y 1'
-    ]
+    if is_rockpi():
+        commands = [
+            'i2cdetect -y 7'
+        ]
+    else:
+        commands = [
+            'i2cdetect -y 1'
+        ]
+
     parameters = ["60 --"]
     keys = ["ECC"]
 
