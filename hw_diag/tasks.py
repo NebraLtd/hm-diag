@@ -6,7 +6,7 @@ from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import detect_ecc
-from hw_diag.utilities.hardware import get_rpi_serial
+from hw_diag.utilities.hardware import get_serial_number
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
@@ -31,7 +31,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     get_ethernet_addresses(diagnostics)
     get_environment_var(diagnostics)
-    get_rpi_serial(diagnostics)
+    get_serial_number(diagnostics)
     detect_ecc(diagnostics)
     public_keys = get_public_keys_and_ignore_errors()
 
@@ -49,7 +49,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         log.exception(e)
 
     # Get the blockchain height from the Helium API
-    value = "1"
+    value = None
     try:
         value = get_helium_blockchain_height()
     except KeyError as e:

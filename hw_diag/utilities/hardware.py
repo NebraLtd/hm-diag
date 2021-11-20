@@ -54,24 +54,24 @@ def detect_ecc(diagnostics):
             logging.error(e)
 
 
-def get_rpi_serial(diagnostics):
+def get_serial_number(diagnostics):
     """
     input:
         diagnostics - dict
     Possible exceptions:
         TypeError - if the path is not str.
-        FileNotFoundError - "/proc/cpuinfo" not found
+        FileNotFoundError - "/proc/device-tree/serial-number" not found
         PermissionError - No file permissions
     Writes the received value to the dictionary
     """
     try:
-        rpi_serial = open("/proc/cpuinfo").readlines()[-2].strip()[10:]
+        serial_number = open("/proc/device-tree/serial-number").readline()
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:
         raise e
 
-    diagnostics["RPI"] = rpi_serial
+    diagnostics["serial_number"] = serial_number
 
 
 def lora_module_test():
