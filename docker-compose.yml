@@ -7,6 +7,7 @@ services:
     environment:
       - 'FIRMWARE_VERSION=2021.08.02.0'
       - 'HELIUM_API_TIMEOUT_SECONDS=5'
+      - 'DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket'
     volumes:
       - 'pktfwdr:/var/pktfwd'
       - 'miner-storage:/var/data'
@@ -17,6 +18,7 @@ services:
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
     labels:
+      io.balena.features.dbus: '1'
       io.balena.features.sysfs: '1'
 
 volumes:
