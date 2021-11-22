@@ -1,10 +1,49 @@
 import logging
-import os
 from time import sleep
-
+import dbus
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hw_diag.utilities.shell import config_search_param
+
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
+
+# BlueZ dbus constants
+BLUEZ_SERVICE_NAME = 'org.bluez'
+DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
+ADAPTER_IFACE = 'org.bluez.Adapter1'
+
+# NetworkManager dbus constants
+NM_SERVICE_NAME = 'org.freedesktop.NetworkManager'
+NM_OBJECT_PATH = '/org/freedesktop/NetworkManager'
+NM_IFACE = 'org.freedesktop.NetworkManager'
+DBUS_PROPERTIES_IFACE = 'org.freedesktop.DBus.Properties'
+NM_DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device'
+
+NM_DEVICE_TYPES = {1: "Ethernet",
+                   2: "Wi-Fi",
+                   5: "Bluetooth",
+                   6: "OLPC",
+                   7: "WiMAX",
+                   8: "Modem",
+                   9: "InfiniBand",
+                   10: "Bond",
+                   11: "VLAN",
+                   12: "ADSL"}
+
+NM_DEVICE_STATES = {0: "Unknown",
+                    10: "Unmanaged",
+                    20: "Unavailable",
+                    30: "Disconnected",
+                    40: "Prepare",
+                    50: "Config",
+                    60: "Need Auth",
+                    70: "IP Config",
+                    80: "IP Check",
+                    90: "Secondaries",
+                    100: "Activated",
+                    110: "Deactivating",
+                    120: "Failed"}
 
 
 def should_display_lte(diagnostics):
@@ -15,25 +54,62 @@ def should_display_lte(diagnostics):
     return variant_data.get('CELLULAR')
 
 
-def set_diagnostics_bt_lte(diagnostics):
-    devices = [
-        ['BT', '0a12'],
-        ['LTE', '2c7c'],  # Quectel
-        ['LTE', '68a2'],  # Sierra Wireless MC7700
-        ['LTE', '1bc7'],  # Telit / Reyax
-        ['LTE', '1e0e'],  # SimCom SIM7100E
-        ['LTE', '12d1'],  # Huawei ME909s-120
-        ['LTE', '2cd2']   # MikroTik R11e-LTE6
-    ]
+def get_ble_devices():
+    bus = dbus.SystemBus()
+    proxy_object = bus.get_object(BLUEZ_SERVICE_NAME, "/")
+    dbus_obj_mgr = dbus.Interface(proxy_object, DBUS_OM_IFACE)
+    dbus_objs = dbus_obj_mgr.GetManagedObjects()
 
-    for dev_type, dev_addr in devices:
-        resp = os.popen(
-            'grep %s /sys/bus/usb/devices/*/idVendor' % dev_addr
-        ).read()
-        if dev_addr in resp:
-            diagnostics[dev_type] = True
-        else:
-            diagnostics[dev_type] = False
+    ble_devices = []
+    for path, interfaces in dbus_objs.items():
+        adapter = interfaces.get(ADAPTER_IFACE)
+        if adapter:
+            ble_devices.append({
+                "Address": str(adapter.get("Address")),
+                "Name": str(adapter.get("Name")),
+                "Powered": str(adapter.get("Powered")),
+                "Discoverable": str(adapter.get("Discoverable")),
+                "Pairable": str(adapter.get("Pairable")),
+                "Discovering": str(adapter.get("Discovering")),
+            })
+
+    log.info('BLE Devices: %s' % ble_devices)
+
+    return ble_devices
+
+
+def get_lte_devices():
+    bus = dbus.SystemBus()
+    proxy = bus.get_object(NM_SERVICE_NAME, NM_OBJECT_PATH)
+    manager = dbus.Interface(proxy, NM_IFACE)
+
+    # Get all devices known to NM
+    devices = manager.GetDevices()
+
+    wifi_devices = []
+    for device in devices:
+        device_proxy = bus.get_object(NM_SERVICE_NAME, device)
+        props_iface = dbus.Interface(device_proxy, DBUS_PROPERTIES_IFACE)
+        props = props_iface.GetAll(NM_DEVICE_IFACE)
+
+        device_type = NM_DEVICE_TYPES.get(props.get("DeviceType"), "Unknown")
+        device_state = NM_DEVICE_STATES.get(props.get("State"), "Unknown")
+        if device_type == "Wi-Fi":
+            wifi_devices.append({
+                "Interface": str(props.get("Interface")),
+                "Type": device_type,
+                "Driver": str(props.get("Driver")),
+                "State": device_state,
+            })
+
+    log.info('WiFi Devices: %s' % wifi_devices)
+
+    return wifi_devices
+
+
+def set_diagnostics_bt_lte(diagnostics):
+    diagnostics['BT'] = any(get_ble_devices())
+    diagnostics['LTE'] = any(get_lte_devices())
 
     return diagnostics
 
@@ -107,3 +183,7 @@ def get_public_keys_and_ignore_errors():
         }
 
     return public_keys
+
+
+if __name__ == '__main__':
+    print('set_diagnostics_bt_lte: %s' % set_diagnostics_bt_lte({}))
