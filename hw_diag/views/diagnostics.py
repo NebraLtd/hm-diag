@@ -97,6 +97,7 @@ def get_initialisation_file():
 
 
 @DIAGNOSTICS.route('/version')
+@cache.cached(timeout=60)
 def version_information():
     response = {
         'firmware_version': os.getenv('FIRMWARE_VERSION', 'unknown'),
