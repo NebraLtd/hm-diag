@@ -6,11 +6,11 @@
 # The balenalib/raspberry-pi-debian-python image was tested but missed many dependencies.
 FROM balenalib/raspberry-pi-debian:buster-build-20211014 as builder
 
+ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
+
 RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
-
-ENV PATH="/root/.local/bin:$PATH"
 
 RUN \
     install_packages \
@@ -22,8 +22,8 @@ RUN \
             gcc \
             pkg-config \
             libdbus-1-dev && \
-    pip3 install --no-cache-dir --user -r requirements.txt && \
-    pip3 install --no-cache-dir --user .
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" -r requirements.txt && \
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # No need to cleanup the builder
 
@@ -31,6 +31,8 @@ RUN \
 ################################### Stage: runner ##################################################
 
 FROM balenalib/raspberry-pi-debian-python:buster-run-20211014 as runner
+
+ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN \
     install_packages \
@@ -44,8 +46,20 @@ HEALTHCHECK \
     --retries=10 \
   CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
-# Copy packages from builder and update PATH to activate it
-COPY --from=builder /root/.local /root/.local
-ENV PATH="/root/.local/bin:$PATH"
+# Copy packages from builder
+COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
+# Add python dependencies to PYTHONPATH
+ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
+ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
+
+# gunicorn depends on "/usr/bin/python3"
+RUN ln -s /usr/local/bin/python3 /usr/bin/python3
+
+# Cleanup
+RUN apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+#ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
