@@ -94,3 +94,9 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route('/version')
+def version_information():
+    response = {'miner_version': 'unknown', 'diagnostics_version': 'unknown'}
+    return response
