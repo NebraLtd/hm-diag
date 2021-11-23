@@ -10,17 +10,20 @@ RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
 
+ENV PATH="/root/.local/bin:$PATH"
+
 RUN \
     install_packages \
             python3-dev \
             python3-minimal \
             python3-pip \
+            python3-setuptools \
             libgirepository1.0-dev \
             gcc \
             pkg-config \
             libdbus-1-dev && \
-    pip install --no-cache-dir --user -r requirements.txt && \
-    pip install --no-cache-dir --user .
+    pip3 install --no-cache-dir --user -r requirements.txt && \
+    pip3 install --no-cache-dir --user .
 
 # No need to cleanup the builder
 
@@ -32,7 +35,7 @@ FROM balenalib/raspberry-pi-debian-python:buster-run-20211014 as runner
 RUN \
     install_packages \
         i2c-tools \
-        libdbus-1-dev \
+        libdbus-1-3
 
 HEALTHCHECK \
     --interval=120s \

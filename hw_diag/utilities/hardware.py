@@ -1,5 +1,4 @@
 import logging
-import os
 from time import sleep
 import dbus
 from hm_pyhelper.miner_param import get_public_keys_rust
@@ -114,7 +113,8 @@ def get_wifi_devices():
             props_iface = dbus.Interface(device_proxy, DBUS_PROPERTIES)
             props = props_iface.GetAll(DBUS_NM_DEVICE_IFACE)
 
-            device_type = NM_DEVICE_TYPES.get(props.get("DeviceType"), "Unknown")
+            device_type = NM_DEVICE_TYPES.get(props.get("DeviceType"),
+                                              "Unknown")
             device_state = NM_DEVICE_STATES.get(props.get("State"), "Unknown")
 
             if device_type == "Wi-Fi":
