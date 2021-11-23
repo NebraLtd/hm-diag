@@ -42,8 +42,6 @@ RUN \
         i2c-tools \
         bluez \
         libdbus-1-dev \
-        network-manager \
-        modemmanager \
         python3-venv
 
 HEALTHCHECK \
