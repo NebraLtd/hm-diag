@@ -13,18 +13,15 @@ WORKDIR /tmp/build
 # This will be the path that venv uses for installation below
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install python3-minimal, pip3, wget, venv.
-# Then set venv environment copied from builder.
-# Finally, use pip to install dependencies.
 RUN \
     install_packages \
-            python3-dev=3.7.3-1 \
-            python3-minimal=3.7.3-1 \
-            python3-pip=18.1-5+rpt1 \
-            python3-venv=3.7.3-1 \
-            libgirepository1.0-dev=1.58.3-2 \
-            gcc=4:8.3.0-1+rpi2 \
-            pkg-config=0.29-6 \
+            python3-dev \
+            python3-minimal \
+            python3-pip \
+            python3-venv \
+            libgirepository1.0-dev \
+            gcc \
+            pkg-config \
             libdbus-1-dev && \
     # Because the PATH is already updated above, this command creates a new venv AND activates it
     python3 -m venv /opt/venv && \
@@ -47,7 +44,7 @@ RUN \
         libdbus-1-dev \
         network-manager \
         modemmanager \
-        python3-venv=3.7.3-1
+        python3-venv
 
 HEALTHCHECK \
     --interval=120s \
