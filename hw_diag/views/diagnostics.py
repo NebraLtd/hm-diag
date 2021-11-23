@@ -98,5 +98,9 @@ def get_initialisation_file():
 
 @DIAGNOSTICS.route('/version')
 def version_information():
-    response = {'miner_version': 'unknown', 'diagnostics_version': 'unknown'}
+    response = {
+        'firmware_version': os.getenv('FIRMWARE_VERSION', 'unknown'),
+        'diagnostics_version': 'unknown'
+    }
+
     return response
