@@ -101,7 +101,7 @@ def get_initialisation_file():
 def version_information():
     response = {
         'firmware_version': os.getenv('FIRMWARE_VERSION', 'unknown'),
-        'diagnostics_version': 'unknown'
+        'diagnostics_version': os.getenv('DIAGNOSTICS_VERSION', 'unknown'),
     }
 
     return response
