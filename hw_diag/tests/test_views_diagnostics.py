@@ -69,7 +69,10 @@ class TestGetDiagnostics(unittest.TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.status, '200 OK')
 
-    @patch.dict(os.environ, {'FIRMWARE_VERSION': '1337.13.37', 'DIAGNOSTICS_VERSION': 'aabbffe'})
+    @patch.dict(
+        os.environ,
+        {'FIRMWARE_VERSION': '1337.13.37', 'DIAGNOSTICS_VERSION': 'aabbffe'}
+    )
     def test_version_endpoint(self):
         # Check the version json output
         resp = self.client.get('/version')
