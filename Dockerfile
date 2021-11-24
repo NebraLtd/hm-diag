@@ -3,8 +3,7 @@
 ####################################################################################################
 ################################## Stage: builder ##################################################
 
-# The balenalib/raspberry-pi-debian-python image was tested but missed many dependencies.
-FROM balenalib/raspberry-pi-debian:buster-build-20211014 as builder
+FROM balenalib/raspberry-pi-debian-python:buster-run-20211014 as builder
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
@@ -14,15 +13,8 @@ WORKDIR /tmp/build
 
 RUN \
     install_packages \
-            python3-dev \
-            python3-minimal \
-            python3-pip \
-            python3-setuptools \
-            libgirepository1.0-dev \
-            gcc \
-            pkg-config \
-            libdbus-1-dev && \
-    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" -r requirements.txt && \
+            build-essential \
+            libdbus-glib-1-dev && \
     pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # No need to cleanup the builder
@@ -53,13 +45,9 @@ COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
-# gunicorn depends on "/usr/bin/python3"
-RUN ln -s /usr/local/bin/python3 /usr/bin/python3
-
 # Cleanup
 RUN apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-#ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]

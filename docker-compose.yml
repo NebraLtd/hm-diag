@@ -15,7 +15,6 @@ services:
       - '80:5000'
     cap_add:
       - SYS_RAWIO
-      - NET_ADMIN
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
     labels:

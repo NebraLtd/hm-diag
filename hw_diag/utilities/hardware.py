@@ -75,6 +75,8 @@ def should_display_lte(diagnostics):
 
 
 def get_ble_devices():
+    log.info("Get BLE devices.")
+
     ble_devices = []
     try:
         bus = dbus.SystemBus()
@@ -96,11 +98,15 @@ def get_ble_devices():
         log.info('BLE Devices: %s' % ble_devices)
     except dbus.exceptions.DBusException as ex:
         log.error(ex.get_dbus_message())
+    except Exception as ex:
+        log.error("Error while getting BLE devices: %s" % str(ex))
 
     return ble_devices
 
 
 def get_wifi_devices():
+    log.info("Get WiFi devices.")
+
     wifi_devices = []
     try:
         bus = dbus.SystemBus()
@@ -128,11 +134,15 @@ def get_wifi_devices():
         log.info('WiFi Devices: %s' % wifi_devices)
     except dbus.exceptions.DBusException as ex:
         log.error(ex.get_dbus_message())
+    except Exception as ex:
+        log.error("Error while getting WiFi devices: %s" % str(ex))
 
     return wifi_devices
 
 
 def get_lte_devices():
+    log.info("Get LTE devices.")
+
     lte_devices = []
     try:
         bus = dbus.SystemBus()
@@ -161,6 +171,8 @@ def get_lte_devices():
         log.info('LTE Devices: %s' % lte_devices)
     except dbus.exceptions.DBusException as ex:
         log.error(ex.get_dbus_message())
+    except Exception as ex:
+        log.error("Error while getting LTE devices: %s" % str(ex))
 
     return lte_devices
 
