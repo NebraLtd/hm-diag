@@ -94,11 +94,11 @@ def get_ble_devices():
                     "Discovering": str(adapter.get("Discovering")),
                 })
 
-        logging.info("Found the following BLE Devices: %s" % ble_devices)
+        logging.info(f"Found the following BLE Devices: {ble_devices}")
     except dbus.exceptions.DBusException as e:
         logging.error(e.get_dbus_message())
     except Exception as e:
-        logging.error("Error while retrieving list of BLE devices: %s" % str(e))
+        logging.error(f"Error while retrieving list of BLE devices: {e}")
 
     return ble_devices
 
@@ -130,11 +130,11 @@ def get_wifi_devices():
                     "State": device_state,
                 })
 
-        logging.info('Found the following WiFi Devices: %s' % wifi_devices)
+        logging.info(f"Found the following WiFi Devices: {wifi_devices}")
     except dbus.exceptions.DBusException as e:
         logging.error(e.get_dbus_message())
     except Exception as e:
-        logging.error("Error while retrieving list of WiFi devices: %s" % str(e))
+        logging.error(f"Error while retrieving list of WiFi devices: {e}")
 
     return wifi_devices
 
@@ -167,11 +167,11 @@ def get_lte_devices():
                     "EquipmentIdentifier": str(equipment_id),
                 })
 
-        logging.info('Found the following LTE Devices: %s' % lte_devices)
+        logging.info(f"Found the following LTE Devices: {lte_devices}")
     except dbus.exceptions.DBusException as e:
         logging.error(e.get_dbus_message())
     except Exception as e:
-        logging.error("Error while retrieving list of LTE devices: %s" % str(e))
+        logging.error(f"Error while retrieving list of LTE devices: {e}")
 
     return lte_devices
 
@@ -261,4 +261,4 @@ def get_public_keys_and_ignore_errors():
 
 
 if __name__ == '__main__':
-    logging.info('set_diagnostics_bt_lte: %s' % set_diagnostics_bt_lte({}))
+    logging.info('set_diagnostics_bt_lte(): %s' % set_diagnostics_bt_lte({}))
