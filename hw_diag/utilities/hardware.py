@@ -261,4 +261,5 @@ def get_public_keys_and_ignore_errors():
 
 
 if __name__ == '__main__':
+    logging.info('get_wifi_devices(): %s' % get_wifi_devices())
     logging.info('set_diagnostics_bt_lte(): %s' % set_diagnostics_bt_lte({}))
