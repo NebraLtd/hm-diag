@@ -1,12 +1,11 @@
-import logging
 from time import sleep
 import dbus
+from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, is_rockpi
 from hw_diag.utilities.shell import config_search_param
 
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+logging = get_logger(__name__)
 
 DBUS_PROPERTIES = 'org.freedesktop.DBus.Properties'
 DBUS_OBJECTMANAGER = 'org.freedesktop.DBus.ObjectManager'
@@ -75,7 +74,7 @@ def should_display_lte(diagnostics):
 
 
 def get_ble_devices():
-    log.info("Get BLE devices.")
+    logging.info("Retrieving list of BLE device(s)")
 
     ble_devices = []
     try:
@@ -95,17 +94,17 @@ def get_ble_devices():
                     "Discovering": str(adapter.get("Discovering")),
                 })
 
-        log.info('BLE Devices: %s' % ble_devices)
-    except dbus.exceptions.DBusException as ex:
-        log.error(ex.get_dbus_message())
-    except Exception as ex:
-        log.error("Error while getting BLE devices: %s" % str(ex))
+        logging.info("Found the following BLE Devices: %s" % ble_devices)
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error("Error while retrieving list of BLE devices: %s" % str(e))
 
     return ble_devices
 
 
 def get_wifi_devices():
-    log.info("Get WiFi devices.")
+    logging.info("Retrieving list of WiFi device(s)")
 
     wifi_devices = []
     try:
@@ -131,17 +130,17 @@ def get_wifi_devices():
                     "State": device_state,
                 })
 
-        log.info('WiFi Devices: %s' % wifi_devices)
-    except dbus.exceptions.DBusException as ex:
-        log.error(ex.get_dbus_message())
-    except Exception as ex:
-        log.error("Error while getting WiFi devices: %s" % str(ex))
+        logging.info('Found the following WiFi Devices: %s' % wifi_devices)
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error("Error while retrieving list of WiFi devices: %s" % str(e))
 
     return wifi_devices
 
 
 def get_lte_devices():
-    log.info("Get LTE devices.")
+    logging.info("Retrieving list of LTE device(s)")
 
     lte_devices = []
     try:
@@ -168,11 +167,11 @@ def get_lte_devices():
                     "EquipmentIdentifier": str(equipment_id),
                 })
 
-        log.info('LTE Devices: %s' % lte_devices)
-    except dbus.exceptions.DBusException as ex:
-        log.error(ex.get_dbus_message())
-    except Exception as ex:
-        log.error("Error while getting LTE devices: %s" % str(ex))
+        logging.info('Found the following LTE Devices: %s' % lte_devices)
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error("Error while retrieving list of LTE devices: %s" % str(e))
 
     return lte_devices
 
@@ -262,4 +261,4 @@ def get_public_keys_and_ignore_errors():
 
 
 if __name__ == '__main__':
-    print('set_diagnostics_bt_lte: %s' % set_diagnostics_bt_lte({}))
+    logging.info('set_diagnostics_bt_lte: %s' % set_diagnostics_bt_lte({}))
