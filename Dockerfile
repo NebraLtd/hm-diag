@@ -25,4 +25,4 @@ RUN \
     python3 setup.py install && \
     rm -rf /tmp/build
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:7000", "hw_diag:wsgi_app"]
