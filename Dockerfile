@@ -14,8 +14,9 @@ WORKDIR /tmp/build
 RUN \
     install_packages \
             build-essential \
-            libdbus-glib-1-dev && \
-    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
+            libdbus-glib-1-dev
+
+RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # No need to cleanup the builder
 
