@@ -71,7 +71,8 @@ def get_serial_number(diagnostics):
     Writes the received value to the dictionary
     """
     try:
-        serial_number = open("/proc/device-tree/serial-number").readline()
+        serial_number = open("/proc/device-tree/serial-number").readline() \
+                            .rstrip('\x00')
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:

@@ -13,7 +13,7 @@ class SerialNumberDiagnostic(Diagnostic):
 
     def perform_test(self, diagnostics_report):
         try:
-            serial_number = open(SERIAL_FILEPATH).readline()
+            serial_number = open(SERIAL_FILEPATH).readline().rstrip('\x00')
             diagnostics_report.record_result(serial_number, self)
 
         except FileNotFoundError as e:
