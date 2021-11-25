@@ -94,3 +94,14 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route('/version')
+@cache.cached(timeout=60)
+def version_information():
+    response = {
+        'firmware_version': os.getenv('FIRMWARE_VERSION', 'unknown'),
+        'diagnostics_version': os.getenv('DIAGNOSTICS_VERSION', 'unknown'),
+    }
+
+    return response
