@@ -1,10 +1,68 @@
-import logging
-import os
 from time import sleep
-
+import dbus
+from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, is_rockpi
 from hw_diag.utilities.shell import config_search_param
+
+logging = get_logger(__name__)
+
+DBUS_PROPERTIES = 'org.freedesktop.DBus.Properties'
+DBUS_OBJECTMANAGER = 'org.freedesktop.DBus.ObjectManager'
+
+# BlueZ
+DBUS_BLUEZ_SERVICE_NAME = 'org.bluez'
+DBUS_ADAPTER_IFACE = 'org.bluez.Adapter1'
+
+# NetworkManager
+DBUS_NM_SERVICE_NAME = 'org.freedesktop.NetworkManager'
+DBUS_NM_OBJECT_PATH = '/org/freedesktop/NetworkManager'
+DBUS_NM_IFACE = 'org.freedesktop.NetworkManager'
+DBUS_NM_DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device'
+
+NM_DEVICE_TYPES = {1: "Ethernet",
+                   2: "Wi-Fi",
+                   5: "Bluetooth",
+                   6: "OLPC",
+                   7: "WiMAX",
+                   8: "Modem",
+                   9: "InfiniBand",
+                   10: "Bond",
+                   11: "VLAN",
+                   12: "ADSL"}
+
+NM_DEVICE_STATES = {0: "Unknown",
+                    10: "Unmanaged",
+                    20: "Unavailable",
+                    30: "Disconnected",
+                    40: "Prepare",
+                    50: "Config",
+                    60: "Need Auth",
+                    70: "IP Config",
+                    80: "IP Check",
+                    90: "Secondaries",
+                    100: "Activated",
+                    110: "Deactivating",
+                    120: "Failed"}
+
+# ModemManager
+DBUS_MM1_SERVICE = 'org.freedesktop.ModemManager1'
+DBUS_MM1_PATH = '/org/freedesktop/ModemManager1'
+DBUS_MM1_IF = 'org.freedesktop.ModemManager1'
+DBUS_MM1_IF_MODEM = 'org.freedesktop.ModemManager1.Modem'
+DBUS_MM1_IF_MODEM_SIMPLE = 'org.freedesktop.ModemManager1.Modem.Simple'
+DBUS_MM1_IF_MODEM_3GPP = 'org.freedesktop.ModemManager1.Modem.Modem3gpp'
+DBUS_MM1_IF_MODEM_CDMA = 'org.freedesktop.ModemManager1.Modem.ModemCdma'
+
+MM_MODEM_CAPABILITY = {
+    'NONE': 0,
+    'POTS': 1 << 0,
+    'CDMA_EVDO': 1 << 1,
+    'GSM_UMTS': 1 << 2,
+    'LTE': 1 << 3,
+    'ADVANCED': 1 << 4,
+    'IRIDIUM': 1 << 5,
+    'ANY': 0xFFFFFFFF}
 
 
 def should_display_lte(diagnostics):
@@ -15,25 +73,112 @@ def should_display_lte(diagnostics):
     return variant_data.get('CELLULAR')
 
 
-def set_diagnostics_bt_lte(diagnostics):
-    devices = [
-        ['BT', '0a12'],
-        ['LTE', '2c7c'],  # Quectel
-        ['LTE', '68a2'],  # Sierra Wireless MC7700
-        ['LTE', '1bc7'],  # Telit / Reyax
-        ['LTE', '1e0e'],  # SimCom SIM7100E
-        ['LTE', '12d1'],  # Huawei ME909s-120
-        ['LTE', '2cd2']   # MikroTik R11e-LTE6
-    ]
+def get_ble_devices():
+    logging.info("Retrieving list of BLE device(s)")
 
-    for dev_type, dev_addr in devices:
-        resp = os.popen(
-            'grep %s /sys/bus/usb/devices/*/idVendor' % dev_addr
-        ).read()
-        if dev_addr in resp:
-            diagnostics[dev_type] = True
-        else:
-            diagnostics[dev_type] = False
+    ble_devices = []
+    try:
+        bus = dbus.SystemBus()
+        proxy_object = bus.get_object(DBUS_BLUEZ_SERVICE_NAME, "/")
+        dbus_obj_mgr = dbus.Interface(proxy_object, DBUS_OBJECTMANAGER)
+        dbus_objs = dbus_obj_mgr.GetManagedObjects()
+        for path, interfaces in dbus_objs.items():
+            adapter = interfaces.get(DBUS_ADAPTER_IFACE)
+            if adapter:
+                ble_devices.append({
+                    "Address": str(adapter.get("Address")),
+                    "Name": str(adapter.get("Name")),
+                    "Powered": str(adapter.get("Powered")),
+                    "Discoverable": str(adapter.get("Discoverable")),
+                    "Pairable": str(adapter.get("Pairable")),
+                    "Discovering": str(adapter.get("Discovering")),
+                })
+
+        logging.info(f"Found the following BLE Devices: {ble_devices}")
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error(f"Error while retrieving list of BLE devices: {e}")
+
+    return ble_devices
+
+
+def get_wifi_devices():
+    logging.info("Retrieving list of WiFi device(s)")
+
+    wifi_devices = []
+    try:
+        bus = dbus.SystemBus()
+        proxy = bus.get_object(DBUS_NM_SERVICE_NAME, DBUS_NM_OBJECT_PATH)
+        manager = dbus.Interface(proxy, DBUS_NM_IFACE)
+        devices = manager.GetDevices()
+
+        for device in devices:
+            device_proxy = bus.get_object(DBUS_NM_SERVICE_NAME, device)
+            props_iface = dbus.Interface(device_proxy, DBUS_PROPERTIES)
+            props = props_iface.GetAll(DBUS_NM_DEVICE_IFACE)
+
+            device_type = NM_DEVICE_TYPES.get(props.get("DeviceType"),
+                                              "Unknown")
+            device_state = NM_DEVICE_STATES.get(props.get("State"), "Unknown")
+
+            if device_type == "Wi-Fi":
+                wifi_devices.append({
+                    "Interface": str(props.get("Interface")),
+                    "Type": device_type,
+                    "Driver": str(props.get("Driver")),
+                    "State": device_state,
+                })
+
+        logging.info(f"Found the following WiFi Devices: {wifi_devices}")
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error(f"Error while retrieving list of WiFi devices: {e}")
+
+    return wifi_devices
+
+
+def get_lte_devices():
+    logging.info("Retrieving list of LTE device(s)")
+
+    lte_devices = []
+    try:
+        bus = dbus.SystemBus()
+        proxy = bus.get_object(DBUS_MM1_SERVICE, DBUS_MM1_PATH)
+        manager = dbus.Interface(proxy, DBUS_OBJECTMANAGER)
+        modems = manager.GetManagedObjects()
+
+        for modem in modems:
+            modem_proxy = bus.get_object(DBUS_MM1_SERVICE, modem)
+            props_iface = dbus.Interface(modem_proxy, DBUS_PROPERTIES)
+            props = props_iface.GetAll(DBUS_MM1_IF_MODEM)
+
+            model = props.get("Model")
+            manufacturer = props.get("Manufacturer")
+            capabilities = props.get("CurrentCapabilities")
+            equipment_id = props.get("EquipmentIdentifier")
+
+            if capabilities & MM_MODEM_CAPABILITY['LTE'] or \
+                    capabilities & MM_MODEM_CAPABILITY['LTE_ADVANCED']:
+                lte_devices.append({
+                    "Model": str(model),
+                    "Manufacturer": str(manufacturer),
+                    "EquipmentIdentifier": str(equipment_id),
+                })
+
+        logging.info(f"Found the following LTE Devices: {lte_devices}")
+    except dbus.exceptions.DBusException as e:
+        logging.error(e.get_dbus_message())
+    except Exception as e:
+        logging.error(f"Error while retrieving list of LTE devices: {e}")
+
+    return lte_devices
+
+
+def set_diagnostics_bt_lte(diagnostics):
+    diagnostics['BT'] = any(get_ble_devices())
+    diagnostics['LTE'] = any(get_lte_devices())
 
     return diagnostics
 
@@ -114,3 +259,8 @@ def get_public_keys_and_ignore_errors():
         }
 
     return public_keys
+
+
+if __name__ == '__main__':
+    logging.info('get_wifi_devices(): %s' % get_wifi_devices())
+    logging.info('set_diagnostics_bt_lte(): %s' % set_diagnostics_bt_lte({}))
