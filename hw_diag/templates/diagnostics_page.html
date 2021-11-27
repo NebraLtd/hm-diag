@@ -46,22 +46,26 @@
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>
-                  {% if not diagnostics.BSP %}
-                    <td class="text-right">Helium API Not Available</td>
+                  {% if not diagnostics.BCH and not diagnostics.MH %}
+                    <td class="text-right">Helium API and Miner RPC Unavailable</td>
+                  {% elif not diagnostics.BCH %}
+                    <td class="text-right">Helium API Unavailable</td>
+                  {% elif not diagnostics.MH %}
+                    <td class="text-right">Miner RPC Unavailable</td>
                   {% elif diagnostics.BSP > 99.98 %}
                     <td class="text-right">100%</td>
-                  {% elif diagnostics.BSP == -100.00 %}
-                    <td class="text-right">Not Available</td>
                   {% else %}
                     <td class="text-right">{{ '%0.2f' % diagnostics.BSP|float }}%</td>
                   {% endif %}
                 </tr>
                 <tr>
                   <td>Height Status</td>
-                  {% if not diagnostics.MH %}
-                    <td class="text-right">Not Available</td>
+                  {% if not diagnostics.BCH and not diagnostics.MH %}
+                    <td class="text-right">Helium API and Miner RPC Unavailable</td>
                   {% elif not diagnostics.BCH %}
-                    <td class="text-right">Helium API Not Available</td>
+                    <td class="text-right">Helium API Unavailable</td>
+                  {% elif not diagnostics.MH %}
+                    <td class="text-right">Miner RPC Unavailable</td>
                   {% else %}
                     <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
                   {% endif %}
