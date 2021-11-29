@@ -5,6 +5,7 @@ import requests
 import logging
 import subprocess
 from hashlib import sha256
+from subprocess import CalledProcessError, TimeoutExpired
 
 
 log = logging.getLogger()
@@ -38,10 +39,21 @@ def convert_diagnostics_to_gcs_payload(diagnostics):
 
     # Run a shell command to fetch uptime from unix system and
     # print out the # of days it's been up
-    diagnostics['uptime_days'] = subprocess.run(
-                                                "uptime | awk '{print $3}'",
-                                                stdout=subprocess.PIPE
-                                               )
+    try:
+        diagnostics['uptime_days'] = subprocess.run(
+                                                    "uptime | awk '{print $3}'",
+                                                    stdout=subprocess.PIPE
+                                                   )
+    
+    except TimeoutExpired as e:
+        diagnostics['uptime_days'] = None
+        log.exception(e)
+    except CalledProcessError as e:
+        diagnostics['uptime_days'] = None
+        log.exception(e)
+    except Exception as e:
+        diagnostics['uptime_days'] = None
+        log.exception(e)
 
     return diagnostics
 
