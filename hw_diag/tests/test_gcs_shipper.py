@@ -54,4 +54,5 @@ class TestUploadDiagnostics(unittest.TestCase):
         diagnostics = convert_diagnostics_to_gcs_payload(diagnostics)
         self.assertTrue('RPI' in diagnostics and
                         'last_updated_ts' in diagnostics and
+                        'uptime_days' in diagnostics and
                         'serial_number' not in diagnostics)
