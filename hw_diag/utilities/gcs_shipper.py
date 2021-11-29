@@ -44,7 +44,6 @@ def convert_diagnostics_to_gcs_payload(diagnostics):
                                                     "uptime | awk '{print $3}'",
                                                     stdout=subprocess.PIPE
                                                    )
-    
     except TimeoutExpired as e:
         diagnostics['uptime_days'] = None
         log.exception(e)
