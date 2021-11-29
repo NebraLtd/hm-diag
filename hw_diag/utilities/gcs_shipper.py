@@ -3,6 +3,7 @@ import os
 import datetime
 import requests
 import logging
+import subprocess
 from hashlib import sha256
 
 
@@ -24,10 +25,22 @@ def generate_hash(public_key):
 
 
 def convert_diagnostics_to_gcs_payload(diagnostics):
+    # We converted RPI to serial_number in the code to support RockPI
+    # but in BigQuery we can't change the field name easily so we convert it back
     if 'serial_number' in diagnostics:
         diagnostics['RPI'] = diagnostics['serial_number']
         del diagnostics['serial_number']
+    
+    # Fetch the current timestamp in UTC to fill in the diagnostics field
     diagnostics['last_updated_ts'] = datetime.datetime.utcnow().timestamp()
+
+    # Run a shell command to fetch uptime from unix system and 
+    # print out the # of days it's been up
+    diagnostics['uptime_days'] = subprocess.run(
+                                                "uptime | awk '{print $3}'",
+                                                stdout=subprocess.PIPE
+                                               )
+
     return diagnostics
 
 
