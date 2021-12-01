@@ -36,7 +36,7 @@ def get_app(name):
     scheduler.init_app(app)
     scheduler.start()
 
-    @scheduler.task('cron', id='ship_diagnostics', minute='0')
+    @scheduler.task('cron', id='ship_diagnostics', minute='5')
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
 
