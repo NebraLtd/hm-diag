@@ -26,7 +26,9 @@ def perform_key_provisioning():
 
 
 def get_app(name):
-    perform_key_provisioning()
+    if os.getenv('BALENA_DEVICE_TYPE', False):
+        perform_key_provisioning()
+
     app = Flask(name)
 
     cache.init_app(app)
