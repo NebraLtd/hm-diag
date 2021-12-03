@@ -26,6 +26,7 @@ def perform_key_provisioning():
 
 
 def get_app(name):
+    perform_key_provisioning()
     app = Flask(name)
 
     cache.init_app(app)
@@ -45,18 +46,3 @@ def get_app(name):
 
     return app
 
-
-def main():
-
-    """
-    Let's make sure we provision the key first.
-    """
-    perform_key_provisioning()
-
-    app = get_app(__name__)
-    debug = bool(DEBUG)
-    app.run('0.0.0.0', threaded=True, debug=debug)
-
-
-if __name__ == '__main__':
-    main()
