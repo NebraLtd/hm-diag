@@ -28,7 +28,13 @@
         <div class="text-center pb-4 mb-4 border-bottom border-light">
             <h1>Diagnostics Information</h1>
             <br />
-            <h3>{{ diagnostics.AN }}</h3>
+            <h3>
+              {% if diagnostics.AN == "ECC failure" %}
+                Animal Name Unavailable
+              {% else %}
+                {{ diagnostics.AN }}
+              {% endif %}
+            </h3>
             {% if diagnostics.PF %}
                     <h3 class="text-success">All Ok</h3>
             {% else %}
@@ -41,8 +47,13 @@
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                  <td class="border-0">Helium Address</td>
-                  <td class="border-0 text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
+                  {% if diagnositcs.PK == "ECC failure" %}
+                    <td class="border-0">Helium Address</td>
+                    <td class="border-0 text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
+                  {% else %}
+                    <td class="border-0">Helium Address</td>
+                    <td class="border-0 text-right">Animal Name Unavailable</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Sync Percentage</td>

@@ -250,9 +250,16 @@ def lora_module_test():
 
 
 def get_public_keys_and_ignore_errors():
-    public_keys = get_public_keys_rust()
-    if not public_keys:
-        error_msg = "ECC failure"
+    error_msg = "ECC failure"
+    try:
+        public_keys = get_public_keys_rust()
+        if not public_keys:
+            public_keys = {
+                'name': error_msg,
+                'key': error_msg
+            }
+    except Exception as e:
+        logging.error(e)
         public_keys = {
             'name': error_msg,
             'key': error_msg
