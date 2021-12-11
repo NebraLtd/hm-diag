@@ -47,7 +47,7 @@
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                  {% if diagnositcs.PK == "ECC failure" %}
+                  {% if diagnositcs.PK != "ECC failure" %}
                     <td class="border-0">Helium Address</td>
                     <td class="border-0 text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
                   {% else %}
