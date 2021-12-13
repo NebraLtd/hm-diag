@@ -29,7 +29,7 @@
             <h1>Diagnostics Information</h1>
             <br />
             <h3>
-              {% if diagnostics.AN == "ECC failure" %}
+              {% if not diagnostics.AN %}
                 Animal Name Unavailable
               {% else %}
                 {{ diagnostics.AN }}
