@@ -1,6 +1,8 @@
 import unittest
+import os
 from flask import Flask
 from unittest.mock import patch
+from hm_pyhelper.exceptions import ECCMalfunctionException
 
 
 # Test cases
@@ -12,6 +14,18 @@ class TestGetApp(unittest.TestCase):
 
     def test_returns_flask_app(self):
         # Check a flask app is returned by get_app.
+        app = get_app(__name__)
+        self.assertIsInstance(app, Flask)
+
+    @patch('hw_diag.app.perform_key_provisioning')
+    @patch.dict(os.environ, {"BALENA_DEVICE_TYPE": "False"})
+    def test_returns_flask_app_with_gateway_exception(
+                                                      self,
+                                                      mock_provision):
+        mock_provision.side_effect = ECCMalfunctionException(
+                                                             "Gateway exited"
+                                                             " with non-zero"
+                                                             " code")
         app = get_app(__name__)
         self.assertIsInstance(app, Flask)
 

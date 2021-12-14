@@ -24,8 +24,8 @@ class TestHardware(unittest.TestCase):
         mocked_get_public_keys_rust.return_value = False
         keys = get_public_keys_and_ignore_errors()
 
-        self.assertEqual(keys['key'], 'ECC failure')
-        self.assertEqual(keys['name'], 'ECC failure')
+        self.assertIsNone(keys['key'])
+        self.assertIsNone(keys['name'])
 
     @patch('dbus.SystemBus')
     @patch('dbus.Interface')

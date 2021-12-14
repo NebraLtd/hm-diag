@@ -26,8 +26,12 @@ def perform_key_provisioning():
 
 
 def get_app(name):
-    if os.getenv('BALENA_DEVICE_TYPE', False):
-        perform_key_provisioning()
+    try:
+        if os.getenv('BALENA_DEVICE_TYPE', False):
+            perform_key_provisioning()
+    except Exception as e:
+        log.error('Failed to provision key: {}'
+                  .format(e))
 
     app = Flask(name)
 
