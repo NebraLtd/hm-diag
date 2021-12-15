@@ -20,6 +20,10 @@ def insert_into_bigquery(data):
     if not data.get('W0'):
         data['W0'] = ''
 
+    if 'RPI' in data:
+        data['serial_number'] = data['RPI']
+        del data['RPI']
+
     client = bigquery.Client()
     errors = client.insert_rows_json(
         TABLE_ID,

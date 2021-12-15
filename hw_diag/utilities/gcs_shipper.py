@@ -23,10 +23,7 @@ def generate_hash(public_key):
     return sha256(hashable.encode('utf-8')).hexdigest()
 
 
-def convert_diagnostics_to_gcs_payload(diagnostics):
-    if 'serial_number' in diagnostics:
-        diagnostics['RPI'] = diagnostics['serial_number']
-        del diagnostics['serial_number']
+def add_timestamp_to_diagnostics(diagnostics):
     diagnostics['last_updated_ts'] = datetime.datetime.utcnow().timestamp()
     return diagnostics
 
@@ -44,7 +41,7 @@ def upload_diagnostics(diagnostics, ship):
 
     upload_url = '%s&name=%s' % (URL, file_name)
     headers = {'Content-Type': 'application/json'}
-    diagnostics = convert_diagnostics_to_gcs_payload(diagnostics)
+    diagnostics = add_timestamp_to_diagnostics(diagnostics)
     content = json.dumps(diagnostics)
 
     try:

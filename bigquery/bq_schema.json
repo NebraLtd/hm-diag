@@ -189,5 +189,10 @@
     "mode": "NULLABLE",
     "name": "CELLULAR",
     "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "uptime_seconds",
+    "type": "INTEGER"
   }
 ]}
