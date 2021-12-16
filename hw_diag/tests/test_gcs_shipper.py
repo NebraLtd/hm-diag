@@ -47,7 +47,7 @@ class TestUploadDiagnostics(unittest.TestCase):
         retval = upload_diagnostics(diagnostics, False)
         self.assertIsNone(retval)
 
-    def test_diagnostics_added_timestamp(self):
+    def test_add_timestamp_to_diagnostics(self):
         diagnostics = {
             "serial_number": "00000000baa3ac7c",
         }
