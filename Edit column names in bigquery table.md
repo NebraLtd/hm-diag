@@ -1,16 +1,21 @@
 # Introduction
 This is a step-by-step guide to help you change the name of a column in bigquery tables.
 
+From official [google docs](https://cloud.google.com/bigquery/docs/manually-changing-schemas) we cannot just rename the column name in the table.  
+Google offers two solutions to this problem.
+The first solution looks imperfect, because after applying this method. All field modifiers become **NULLABLE**.
+The second also looks imperfect. We'll have to export the files to a new bucket. Using files no larger than 1 GB. After that, create a new table with a new schema, and import it back.  
+
 ## Step 1: Creating table with new schema in bigquery
 ---
 In the **explorer** in bigquery in the dataset. Click on the ```⋮```to the right of the dataset name. And select the item **Create table**.  
 ![create table](https://user-images.githubusercontent.com/38936255/146343440-b3db5c50-19b9-4314-9c7e-f82ca012d870.png)  
-And create a new table using the schema with the changed name of the field or fields.  
-At the end of the first step, you should have two tables. One original, the second with a modified scheme.  
+Create a new table using the schema with the changed name of the field or fields.  
+At the end of the first step, you should have two tables. One original, the second with a modified schema.  
 ![img](https://user-images.githubusercontent.com/38936255/146344509-2aecf8bb-119c-455b-ba44-a95924bcc532.png)  
-## Step 2:  Import data from a table using the old schema into a new
+## Step 2: Import data from original table to new table created with the new schema.
 ---
-Importing data into a new table will be done using a query():  
+Importing data into a new table will be done using a query:  
 ```
 SELECT
  * EXCEPT(column_one, column_two),
@@ -22,7 +27,7 @@ After creating query with your initial data. It is necessary to specify in the q
 
 ![img](https://user-images.githubusercontent.com/38936255/146346033-33474622-b910-4315-8eb0-cd7f2e95dd50.png)
 
-In the settings will need in the **Destination** tab:  
+Perform following steps under **Destination** tab:  
 1. Select **Set a destination table for query results**.  
 2. Select **Dataset name**.  
 3. Enter the name of the table to which export the data.  
@@ -35,7 +40,7 @@ After that, run the query and wait for it to complete successfully.
 
 ## Step 3: Replacing an old table with a new
 ---
-*Recommend: Before proceeding, make a backup copy of the current table to protect yourself.*
+*Recommended: Before proceeding, make a backup copy of the current table to protect yourself.*
 
 In this step, we are deleting the old table. And replacing it with a new one with a new field or fields name.
 
