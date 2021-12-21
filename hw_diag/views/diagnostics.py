@@ -13,7 +13,8 @@ from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
 from hw_diag.diagnostics.serial_number_diagnostic import SerialNumberDiagnostic
-from hw_diag.diagnostics.bt_lte_diagnostic import BtLteDiagnostics
+from hw_diag.diagnostics.bt_diagnostic import BtDiagnostic
+from hw_diag.diagnostics.lte_diagnostic import LteDiagnostic
 from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
 from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
 from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
@@ -81,7 +82,8 @@ def get_initialisation_file():
         EccDiagnostic(),
         MacDiagnostics(),
         EnvVarDiagnostics(),
-        BtLteDiagnostics(),
+        BtDiagnostic(),
+        LteDiagnostic(),
         LoraDiagnostic(),
         KeyDiagnostics(),
         # Must be last, it depends on previous results
