@@ -29,6 +29,7 @@ ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN \
     install_packages \
+        wget \
         i2c-tools \
         libdbus-1-3
 
