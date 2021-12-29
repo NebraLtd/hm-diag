@@ -24,7 +24,19 @@ log.setLevel(logging.DEBUG)
 def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
-    diagnostics = {}
+    diagnostics = [
+        SerialNumberDiagnostic(),
+        EccDiagnostic(),
+        MacDiagnostics(),
+        EnvVarDiagnostics(),
+        BtDiagnostic(),
+        LteDiagnostic(),
+        LoraDiagnostic(),
+        KeyDiagnostics(),
+        # Must be last, it depends on previous results
+        PfDiagnostic()
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
 
     now = datetime.datetime.utcnow()
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
