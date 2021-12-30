@@ -1,5 +1,6 @@
 import logging
 import os
+import sentry_sdk
 
 from flask import Flask
 from flask_apscheduler import APScheduler
@@ -9,7 +10,16 @@ from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hm_pyhelper.miner_param import provision_key
+from sentry_sdk.integrations.flask import FlaskIntegration
 
+
+DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
+DSN_SENTRY = os.getenv('SENTRY_DIAG')
+sentry_sdk.init(
+    dsn=DSN_SENTRY,
+    integrations=[FlaskIntegration()],
+    release=f"diagnostics@{DIAGNOSTICS_VERSION}",
+)
 
 DEBUG = bool(os.getenv('DEBUG', '0'))
 
