@@ -33,12 +33,13 @@ RUN \
         i2c-tools \
         libdbus-1-3
 
-HEALTHCHECK \
-    --interval=120s \
-    --timeout=5s \
-    --start-period=15s \
-    --retries=10 \
-  CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
+# @TODO: Re-enable health-check once Balena supports it fully.
+# HEALTHCHECK \
+#    --interval=120s \
+#    --timeout=5s \
+#    --start-period=15s \
+#    --retries=10 \
+#  CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
 # Copy packages from builder
 COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
