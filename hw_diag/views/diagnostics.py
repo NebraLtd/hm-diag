@@ -6,6 +6,7 @@ import logging
 from flask import Blueprint
 from flask import render_template
 from flask import jsonify
+from datetime import datetime
 
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
@@ -61,11 +62,13 @@ def get_diagnostics_json():
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
+    now = datetime.utcnow()
 
     return render_template(
         'diagnostics_page.html',
         diagnostics=diagnostics,
-        display_lte=display_lte
+        display_lte=display_lte,
+        now=now
     )
 
 
