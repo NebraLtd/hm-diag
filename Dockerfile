@@ -29,11 +29,10 @@ ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN \
     install_packages \
-        wget \
         i2c-tools \
         libdbus-1-3
 
-# @TODO: Re-enable health-check once Balena supports it fully.
+# @TODO: Re-enable health-check (and add wget install) once Balena supports it fully.
 # HEALTHCHECK \
 #    --interval=120s \
 #    --timeout=5s \
