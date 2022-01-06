@@ -188,9 +188,10 @@
       {% else %}
         <p>Last Updated: Never</p>
       {% endif %}
+      {% now "Y" as current_year %}
       <p>To get support please visit <a href="https://nebra.io/helium-support">https://nebra.io/helium-support</a></p>
       <p><a href="/json">Download Diagnostics Info for Support</a></p>
-      <p>&copy; Nebra LTD. 2020-{% now "Y" %}<p>
+      <p>&copy; Nebra LTD. 2020-{{ current_year }}<p>
     </div>
   </section>
 </body>
