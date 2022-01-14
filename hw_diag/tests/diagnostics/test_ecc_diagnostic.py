@@ -34,7 +34,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
             'ECC': 'gateway_mfr test finished with error, {"result": "fail"}'
         })
 
@@ -48,7 +48,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
             'ECC': 'ECC Malfunctioned'
         })
 
@@ -63,7 +63,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
             'ECC': 'Gateway MFR File Not Found'
         })
 
@@ -77,6 +77,6 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
             'ECC': 'Resource Busy Error'
         })

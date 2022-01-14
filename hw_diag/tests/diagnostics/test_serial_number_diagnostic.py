@@ -46,7 +46,7 @@ class TestSerialNumberDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['serial_number'],
+            DIAGNOSTICS_ERRORS_KEY: ['serial_number', 'serial_number'],
             'serial_number': 'File not found',
             'serial_number': 'File not found'
         })
@@ -60,7 +60,7 @@ class TestSerialNumberDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['serial_number'],
+            DIAGNOSTICS_ERRORS_KEY: ['serial_number', 'serial_number'],
             'serial_number': 'Bad permissions',
             'serial_number': 'Bad permissions'
         })

@@ -29,7 +29,7 @@ class TestEnvVarDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['DIAGNOSTIC_KEY'],
+            DIAGNOSTICS_ERRORS_KEY: ['DIAGNOSTIC_KEY', 'ENV_VAR'],
             'DIAGNOSTIC_KEY': 'Env var ENV_VAR not set',
             'ENV_VAR': 'Env var ENV_VAR not set'
         })

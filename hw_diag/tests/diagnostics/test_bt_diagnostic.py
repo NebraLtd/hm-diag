@@ -78,7 +78,7 @@ class TestBtDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['BT'],
+            DIAGNOSTICS_ERRORS_KEY: ['BT', 'bluetooth'],
             'BT': 'Bluez is working but, no Bluetooth devices detected.',
             'bluetooth': 'Bluez is working but, no Bluetooth devices detected.'
         })
@@ -99,7 +99,7 @@ class TestBtDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['BT'],
+            DIAGNOSTICS_ERRORS_KEY: ['BT', 'bluetooth'],
             'BT': 'Not authorized',
             'bluetooth': 'Not authorized'
         })
