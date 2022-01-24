@@ -13,9 +13,10 @@ def get_environment_var(diagnostics):
         'BALENA_APP_NAME',
         'FREQ',
         'FIRMWARE_VERSION',
-        'VARIANT'
+        'VARIANT',
+        'FIRMWARE_SHORT_HASH'
     ]
-    keys = ["BN", "ID", "BA", "FR", "FW", "VA"]
+    keys = ["BN", "ID", "BA", "FR", "FW", "VA", "firmware_short_hash"]
 
     for (var, key) in zip(env_var, keys):
         diagnostics[key] = os.getenv(var)

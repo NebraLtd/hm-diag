@@ -56,5 +56,10 @@ class TestEnvVarDiagnostics(unittest.TestCase):
             'FIRMWARE_VERSION': 'foo',
             'FW': 'foo',
             'VARIANT': 'foo',
-            'VA': 'foo'
+            'VA': 'foo',
+            # We're moving towards longer lowercase key naming and will
+            # deprecate old ones in near future. Just keeping this entry in the
+            # list for the sake of style compatibility.
+            'FIRMWARE_SHORT_HASH': 'foo',
+            'firmware_short_hash': 'foo'
         })

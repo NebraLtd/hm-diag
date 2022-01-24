@@ -19,6 +19,9 @@ ENV_VARS_MAPPING = [{
 }, {
     'ENV_VAR': 'VARIANT',
     'DIAGNOSTIC_KEY': 'VA'
+}, {
+    'ENV_VAR': 'FIRMWARE_SHORT_HASH',
+    'DIAGNOSTIC_KEY': 'firmware_short_hash'
 }]
 
 
