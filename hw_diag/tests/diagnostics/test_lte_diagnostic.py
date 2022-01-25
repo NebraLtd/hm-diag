@@ -4,7 +4,7 @@ from dbus import DBusException
 
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-
+from hm_pyhelper.constants.diagnostics import LTE_KEY
 from hw_diag.diagnostics.lte_diagnostic import LteDiagnostic
 
 
@@ -63,7 +63,7 @@ class TestLteDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LTE'],
+            DIAGNOSTICS_ERRORS_KEY: ['LTE', LTE_KEY],
             'LTE': 'ModemManager is working but, no LTE devices detected.',
             'lte': 'ModemManager is working but, no LTE devices detected.'
         })
@@ -84,7 +84,7 @@ class TestLteDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LTE'],
+            DIAGNOSTICS_ERRORS_KEY: ['LTE', LTE_KEY],
             'LTE': 'Not authorized',
             'lte': 'Not authorized'
         })

@@ -1,9 +1,14 @@
-from time import sleep
 import dbus
+import json
+from time import sleep
+
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, is_rockpi
+
 from hw_diag.utilities.shell import config_search_param
+from hm_pyhelper.constants.nebra import NEBRA_JSON_FILEPATH
+from hm_pyhelper.constants.shipping import DESTINATION_WALLETS_KEY
 
 logging = get_logger(__name__)
 
@@ -266,6 +271,32 @@ def get_public_keys_and_ignore_errors():
         }
 
     return public_keys
+
+
+def get_nebra_json() -> dict:
+    """
+    Loads nebra.json file and deserialized into JSON.
+    Returns None if file cannot be openend.
+    """
+    # Load Nebra JSON file contents
+    try:
+        with open(NEBRA_JSON_FILEPATH) as json_file:
+            return json.load(json_file)
+    except Exception as e:
+        logging.error(e)
+        return None
+
+
+def remove_destination_wallets_from_nebra_json() -> dict:
+    """
+    Removes DESTINATION_WALLETS_KEY from NEBRA_JSON_FILEPATH.
+    """
+    # Load Nebra JSON file contents
+    with open(NEBRA_JSON_FILEPATH, 'w') as json_file:
+        nebra_json = json.load(json_file)
+        del nebra_json[DESTINATION_WALLETS_KEY]
+        json.dump(nebra_json, json_file)
+        return nebra_json
 
 
 if __name__ == '__main__':

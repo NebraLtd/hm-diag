@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, mock_open
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-
+from hm_pyhelper.constants.diagnostics import ETH_MAC_ADDRESS_KEY, WIFI_MAC_ADDRESS_KEY
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostic, MacDiagnostics
 
 
@@ -31,7 +31,7 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['I0'],
+            DIAGNOSTICS_ERRORS_KEY: ['I0', 'friendly'],
             'I0': 'No file',
             'friendly': 'No file'
         })
@@ -61,7 +61,7 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            DIAGNOSTICS_ERRORS_KEY: ['E0', ETH_MAC_ADDRESS_KEY, 'W0', WIFI_MAC_ADDRESS_KEY],
             'E0': 'File Not Found Error',
             'eth_mac_address': 'File Not Found Error',
             'W0': 'File Not Found Error',
@@ -77,7 +77,7 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            DIAGNOSTICS_ERRORS_KEY: ['E0', ETH_MAC_ADDRESS_KEY, 'W0', WIFI_MAC_ADDRESS_KEY],
             'E0': 'Permission Error',
             'eth_mac_address': 'Permission Error',
             'W0': 'Permission Error',
