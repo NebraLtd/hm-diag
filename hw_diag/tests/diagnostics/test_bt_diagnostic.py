@@ -4,7 +4,7 @@ from dbus import DBusException
 
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-
+from hm_pyhelper.constants.diagnostics import BLUETOOTH_KEY
 from hw_diag.diagnostics.bt_diagnostic import BtDiagnostic
 
 
@@ -78,7 +78,7 @@ class TestBtDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['BT'],
+            DIAGNOSTICS_ERRORS_KEY: ['BT', BLUETOOTH_KEY],
             'BT': 'Bluez is working but, no Bluetooth devices detected.',
             'bluetooth': 'Bluez is working but, no Bluetooth devices detected.'
         })
@@ -99,7 +99,7 @@ class TestBtDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['BT'],
+            DIAGNOSTICS_ERRORS_KEY: ['BT', BLUETOOTH_KEY],
             'BT': 'Not authorized',
             'bluetooth': 'Not authorized'
         })

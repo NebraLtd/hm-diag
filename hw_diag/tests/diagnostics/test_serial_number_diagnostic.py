@@ -3,6 +3,7 @@ from unittest.mock import patch, mock_open
 
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
+from hm_pyhelper.constants.diagnostics import SERIAL_NUMBER_KEY
 from hw_diag.diagnostics.serial_number_diagnostic import SerialNumberDiagnostic
 
 VALID_CPU_PROC = """00000000ddd1a4c2"""
@@ -46,7 +47,7 @@ class TestSerialNumberDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['serial_number'],
+            DIAGNOSTICS_ERRORS_KEY: ['serial_number', SERIAL_NUMBER_KEY],
             'serial_number': 'File not found',
             'serial_number': 'File not found'
         })
@@ -60,7 +61,7 @@ class TestSerialNumberDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['serial_number'],
+            DIAGNOSTICS_ERRORS_KEY: ['serial_number', SERIAL_NUMBER_KEY],
             'serial_number': 'Bad permissions',
             'serial_number': 'Bad permissions'
         })

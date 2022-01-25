@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
+from hm_pyhelper.constants.diagnostics import LORA_KEY
 from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
 
 
@@ -32,7 +33,7 @@ class TestLoraDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LOR'],
+            DIAGNOSTICS_ERRORS_KEY: ['LOR', LORA_KEY],
             'LOR': False,
             'lora': False
         })

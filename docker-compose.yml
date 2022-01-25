@@ -11,6 +11,7 @@ services:
     volumes:
       - 'pktfwdr:/var/pktfwd'
       - 'miner-storage:/var/data'
+      - 'nebra.json:/mnt/boot/nebra.json'
     ports:
       - '80:5000'
     cap_add:

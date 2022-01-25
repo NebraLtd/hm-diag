@@ -19,14 +19,21 @@ from hw_diag.diagnostics.lte_diagnostic import LteDiagnostic
 from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
 from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
 from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
+from hw_diag.diagnostics.nebra_json_diagnostics import NebraJsonDiagnostics
+from hw_diag.diagnostics.add_gateway_txn.gen_add_gateway_txn_diagnostic \
+    import GenAddGatewayTxnDiagnostic
+from hw_diag.diagnostics.add_gateway_txn.ack_add_gateway_txn_diagnostic \
+    import AckAddGatewayTxnDiagnostic
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
+from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY, DESTINATION_WALLETS_KEY
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
+API_VERSION = 'v1'
 
 
 def read_diagnostics_file():
@@ -89,6 +96,8 @@ def get_initialisation_file():
         LteDiagnostic(),
         LoraDiagnostic(),
         KeyDiagnostics(),
+        # This will overwrite any environment variables that are also defined in nebra.json
+        NebraJsonDiagnostics(),
         # Must be last, it depends on previous results
         PfDiagnostic()
     ]
@@ -99,6 +108,50 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route(f'/{API_VERSION}/gen_add_gateway_txn', methods=['POST'])
+def gen_add_gateway_txn():
+    """
+    This needs to be generated as quickly as possible,
+    so we bypass the regular timer.
+    """
+
+    diagnostics = [
+        GenAddGatewayTxnDiagnostic(),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({DESTINATION_ADD_GATEWAY_TXN_KEY}):
+        http_code = 406
+    else:
+        http_code = 200
+
+    LOGGER.debug("gen_add_gateway_txn result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.route(f'/{API_VERSION}/ack_add_gateway_txn', methods=['POST'])
+def ack_add_gateway_txn():
+    """
+    This needs to be generated as quickly as possible,
+    so we bypass the regular timer.
+    """
+
+    diagnostics = [
+        AckAddGatewayTxnDiagnostic(),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({DESTINATION_WALLETS_KEY}):
+        http_code = 406
+    else:
+        http_code = 200
+
+    LOGGER.debug("gen_add_gateway_txn result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code
 
 
 @DIAGNOSTICS.route('/version')

@@ -32,7 +32,7 @@ class TestPfDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['PF'],
+            DIAGNOSTICS_ERRORS_KEY: ['PF', 'legacy_pass_fail'],
             'PF': False,
             'legacy_pass_fail': False,
         })

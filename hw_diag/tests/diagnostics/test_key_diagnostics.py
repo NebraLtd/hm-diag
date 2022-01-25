@@ -35,7 +35,7 @@ class TestKeyDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['KK'],
+            DIAGNOSTICS_ERRORS_KEY: ['KK', 'test_key'],
             'KK': 'Key key_location not found',
             'test_key': 'Key key_location not found'
         })

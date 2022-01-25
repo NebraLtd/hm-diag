@@ -10,7 +10,68 @@ Find the IP address of the hotspot using Balena's dashboard or network scanner.
 The website is available on port `80` so you can simply input the hotspot's
 IP address in the browser.
 
-## Diagnostics JSON Layout
+## Diagnostics API
+
+This service exposes HTTP endpoints that provide diagnostics information about the miner.
+In the future, the pay load of all responses will be a [DiagnosticsReport](https://github.com/NebraLtd/hm-pyhelper/blob/ffeeb3b4e200e28f0887618b489411aea184072f/hm_pyhelper/diagnostics/diagnostics_report.py),
+but currently some endpoints still return regular JSON. The general format is:
+
+```
+{
+    'errors': ['key1', 'friendly_key1'],
+    'key1': 'Something went wrong',
+    'friendly_key1': 'Something went wrong',
+    'key2': True,
+    'friendly_key2': True
+}
+```
+
+Note that we are currently duplicating all values under both a 'key' and a 'friendly_key'. This is being
+done to enable us to slowly rename keys for human readability without risking breaking changes.
+
+HTTP error codes are used to communicate issues, when possible. However some endpoints (eg /json) return
+information about various parts of a miner. It is not obvious what subset of keys should be used for
+determining if the response is an error. In those cases, an HTTP code of 200 will be returned even though
+some errors may be present in the error array.
+
+### POST /v1/gen_add_gateway_txn
+
+#### Parameters
+None
+
+#### Response
+
+DiagnosticsReport containing key `destination_add_gateway_txn`. If valid, will be in the following format:
+
+
+
+### POST /v1/ack_add_gateway_txn
+
+### GET /initFile.txt
+
+#### Parameters
+None
+
+#### Response
+base64 encoded DiagnosticsReport.
+HTTP code always 200.
+
+### GET /version
+
+#### Parameters
+None
+
+#### Response
+Regular JSON, not a DiagnosticsReport.
+
+
+### GET /json
+
+#### Parameters
+None
+
+#### Response
+Currently returns regular JSON, not a DiagnosticsReport.
 
 As part of the code the system produces a JSON file which then is used to carry the data over easily to other parts of the system.
 

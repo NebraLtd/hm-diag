@@ -7,6 +7,7 @@ from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hm_pyhelper.exceptions import ECCMalfunctionException,\
     GatewayMFRFileNotFoundException
 from hm_pyhelper.lock_singleton import ResourceBusyError
+from hm_pyhelper.constants.diagnostics import ECC_KEY
 
 
 class TestECCDiagnostic(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: [ECC_KEY, ECC_KEY],
             'ECC': 'gateway_mfr test finished with error, {"result": "fail"}'
         })
 
@@ -48,7 +49,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: [ECC_KEY, ECC_KEY],
             'ECC': 'ECC Malfunctioned'
         })
 
@@ -63,7 +64,7 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: [ECC_KEY, ECC_KEY],
             'ECC': 'Gateway MFR File Not Found'
         })
 
@@ -77,6 +78,6 @@ class TestECCDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['ECC'],
+            DIAGNOSTICS_ERRORS_KEY: [ECC_KEY, ECC_KEY],
             'ECC': 'Resource Busy Error'
         })
