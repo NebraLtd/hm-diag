@@ -71,7 +71,11 @@ class TestGetDiagnostics(unittest.TestCase):
 
     @patch.dict(
         os.environ,
-        {'FIRMWARE_VERSION': '1337.13.37', 'DIAGNOSTICS_VERSION': 'aabbffe'}
+        {
+            'FIRMWARE_VERSION': '1337.13.37',
+            'DIAGNOSTICS_VERSION': 'aabbffe',
+            'FIRMWARE_SHORT_HASH': '0011223'
+        }
     )
     def test_version_endpoint(self):
         # Check the version json output
@@ -81,3 +85,4 @@ class TestGetDiagnostics(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(reply['firmware_version'], '1337.13.37')
         self.assertEqual(reply['diagnostics_version'], 'aabbffe')
+        self.assertEqual(reply['firmware_short_hash'], '0011223')

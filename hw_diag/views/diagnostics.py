@@ -107,6 +107,7 @@ def version_information():
     response = {
         'firmware_version': os.getenv('FIRMWARE_VERSION', 'unknown'),
         'diagnostics_version': os.getenv('DIAGNOSTICS_VERSION', 'unknown'),
+        'firmware_short_hash': os.getenv('FIRMWARE_SHORT_HASH', 'unknown'),
     }
 
     return response
