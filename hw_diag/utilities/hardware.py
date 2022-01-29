@@ -1,4 +1,3 @@
-from time import sleep
 import dbus
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
@@ -231,20 +230,26 @@ def lora_module_test():
     Checks the status of the lore module.
     Returns true or false.
     """
+    # TODO test start #############################
+    print("KMT: lora_module_test() started.")
+    # TODO test end ###############################
     result = None
-    while result is None:
-        try:
-            # The Pktfwder container creates this file
-            # to pass over the status.
-            with open("/var/pktfwd/diagnostics") as data:
-                lora_status = data.read()
-                if lora_status == "true":
-                    result = True
-                else:
-                    result = False
-        except FileNotFoundError:
-            # Packet forwarder container hasn't started
-            sleep(10)
+    try:
+        # The Pktfwder container creates this file
+        # to pass over the status.
+        with open("/var/pktfwd/diagnostics") as data:
+            lora_status = data.read()
+            if lora_status == "true":
+                result = True
+            else:
+                result = False
+    except FileNotFoundError:
+        # Packet forwarder container hasn't started
+        result = False
+
+    # TODO test start #############################
+    print("KMT: lora_module_test() finished.")
+    # TODO test end ###############################
 
     return result
 
