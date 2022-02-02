@@ -53,6 +53,7 @@ As part of the code the system produces a JSON file which then is used to carry 
 | VA | ID of the [hardware variant](https://github.com/NebraLtd/hm-pyhelper/blob/master/hm_pyhelper/hardware_definitions.py) |
 | W0 | Mac Address of the WLAN0 interface |
 | last_updated | When this JSON was last updated (UTC timezone) |
+| firmware_short_hash | The related commit short hash of currently running firmware |
 
 ## Local development environment
 
