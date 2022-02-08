@@ -18,6 +18,15 @@ RUN \
 
 RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
+# firehose build, the tar is obtained from  quectel.
+# there is no install target in Makefile, doing manual copy
+RUN tar -xf quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar && \
+    cd QFirehose_Linux_Android_V1.4.9 && \
+    make && \
+    cp QFirehose /usr/sbin/QFirehose
+
+RUN rm -rf quectel/qfirehose
+
 # No need to cleanup the builder
 
 ####################################################################################################
@@ -43,6 +52,12 @@ RUN \
 
 # Copy packages from builder
 COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
+
+# copy modem flashing tool
+COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
+
+# copy firmware files
+COPY --from=builder /tmp/build/quectel /quectel
 
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
