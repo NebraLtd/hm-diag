@@ -2,22 +2,11 @@ import dbus
 
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 from hm_pyhelper.logger import get_logger
+from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 
 # Diagnostics keys
 KEY = 'LTE'
 FRIENDLY_NAME = "lte"
-
-DBUS_PROPERTIES = 'org.freedesktop.DBus.Properties'
-DBUS_OBJECTMANAGER = 'org.freedesktop.DBus.ObjectManager'
-
-# ModemManager
-DBUS_MM1_SERVICE = 'org.freedesktop.ModemManager1'
-DBUS_MM1_PATH = '/org/freedesktop/ModemManager1'
-DBUS_MM1_IF = 'org.freedesktop.ModemManager1'
-DBUS_MM1_IF_MODEM = 'org.freedesktop.ModemManager1.Modem'
-DBUS_MM1_IF_MODEM_SIMPLE = 'org.freedesktop.ModemManager1.Modem.Simple'
-DBUS_MM1_IF_MODEM_3GPP = 'org.freedesktop.ModemManager1.Modem.Modem3gpp'
-DBUS_MM1_IF_MODEM_CDMA = 'org.freedesktop.ModemManager1.Modem.ModemCdma'
 
 MM_MODEM_CAPABILITY = {
     'NONE': 0,
@@ -64,8 +53,8 @@ class LteDiagnostic(Diagnostic):
 def get_lte_devices():
     lte_devices = []
     system_bus = dbus.SystemBus()
-    proxy = system_bus.get_object(DBUS_MM1_SERVICE, DBUS_MM1_PATH)
-    manager = dbus.Interface(proxy, DBUS_OBJECTMANAGER)
+    proxy = system_bus.get_object(DBusIds.DBUS_MM1_SERVICE, DBusIds.DBUS_MM1_PATH)
+    manager = dbus.Interface(proxy, DBusIds.DBUS_OBJECTMANAGER_IF)
     modems = manager.GetManagedObjects()
 
     for modem in modems:
@@ -76,9 +65,9 @@ def get_lte_devices():
 
 
 def append_lte_device_from_modem(lte_devices, modem, system_bus):
-    modem_proxy = system_bus.get_object(DBUS_MM1_SERVICE, modem)
-    props_iface = dbus.Interface(modem_proxy, DBUS_PROPERTIES)
-    props = props_iface.GetAll(DBUS_MM1_IF_MODEM)
+    modem_proxy = system_bus.get_object(DBusIds.DBUS_MM1_SERVICE, modem)
+    props_iface = dbus.Interface(modem_proxy, DBusIds.DBUS_PROPERTIES_IF)
+    props = props_iface.GetAll(DBusIds.DBUS_MM1_MODEM_IF)
 
     model = props.get("Model")
     manufacturer = props.get("Manufacturer")

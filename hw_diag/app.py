@@ -1,6 +1,9 @@
+from datetime import datetime
 import logging
 import os
+import traceback
 import sentry_sdk
+from datetime import timedelta
 
 from flask import Flask
 from flask_apscheduler import APScheduler
@@ -9,6 +12,7 @@ from retry import retry
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.views.diagnostics import DIAGNOSTICS
+from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -56,6 +60,17 @@ def get_app(name):
     @scheduler.task('cron', id='ship_diagnostics', minute='0')
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
+
+    # schedule single shot job 2 minutes in future
+    @scheduler.task('date', id='ensure_quectel_health',
+                    run_date=datetime.now()+timedelta(minutes=2))
+    def run_quectel_health_task():
+        try:
+            ensure_quectel_health()
+        except Exception as e:
+            logging.error(f'Unknown error encountered while trying to update Quectel modem '
+                          f'for network compatibility: {e}')
+            logging.error(traceback.format_exc())
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
