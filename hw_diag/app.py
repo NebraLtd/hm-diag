@@ -9,6 +9,7 @@ from retry import retry
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.views.diagnostics import DIAGNOSTICS
+from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -46,6 +47,11 @@ def get_app(name):
     app = Flask(name)
 
     cache.init_app(app)
+    
+    try:
+        ensure_quectel_health()
+    except Exception as e:
+        log.error('Error in modem settings: {}'.format(e))
 
     # Configure the backend scheduled tasks
     scheduler = APScheduler()
