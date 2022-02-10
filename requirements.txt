@@ -8,4 +8,4 @@ requests==2.26.0
 retry==0.9.2
 sentry-sdk[Flask]==1.5.1
 dbus-python==1.2.16
-hm-pyhelper==0.12.2
+hm-pyhelper==0.13.10

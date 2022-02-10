@@ -31,7 +31,7 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['I0'],
+            DIAGNOSTICS_ERRORS_KEY: ['I0', 'friendly'],
             'I0': 'No file',
             'friendly': 'No file'
         })
@@ -61,7 +61,8 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            DIAGNOSTICS_ERRORS_KEY:
+                ['E0', 'eth_mac_address', 'W0', 'wifi_mac_address'],
             'E0': 'File Not Found Error',
             'eth_mac_address': 'File Not Found Error',
             'W0': 'File Not Found Error',
@@ -77,7 +78,8 @@ class TestMacDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['E0', 'W0'],
+            DIAGNOSTICS_ERRORS_KEY:
+                ['E0', 'eth_mac_address', 'W0', 'wifi_mac_address'],
             'E0': 'Permission Error',
             'eth_mac_address': 'Permission Error',
             'W0': 'Permission Error',

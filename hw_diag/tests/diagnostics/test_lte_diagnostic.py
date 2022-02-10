@@ -63,7 +63,7 @@ class TestLteDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LTE'],
+            DIAGNOSTICS_ERRORS_KEY: ['LTE', 'lte'],
             'LTE': 'ModemManager is working but, no LTE devices detected.',
             'lte': 'ModemManager is working but, no LTE devices detected.'
         })
@@ -84,7 +84,7 @@ class TestLteDiagnostics(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LTE'],
+            DIAGNOSTICS_ERRORS_KEY: ['LTE', 'lte'],
             'LTE': 'Not authorized',
             'lte': 'Not authorized'
         })

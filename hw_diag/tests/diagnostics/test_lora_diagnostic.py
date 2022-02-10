@@ -32,7 +32,7 @@ class TestLoraDiagnostic(unittest.TestCase):
 
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
-            DIAGNOSTICS_ERRORS_KEY: ['LOR'],
+            DIAGNOSTICS_ERRORS_KEY: ['LOR', 'lora'],
             'LOR': False,
             'lora': False
         })
