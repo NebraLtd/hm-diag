@@ -42,7 +42,16 @@ RUN \
     install_packages \
         wget \
         i2c-tools \
-        libdbus-1-3
+        libdbus-1-3 \
+        gpg
+
+# Nebra uses /opt by convention
+WORKDIR /opt/
+
+# Import gpg key
+COPY keys/manufacturing-key.gpg ./
+RUN gpg --import manufacturing-key.gpg
+RUN rm manufacturing-key.gpg
 
 # @TODO: Re-enable health-check once Balena supports it fully.
 # HEALTHCHECK \

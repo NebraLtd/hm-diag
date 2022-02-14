@@ -1,39 +1,35 @@
 import unittest
 
 from unittest.mock import patch
-from unittest.mock import MagicMock
 from copy import deepcopy
+
+import hm_pyhelper.miner_json_rpc.client
 
 from hw_diag.utilities.miner import fetch_miner_data
 
 
-PEER_ADDR = {
-    'peer_addr':
-        '/p2p/11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
-}
-HEIGHT = {'height': 1045324}
-
-PEER_BOOK = [
-    {
-        'connection_count': 5,
-        'listen_addr_count': 1,
-        'name': 'wild-purple-tuna',
-        'nat': 'static'
-    }
-]
-
-
 class TestGetMinerDiag(unittest.TestCase):
+    PEER_ADDR = {
+        'peer_addr':
+            '/p2p/11rMJrFystAT3mLEdgeeVo2opSmHuMb2RXFVYh7qfqhqt2GkPv9'
+    }
 
-    @patch('hw_diag.utilities.miner.client')
-    def test_fetch_miner_data_valid(self, mock_client):
-        mock_client.get_peer_addr = MagicMock()
-        mock_client.get_peer_addr.return_value = PEER_ADDR
-        mock_client.get_peer_book = MagicMock()
-        mock_client.get_height = MagicMock()
-        mock_client.get_height.return_value = HEIGHT
-        mock_client.get_peer_book.return_value = deepcopy(PEER_BOOK)
+    HEIGHT = {'height': 1045324}
 
+    PEER_BOOK = [
+        {
+            'connection_count': 5,
+            'listen_addr_count': 1,
+            'name': 'wild-purple-tuna',
+            'nat': 'static'
+        }
+    ]
+
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_addr', return_value=PEER_ADDR)
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_book',
+                  return_value=deepcopy(PEER_BOOK))
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_height', return_value=HEIGHT)
+    def test_fetch_miner_data_valid(self, mock_height, mock_book, mock_addr):
         expected_data = {
             'MC': True,
             'MD': True,
@@ -45,15 +41,12 @@ class TestGetMinerDiag(unittest.TestCase):
         result = fetch_miner_data({})
         self.assertEqual(result, expected_data)
 
-    @patch('hw_diag.utilities.miner.client')
-    def test_fetch_miner_data_relayed(self, mock_client):
-        mock_client.get_peer_addr = MagicMock()
-        mock_client.get_peer_addr.return_value = PEER_ADDR
-        mock_client.get_peer_book = MagicMock()
-        mock_client.get_height = MagicMock()
-        mock_client.get_height.return_value = HEIGHT
-        mock_client.get_peer_book.return_value = deepcopy(PEER_BOOK)
-        mock_client.get_peer_book.return_value[0]['nat'] = 'symmetric'
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_addr', return_value=PEER_ADDR)
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_book',
+                  return_value=deepcopy(PEER_BOOK))
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_height', return_value=HEIGHT)
+    def test_fetch_miner_data_relayed(self, mock_height, mock_book, mock_addr):
+        mock_book.return_value[0]['nat'] = 'symmetric'
 
         expected_data = {
             'MC': True,
@@ -66,15 +59,12 @@ class TestGetMinerDiag(unittest.TestCase):
         result = fetch_miner_data({})
         self.assertEqual(result, expected_data)
 
-    @patch('hw_diag.utilities.miner.client')
-    def test_fetch_miner_data_not_connected(self, mock_client):
-        mock_client.get_peer_addr = MagicMock()
-        mock_client.get_peer_addr.return_value = PEER_ADDR
-        mock_client.get_peer_book = MagicMock()
-        mock_client.get_height = MagicMock()
-        mock_client.get_height.return_value = HEIGHT
-        mock_client.get_peer_book.return_value = deepcopy(PEER_BOOK)
-        mock_client.get_peer_book.return_value[0]['connection_count'] = 0
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_addr', return_value=PEER_ADDR)
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_peer_book',
+                  return_value=deepcopy(PEER_BOOK))
+    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'get_height', return_value=HEIGHT)
+    def test_fetch_miner_data_not_connected(self, mock_height, mock_book, mock_addr):
+        mock_book.return_value[0]['connection_count'] = 0
 
         expected_data = {
             'MC': False,

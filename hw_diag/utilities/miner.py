@@ -1,12 +1,11 @@
+from hm_pyhelper.constants.nebra import NEBRA_WALLET_ADDRESS
 from hm_pyhelper.miner_json_rpc import MinerClient
 from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
 from hm_pyhelper.miner_param import LOGGER
 
 
-client = MinerClient()
-
-
 def fetch_miner_data(diagnostics):
+    client = MinerClient()
     try:
         peerbook = client.get_peer_book()[0]
         height = client.get_height()
@@ -33,3 +32,9 @@ def fetch_miner_data(diagnostics):
     diagnostics['MN'] = peerbook.get('nat')
     diagnostics['MR'] = diagnostics['MN'] == 'symmetric'
     return diagnostics
+
+
+def create_add_gateway_txn(destination_wallet):
+    client = MinerClient()
+    add_gateway_txn = client.create_add_gateway_txn(destination_wallet, NEBRA_WALLET_ADDRESS)
+    return add_gateway_txn

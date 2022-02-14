@@ -1,19 +1,22 @@
 import json
+
+from hm_pyhelper.diagnostics import DiagnosticsReport
 from hm_pyhelper.lock_singleton import ResourceBusyError
 from hm_pyhelper.miner_param import LOGGER, get_gateway_mfr_test_result
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 from hm_pyhelper.exceptions import ECCMalfunctionException,\
     GatewayMFRFileNotFoundException
 
-KEY = 'ECC'
-FRIENDLY_NAME = "ECC"
-
 
 class EccDiagnostic(Diagnostic):
-    def __init__(self):
-        super(EccDiagnostic, self).__init__(KEY, FRIENDLY_NAME)
+    # Diagnostics keys
+    KEY = 'ECC'
+    FRIENDLY_NAME = "ECC"
 
-    def perform_test(self, diagnostics_report):
+    def __init__(self):
+        super(EccDiagnostic, self).__init__(self.KEY, self.FRIENDLY_NAME)
+
+    def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         try:
             ecc_tests = get_gateway_mfr_test_result()
 

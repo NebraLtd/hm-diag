@@ -1,15 +1,17 @@
+from hm_pyhelper.diagnostics import DiagnosticsReport
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 from hw_diag.utilities.hardware import lora_module_test
 
-KEY = 'LOR'
-FRIENDLY_NAME = "lora"
-
 
 class LoraDiagnostic(Diagnostic):
-    def __init__(self):
-        super(LoraDiagnostic, self).__init__(KEY, FRIENDLY_NAME)
+    # Diagnostics keys
+    KEY = 'LOR'
+    FRIENDLY_NAME = "lora"
 
-    def perform_test(self, diagnostics_report):
+    def __init__(self):
+        super(LoraDiagnostic, self).__init__(self.KEY, self.FRIENDLY_NAME)
+
+    def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         if lora_module_test():
             diagnostics_report.record_result(True, self)
         else:
