@@ -332,6 +332,10 @@ def ensure_quectel_health() -> None:
                      "UPDATE_QUECTEL_EG25G_MODEM is not set")
         return
 
+    if not is_att_sim():
+        logging.info("skipping firmware upgrade as att sim was not found")
+        return
+
     # ensure correct settings, these settings are recommended for data centric operation.
     # basically we are telling modem and network we are not interested in voice services.
     try:
@@ -343,10 +347,6 @@ def ensure_quectel_health() -> None:
                                      Modem.SERVICE_DOMAIN_PS_VALUE)
     except Exception as e:
         logging.error(f'unknown error, failed to do correct mode setting: {e}')
-
-    if not is_att_sim():
-        logging.info("skipping firmware upgrade as att sim was not found")
-        return
 
     # update firmware
     fw_status = firmware_upgrade_with_rollback()

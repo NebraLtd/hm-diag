@@ -61,9 +61,11 @@ def get_app(name):
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
 
-    # schedule single shot job 2 minutes in future
-    @scheduler.task('date', id='ensure_quectel_health',
+    # schedule single shot job 2 minutes in future and another
+    # repeating job every 1 hour
+    @scheduler.task('date', id='quectel_single_shot',
                     run_date=datetime.now()+timedelta(minutes=2))
+    @scheduler.task('interval', id='quectel_repeating', hours=1)
     def run_quectel_health_task():
         try:
             ensure_quectel_health()
