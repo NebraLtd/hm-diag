@@ -65,4 +65,4 @@ COPY --from=builder /tmp/build/quectel /quectel
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "hw_diag:wsgi_app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
