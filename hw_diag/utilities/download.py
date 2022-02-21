@@ -23,7 +23,7 @@ def validate_file(file_path: str, hash: str) -> bool:
     :param file_path: path to the file for hash validation
     :param hash:      expected hash value of the file
     """
-    md5 = hashlib.md5()
+    md5 = hashlib.md5()  # nosec NOSONAR
     with open(file_path, 'rb') as f:
         while True:
             chunk = f.read(1000 * 1000)  # approx 1mb

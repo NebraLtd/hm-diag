@@ -61,9 +61,7 @@ def get_app(name):
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
 
-    # schedule single shot job 2 minutes in future
-    @scheduler.task('date', id='ensure_quectel_health',
-                    run_date=datetime.now()+timedelta(minutes=2))
+    @scheduler.task('interval', id='quectel_repeating', hours=1)
     def run_quectel_health_task():
         try:
             ensure_quectel_health()
@@ -71,6 +69,10 @@ def get_app(name):
             logging.error(f'Unknown error encountered while trying to update Quectel modem '
                           f'for network compatibility: {e}')
             logging.error(traceback.format_exc())
+
+    # bring first run time to run 2 minutes from now as well
+    quectel_job = scheduler.get_job('quectel_repeating')
+    quectel_job.modify(next_run_time=datetime.now()+timedelta(minutes=2))
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
