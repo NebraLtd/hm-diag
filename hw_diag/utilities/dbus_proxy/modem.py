@@ -36,6 +36,7 @@ class Modem(DBusObject):
         values = response.strip().split(' ')
         if len(values) == 2:
             return values[1]
+        return ''
 
     def set_at_value(self, cmd: str, value: str) -> str:
         return self.at_command(cmd + ',' + value)
@@ -43,16 +44,17 @@ class Modem(DBusObject):
     def set_ue_mode(self, value: str = UE_MODE_DATA_ONLY_VALUE) -> str:
         return self.set_at_value(self.UE_MODE_SETTING_WRITE_AT_CMD, value)
 
-    def get_service_domain(self, value: str = SERVICE_DOMAIN_PS_VALUE) -> str:
+    def get_service_domain(self) -> str:
         response = self.at_command(self.SERVICE_DOMAIN_AT_CMD)
         values = response.strip().split(',')
         if len(values) == 2:
             return values[1].strip()
+        return ''
 
     def set_service_domain(self, value: str = SERVICE_DOMAIN_PS_VALUE) -> str:
         if value == self.SERVICE_DOMAIN_PS_VALUE:
-            return self.at_command(self.SERVICE_DOMAIN_PS_WRITE_AT_CMD, value)
-        return self.at_command(self.SERVICE_DOMAIN_AT_CMD, value)
+            return self.at_command(self.SERVICE_DOMAIN_PS_WRITE_AT_CMD + ',' + value)
+        return self.at_command(self.SERVICE_DOMAIN_AT_CMD + ',' + value)
 
     def reset(self) -> str:
         return self.at_command(self.REST_AT_CMD)

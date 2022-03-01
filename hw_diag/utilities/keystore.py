@@ -32,11 +32,3 @@ class KeyStore:
         self.store[key] = value
         with open(self.filename, 'w') as f:
             f.write(json.dumps(self.store, indent=4))
-
-
-if __name__ == "__main__":
-    ks = KeyStore("keystore.json")
-    ks.set("foo", "bar")
-
-    ks1 = KeyStore("keystore.json")
-    print(ks1.get("foo"))

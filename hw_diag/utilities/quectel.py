@@ -6,6 +6,7 @@ import dbus
 
 from retry import retry
 from retry.api import retry_call
+from typing import Tuple
 
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
@@ -34,10 +35,14 @@ EG25G_DESIRED_FW = {
 }
 
 FW_FILE_HASH = {
-    'EG25GGBR07A07M2G_01.001.01.001.tgz': 'db59e2afd2a9497f3750366da6d42a40',
-    'EG25GGBR07A07M2G_30.003.30.003.tgz': '914dd0a491ac212f417d1d286a8146ad',
-    'EG25GGBR07A08M2G_01.001.01.001.tgz': '6c22bb953d7b57371e8326b341938d10',
-    'EG25GGBR07A08M2G_30.006.30.006.tgz': '08fc2173a2582a6cef2d62ca8a169d1a'
+    'EG25GGBR07A07M2G_01.001.01.001.tgz':
+        '180bf41a3f08e5eb631d1ee98d1ff18dca14e6ef32ef9d41f704cc261ad163d0',
+    'EG25GGBR07A07M2G_30.003.30.003.tgz':
+        '7220c074d2abdcfa1d5e5740f9c8ad5561f09f294ce4e36bb6e05c9e3c0762dc',
+    'EG25GGBR07A08M2G_01.001.01.001.tgz':
+        '00c21f7843a12923265628a619fbea77876e393d51e94cf8f47e68aebf32a038',
+    'EG25GGBR07A08M2G_30.006.30.006.tgz':
+        'bde8796ae6307ecd31dce477d1a9281f67339ed0fbe4eee2d1ab108a061243b7'
 }
 
 GCP_FW_BASEPATH = ('https://storage.googleapis.com/helium-assets.nebra.com/'
@@ -48,9 +53,13 @@ FW_MAX_RETRIES = 10
 SETTINGS_MAX_RETRIES = 30
 
 
-def at_max_retries(feature: str, max_retries: str) -> bool:
+def get_feature_retry_count(feature: str) -> int:
     feature_history = KeyStore(FW_STATE_FILE)
-    existing_retries = feature_history.get(feature, 0)
+    return feature_history.get(feature, 0)
+
+
+def at_max_retries(feature: str, max_retries: int) -> bool:
+    existing_retries = get_feature_retry_count(feature)
     if existing_retries >= max_retries:
         logging.warning(
             f'{feature} has already been tried {existing_retries} times')
@@ -86,15 +95,22 @@ def download_and_extract(url: str, file_path: str, file_hash: str) -> None:
 
 
 def get_firmware_versions() -> list:
+    '''returns list of firmwar versions to be downloaded'''
     # Note:: it was decided that we would expect the miner to have internet connectivity
     # while installing the modem. That is why we check for modem and download fw for
     # that revision. If we want to download firmware for all revisions for all outdoor miner.
     # we will need to check VARIANT in a list of outdoor variant types and download firmware
     # assuming only outdoor ones have the option of a modem.
-    modem = find_eg25g_modem()
-    modem_revision = modem.get_property('Revision')
+    fw_versions = []
+    try:
+        modem = find_eg25g_modem()
+        if modem:
+            modem_revision = modem.get_property('Revision')
+            fw_versions.append(EG25G_OLD_KNOWN_FW[modem_revision])
+            fw_versions.append(EG25G_DESIRED_FW[modem_revision])
+    except Exception as e:
+        logging.error(f'failed to determine required firmware revisions: {e}')
 
-    fw_versions = [EG25G_OLD_KNOWN_FW[modem_revision], EG25G_DESIRED_FW[modem_revision]]
     return fw_versions
 
 
@@ -183,33 +199,56 @@ def is_internet_accessible(wait_time: int = INTERNET_MAX_WAIT_TIME) -> bool:
         return False
 
 
-def update_setting_with_rollback(getter: str, setter: str, desired_value: str) -> bool:
-    modem = find_eg25g_modem()
-    if not modem:
-        logging.debug('EG25G modem not found')
+def call_method(obj, method, *args, **kwargs):
+    return getattr(obj, method)(*args, **kwargs)
+
+
+def setting_needs_update(modem: Modem, getter: str,
+                         setter: str, desired_value: str) -> Tuple[bool, str]:
+    '''return a tuple containing
+       true if settings needs to be updated, false otherwise
+       and current value of the setting'''
+    old_value = call_method(modem, getter)
+    if at_max_retries(setter, SETTINGS_MAX_RETRIES):
+        return False, old_value
+
+    if old_value == desired_value:
+        logging.info(f"Setting is already correct {old_value}")
+        return False, old_value
+    logging.info(f'actual value : {old_value} needs to be: {desired_value}')
+    return True, old_value
+
+
+def update_setting(modem: Modem, getter: str, setter: str, desired_value: str) -> bool:
+    '''returns true if the setting was correctly updated, false otherwise'''
+    try:
+        call_method(modem, setter, desired_value)
+        new_value = call_method(modem, getter)
+        if (desired_value != new_value):
+            logging.error("the value didn't set correctly")
+            return False
+        return True
+    except Exception as e:
+        logging.info(f'failed to update setting {setter} to {desired_value}')
+        logging.error(f'error: {e}')
         return False
 
-    getter_method = getattr(modem, getter)
-    setter_method = getattr(modem, setter)
 
+def update_setting_with_rollback(getter: str, setter: str, desired_value: str) -> bool:
     try:
-        # this settings has been tried unsuccessfully too many times
-        if at_max_retries(setter, SETTINGS_MAX_RETRIES):
+        modem = find_eg25g_modem()
+        if not modem:
+            logging.debug('EG25G modem not found')
             return False
 
-        old_value = getter_method()
-        if old_value == desired_value:
-            logging.info(f"Setting is already correct {old_value}")
+        update_needed, old_value = setting_needs_update(modem, getter, setter, desired_value)
+        if not update_needed:
+            return False
+
+        if not update_setting(modem, getter, setter, desired_value):
             return False
 
         internet_before_mode_change = is_internet_accessible()
-
-        logging.info(f'actual value : {old_value} needs to be: {desired_value}')
-        setter_method(desired_value)
-        new_value = getter_method()
-        if (old_value == new_value):
-            logging.error("the value didn't set correctly, will be tried again")
-            return False
 
         # we have verified the setting was set correctly, lets reset.
         reset_modem_and_modem_manager(modem)
@@ -224,8 +263,8 @@ def update_setting_with_rollback(getter: str, setter: str, desired_value: str) -
                 logging.info('EG25G modem not found, setting old value will be skipped')
                 return False
             increment_retry_count(setter)
-            logging.info(f"restting to {old_value}")
-            setter_method(modem, old_value)
+            logging.info(f"resetting to {old_value}")
+            update_setting(modem, getter, setter, old_value)
     except dbus.exceptions.DBusException as e:
         logging.error(f'failed to set AT over dbus with error: {e.get_dbus_message()}')
         return False
@@ -300,8 +339,9 @@ def is_att_sim() -> bool:
     att_sim = False
     try:
         modem = find_eg25g_modem()
-        sim = modem.get_sim()
-        att_sim = sim.is_att_sim()
+        if modem:
+            sim = modem.get_sim()
+            att_sim = sim.is_att_sim()
     except Exception as e:
         # no modem or no sim
         logging.info(f'failed to get sim info with error: {e}')
@@ -332,10 +372,6 @@ def ensure_quectel_health() -> None:
                      "UPDATE_QUECTEL_EG25G_MODEM is not set")
         return
 
-    if not is_att_sim():
-        logging.info("skipping firmware upgrade as att sim was not found")
-        return
-
     # ensure correct settings, these settings are recommended for data centric operation.
     # basically we are telling modem and network we are not interested in voice services.
     try:
@@ -347,6 +383,13 @@ def ensure_quectel_health() -> None:
                                      Modem.SERVICE_DOMAIN_PS_VALUE)
     except Exception as e:
         logging.error(f'unknown error, failed to do correct mode setting: {e}')
+
+    # Note:: I think we should keep this logic uncommented for sometime.
+    # settings update is enough for 3G shutdown but we don't know how upgrade
+    # effects all the providers.
+    # if not is_att_sim():
+    #     logging.info("skipping firmware upgrade as att sim was not found")
+    #     return
 
     # update firmware
     fw_status = firmware_upgrade_with_rollback()
