@@ -2,7 +2,7 @@ from time import sleep
 import dbus
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
-from hm_pyhelper.hardware_definitions import variant_definitions, is_rockpi
+from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
 from hw_diag.utilities.shell import config_search_param
 
 logging = get_logger(__name__)
@@ -186,14 +186,18 @@ def set_diagnostics_bt_lte(diagnostics):
 def detect_ecc(diagnostics):
     # The order of the values in the lists is important!
     # It determines which value will be available for which key
-    if is_rockpi():
-        commands = [
-            'i2cdetect -y 7'
-        ]
-    else:
-        commands = [
-            'i2cdetect -y 1'
-        ]
+    variant = diagnostics.get('VA')
+
+    try:
+        key_storage_bus = get_variant_attribute(variant, 'KEY_STORAGE_BUS')
+    except Exception as e:
+        logging.warn("Unable to lookup storage bus from hardware definitions, "
+                     "falling back to the default. Exception message: {}".format(e))
+        key_storage_bus = '/dev/i2c-1'
+
+    commands = [
+            'i2cdetect -y ' + key_storage_bus.split('-')[1]
+    ]
 
     parameters = ["60 --"]
     keys = ["ECC"]
