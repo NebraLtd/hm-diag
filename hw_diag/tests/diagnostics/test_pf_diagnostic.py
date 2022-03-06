@@ -2,14 +2,14 @@ import unittest
 
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic, CHECK_KEYS
+from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
 
 
 class TestPfDiagnostic(unittest.TestCase):
     def test_success(self):
         diagnostic = PfDiagnostic()
         diagnostics_report = DiagnosticsReport([diagnostic])
-        for key in CHECK_KEYS:
+        for key in PfDiagnostic.CHECK_KEYS:
             diagnostics_report[key] = True
         diagnostics_report.perform_diagnostics()
 

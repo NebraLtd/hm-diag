@@ -3,13 +3,14 @@ import base64
 import os
 import logging
 
-from flask import Blueprint
+from flask import Blueprint, request
 from flask import render_template
 from flask import jsonify
 from datetime import datetime
-
+from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
+from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
 from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
@@ -19,9 +20,11 @@ from hw_diag.diagnostics.lte_diagnostic import LteDiagnostic
 from hw_diag.diagnostics.lora_diagnostic import LoraDiagnostic
 from hw_diag.diagnostics.pf_diagnostic import PfDiagnostic
 from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
+from hw_diag.utilities.diagnostics import compose_diagnostics_report_from_err_msg
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
+from hw_diag.utilities.security import GnuPG
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
@@ -111,3 +114,46 @@ def version_information():
     }
 
     return response
+
+
+@DIAGNOSTICS.route('/v1/add-gateway-txn', methods=['POST'])
+def add_gateway_txn():
+    """
+    Generates an add_gateway_txn if a destination name and wallets are defined and valid.
+    Diagnostics report will be in the format below if successful.
+
+    https://docs.helium.com/mine-hnt/full-hotspots/become-a-maker/hotspot-integration-testing/#generate-an-add-hotspot-transaction
+    {
+        errors: [],
+        DESTINATION_ADD_GATEWAY_TXN_KEY: {
+            "address": "11TL62V8NYvSTXmV5CZCjaucskvNR1Fdar1Pg4Hzmzk5tk2JBac",
+            "fee": 65000,
+            "owner": "14GWyFj9FjLHzoN3aX7Tq7PL6fEg4dfWPY8CrK8b9S5ZrcKDz6S",
+            "payer": "138LbePH4r7hWPuTnK6HXVJ8ATM2QU71iVHzLTup1UbnPDvbxmr",
+            "staking fee": 4000000,
+            "txn": "CrkBCiEBrlImpYLbJ0z0hw5b4g9isRyPrgbXs9X+RrJ4pJJc9MkS..."
+        }
+    }
+    """
+
+    shipping_destination_with_signature = request.get_data()
+    if not shipping_destination_with_signature:
+        err_msg = 'Can not find payload.'
+        LOGGER.error(err_msg)
+        diagnostics_report = compose_diagnostics_report_from_err_msg(
+            DESTINATION_ADD_GATEWAY_TXN_KEY, err_msg)
+        return diagnostics_report, 406
+
+    diagnostics = [
+        AddGatewayTxnDiagnostic(GnuPG(), shipping_destination_with_signature),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({DESTINATION_ADD_GATEWAY_TXN_KEY}):
+        http_code = 500
+    else:
+        http_code = 200
+
+    LOGGER.debug("add_gateway_txn result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code

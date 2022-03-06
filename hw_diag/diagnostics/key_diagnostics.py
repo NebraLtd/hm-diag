@@ -1,28 +1,16 @@
+from hm_pyhelper.diagnostics import DiagnosticsReport
 from hm_pyhelper.exceptions import ECCMalfunctionException
 from hm_pyhelper.lock_singleton import ResourceBusyError
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
 
-KEY_MAPPINGS = [
-    {
-        'key': 'OK',
-        'friendly_key': 'onboarding_key',
-        'key_path': 'key'
-    },
-    {
-        'key': 'PK',
-        'friendly_key': 'public_key',
-        'key_path': 'key'
-    }
-]
-
 
 class KeyDiagnostic(Diagnostic):
-    def __init__(self, key, friendly_key, key_path):
+    def __init__(self, key: str, friendly_key: str, key_path: str):
         super(KeyDiagnostic, self).__init__(key, friendly_key)
         self.key_path = key_path
 
-    def perform_test(self, diagnostics_report):
+    def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         # Try to get key, but there may be ECC lock or other failure
         try:
             public_keys = get_public_keys_rust()
@@ -51,16 +39,28 @@ class KeyDiagnostic(Diagnostic):
 
 
 class KeyDiagnostics:
+    KEY_MAPPINGS = [
+        {
+            'key': 'OK',
+            'friendly_key': 'onboarding_key',
+            'key_path': 'key'
+        },
+        {
+            'key': 'PK',
+            'friendly_key': 'public_key',
+            'key_path': 'key'
+        }
+    ]
+
     def __init__(self):
-        def get_diagnostic_for_key(key_mapping):
+        def get_diagnostic_for_key(key_mapping: dict) -> Diagnostic:
             return KeyDiagnostic(
               key_mapping['key'],
               key_mapping['friendly_key'],
               key_mapping['key_path'])
 
-        self.key_diagnostics = map(get_diagnostic_for_key,
-                                   KEY_MAPPINGS)
+        self.key_diagnostics = map(get_diagnostic_for_key, self.KEY_MAPPINGS)
 
-    def perform_test(self, diagnostics_report):
+    def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         for key_diagnostic in self.key_diagnostics:
             key_diagnostic.perform_test(diagnostics_report)

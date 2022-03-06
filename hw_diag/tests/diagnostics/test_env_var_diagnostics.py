@@ -4,7 +4,7 @@ from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
 
 from hw_diag.diagnostics.env_var_diagnostics import \
-    EnvVarDiagnostic, EnvVarDiagnostics, ENV_VARS_MAPPING
+    EnvVarDiagnostic, EnvVarDiagnostics
 
 
 class TestEnvVarDiagnostics(unittest.TestCase):
@@ -35,7 +35,7 @@ class TestEnvVarDiagnostics(unittest.TestCase):
         })
 
     def test_env_vars_success(self):
-        for mapping in ENV_VARS_MAPPING:
+        for mapping in EnvVarDiagnostics.ENV_VARS_MAPPING:
             os.environ[mapping['ENV_VAR']] = 'foo'
 
         diagnostic = EnvVarDiagnostics()
