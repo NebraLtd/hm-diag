@@ -66,7 +66,7 @@ class SystemDUnit(DBusObject):
         return self._wait_state('running', timeout)
 
     def is_running(self) -> bool:
-        return self.get_property('SubState').trim() == 'running'
+        return self.get_property('SubState').strip() == 'running'
 
     def is_stopped(self) -> bool:
-        return self.get_property('SubState').trim() == 'dead'
+        return self.get_property('SubState').strip() == 'dead'
