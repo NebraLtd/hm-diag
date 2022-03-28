@@ -57,29 +57,11 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>Sync Percentage</td>
-                  {% if not diagnostics.BCH and not diagnostics.MH %}
-                    <td class="text-right">Helium API and Miner RPC Unavailable</td>
-                  {% elif not diagnostics.BCH %}
-                    <td class="text-right">Helium API Unavailable</td>
-                  {% elif not diagnostics.MH %}
-                    <td class="text-right">Miner RPC Unavailable</td>
-                  {% elif diagnostics.BSP > 99.98 %}
-                    <td class="text-right">100%</td>
-                  {% else %}
-                    <td class="text-right">{{ '%0.2f' % diagnostics.BSP|float }}%</td>
-                  {% endif %}
-                </tr>
-                <tr>
                   <td>Height Status</td>
-                  {% if not diagnostics.BCH and not diagnostics.MH %}
-                    <td class="text-right">Helium API and Miner RPC Unavailable</td>
-                  {% elif not diagnostics.BCH %}
-                    <td class="text-right">Helium API Unavailable</td>
-                  {% elif not diagnostics.MH %}
+                  {% if not diagnostics.MH %}
                     <td class="text-right">Miner RPC Unavailable</td>
                   {% else %}
-                    <td class="text-right">{{ diagnostics.MH }} / {{ diagnostics.BCH }}</td>
+                    <td class="text-right">{{ diagnostics.MH }}</td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -92,8 +74,8 @@
                 </tr>
                 <tr>
                   <td>Region Plan</td>
-                  {% if diagnostics.RE == 'UN123' %}
-                    <td class="text-right">Awaiting Location Assertion</td>
+                  {% if not diagnostics.RE %}
+                    <td class="text-right">Unknown Location</td>
                   {% else %}
                     <td class="text-right">{{ diagnostics.RE }}</td>
                   {% endif %}
@@ -103,9 +85,9 @@
                   <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
                 </tr>
                 <tr>
-                  <td>Miner Connected To Blockchain</td>
-                  {% if diagnostics.MC %}
-                    <td class="text-success text-right">True</td>
+                  <td>Miner Connected To Validator</td>
+                  {% if diagnostics.validator_uri %}
+                    <td class="text-success text-right">True diagnostics.validator_uri</td>
                   {% else %}
                     <td class="text-warning text-right">False</td>
                   {% endif %}
@@ -116,14 +98,6 @@
           <div class="col-12 col-lg-6 mb-4 mb-lg-0">
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
-                <tr>
-                  <td class="border-0">Miner Relayed</td>
-                  {% if diagnostics.MN == 'symmetric' %}
-                    <td class="border-0 text-warning text-right">True</td>
-                  {% else %}
-                    <td class="border-0 text-success text-right">False</td>
-                  {% endif %}
-                </tr>
                 <tr>
                   <td>ECC Detected</td>
                   {% if diagnostics.ECC %}

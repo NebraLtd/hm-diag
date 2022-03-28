@@ -43,7 +43,8 @@ RUN \
         wget \
         i2c-tools \
         libdbus-1-3 \
-        gpg
+        gpg \
+        libatomic1
 
 # Nebra uses /opt by convention
 WORKDIR /opt/

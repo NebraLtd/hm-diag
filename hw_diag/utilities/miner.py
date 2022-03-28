@@ -1,40 +1,39 @@
 from hm_pyhelper.constants.nebra import NEBRA_WALLET_ADDRESS
-from hm_pyhelper.miner_json_rpc import MinerClient
-from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
+from hm_pyhelper.gateway_grpc.client import GatewayClient, decode_pub_key
 from hm_pyhelper.miner_param import LOGGER
+import grpc
 
 
 def fetch_miner_data(diagnostics):
-    client = MinerClient()
-    try:
-        peerbook = client.get_peer_book()[0]
-        height = client.get_height()
-    except MinerFailedFetchData as err:
-        LOGGER.exception(err)
-        diagnostics['MC'] = "Failed to Fetch"
-        diagnostics['MD'] = "Failed to Fetch"
-        diagnostics['MH'] = None
-        diagnostics['MN'] = "Failed to Fetch"
-        diagnostics['MR'] = "Failed to Fetch"
-        return diagnostics
-    except Exception as err:
-        LOGGER.exception(err)
-        diagnostics['MC'] = "Failed to Fetch"
-        diagnostics['MD'] = "Failed to Fetch"
-        diagnostics['MH'] = None
-        diagnostics['MN'] = "Failed to Fetch"
-        diagnostics['MR'] = "Failed to Fetch"
-        return diagnostics
-
-    diagnostics['MC'] = peerbook.get('connection_count') > 1
-    diagnostics['MD'] = peerbook.get('listen_addr_count') > 0
-    diagnostics['MH'] = height.get('height')
-    diagnostics['MN'] = peerbook.get('nat')
-    diagnostics['MR'] = diagnostics['MN'] == 'symmetric'
-    return diagnostics
+    with GatewayClient as client:
+        try:
+            validator_info = client.get_validator_info()
+            diagnostics['validator_address'] = decode_pub_key(validator_info.gateway.address)
+            diagnostics['validator_uri'] = validator_info.gateway.uri
+            diagnostics['block_age'] = validator_info.block_age
+            diagnostics['MH'] = validator_info.height
+            diagnostics['RE'] = client.get_region()
+            diagnostics['miner_key'] = client.get_pubkey()
+            diagnostics['FW'] = client.get_gateway_version()
+        except grpc.RpcError as err:
+            LOGGER.error(f"rpc error: {err.StatusCode}")
+            LOGGER.exception(err)
+        except Exception as err:
+            LOGGER.exception(err)
+        finally:
+            return diagnostics
 
 
-def create_add_gateway_txn(destination_wallet):
-    client = MinerClient()
-    add_gateway_txn = client.create_add_gateway_txn(destination_wallet, NEBRA_WALLET_ADDRESS)
-    return add_gateway_txn
+def create_add_gateway_txn(destination_wallet: str) -> dict:
+    with GatewayClient as client:
+        add_gateway_txn = None
+        try:
+            add_gateway_txn = client.create_add_gateway_txn(destination_wallet,
+                                                            NEBRA_WALLET_ADDRESS)
+        except grpc.RpcError as err:
+            LOGGER.error(f"rpc error: {err.StatusCode}")
+            LOGGER.exception(err)
+        except Exception as err:
+            LOGGER.exception(err)
+        finally:
+            return add_gateway_txn
