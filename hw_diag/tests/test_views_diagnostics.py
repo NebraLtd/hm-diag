@@ -50,7 +50,8 @@ class TestGetDiagnostics(unittest.TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.status, '200 OK')
 
-    def test_get_json_output(self):
+    @patch('hm_pyhelper.miner_param.get_mac_address', return_value='A0:32:23:B4:C5:D6')
+    def test_get_json_output(self, mock_get_mac_address):
         # Check the diagnostics JSON output.
         url = '/json'
         # Server perspective
@@ -159,7 +160,7 @@ bsoB7mtn
         "txn": "CrkBCiEBrlImpYLbJ0z0hw5b4g9isRyPrgbXs9X+RrJ4pJJc9MkS..."
     }
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   return_value=mocked_create_add_gateway_txn_result)
     @patch('hw_diag.views.diagnostics.GnuPG')
     def test_add_gateway_txn_success(self, mock_gnupg, mock_txn):
@@ -176,7 +177,7 @@ bsoB7mtn
             DESTINATION_ADD_GATEWAY_TXN_KEY: self.mocked_create_add_gateway_txn_result,
         })
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   return_value=mocked_create_add_gateway_txn_result)
     @patch('hw_diag.views.diagnostics.GnuPG')
     def test_add_gateway_txn_failure_no_payload(self, mock_gnupg, mock_txn):
@@ -193,7 +194,7 @@ bsoB7mtn
             DESTINATION_ADD_GATEWAY_TXN_KEY: 'Can not find payload.',
         })
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   return_value=mocked_create_add_gateway_txn_result)
     @patch('hw_diag.views.diagnostics.GnuPG')
     def test_add_gateway_txn_failure_invalid_signature(self, mock_gnupg, mock_txn):

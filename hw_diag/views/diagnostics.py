@@ -2,6 +2,7 @@ import json
 import base64
 import os
 import logging
+import traceback
 
 from flask import Blueprint, request
 from flask import render_template
@@ -28,7 +29,7 @@ from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
-
+from hm_pyhelper.constants import diagnostics as DIAG_CONSTS
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
@@ -47,6 +48,7 @@ def read_diagnostics_file():
         diagnostics = {'error': msg}
     except Exception as e:
         msg = 'Diagnostics has encountered an error: %s'
+        traceback.format_exc()
         diagnostics = {'error': msg % str(e)}
 
     return diagnostics
@@ -67,13 +69,15 @@ def get_diagnostics_json():
 @cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
+    diag_report = DiagnosticsReport.from_json_dict(diagnostics)
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
 
     return render_template(
         'diagnostics_page.html',
-        diagnostics=diagnostics,
+        diagnostics=diag_report.from_json_dict(diagnostics),
         display_lte=display_lte,
+        DIAG_CONSTS=DIAG_CONSTS,
         now=now
     )
 
