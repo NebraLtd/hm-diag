@@ -87,7 +87,11 @@
                 </tr>
                 <tr>
                   <td>Frequency</td>
-                  <td class="text-right">{{ diagnostics.FR }}</td>
+                  {% if not diagnostics.FR %}
+                    <td class="text-right">Non Nebra miner</td>
+                  {% else %}
+                    <td class="text-right">{{ diagnostics.FR }}</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Region Plan</td>
