@@ -71,8 +71,11 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 # copy firmware files
 COPY --from=builder /tmp/build/quectel /quectel
 
+COPY --from=builder /tmp/build/start.sh /opt/start.sh
+
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
+# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
+ENTRYPOINT ["/bin/bash", "/opt/start.sh"]
