@@ -10,5 +10,5 @@ requests==2.26.0
 retry==0.9.2
 sentry-sdk[Flask]==1.5.1
 dbus-python==1.2.16
-hm-pyhelper@ https://github.com/NebraLtd/hm-pyhelper/archive/refs/heads/light-hotspot.zip
+hm-pyhelper@ https://github.com/NebraLtd/hm-pyhelper/archive/refs/heads/mfr-included.zip
 python-gnupg==0.4.8
