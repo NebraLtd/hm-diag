@@ -8,26 +8,31 @@ FROM balenalib/raspberry-pi-debian-python:buster-run-20211014 as builder
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN mkdir /tmp/build
-COPY ./ /tmp/build
-WORKDIR /tmp/build
-
-
 
 RUN \
     install_packages \
             build-essential \
             libdbus-glib-1-dev
 
-RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
+COPY requirements.txt /tmp/build
+RUN pip3 install --target="$PYTHON_DEPENDENCIES_DIR" -r /tmp/build/requirements.txt
+
+# we have done most of the expensive work and ensure that it remains cached most of the time.
+# now we can copy sources which will always invalidate the cache as some file would have changed.
+COPY ./ /tmp/build
+WORKDIR /tmp/build
 
 # firehose build, the tar is obtained from  quectel.
 # there is no install target in Makefile, doing manual copy
-RUN tar -xf quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar
+RUN tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar
 # docker linter wants WORKDIR for changing directory
 WORKDIR /tmp/build/QFirehose_Linux_Android_V1.4.9
 RUN make && \
     cp QFirehose /usr/sbin/QFirehose && \
     rm -rf quectel/qfirehose
+
+WORKDIR /tmp/build
+RUN pip3 install --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # No need to cleanup the builder
 
