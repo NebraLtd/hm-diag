@@ -5,7 +5,7 @@ import grpc
 
 
 def fetch_miner_data(diagnostics):
-    with GatewayClient as client:
+    with GatewayClient() as client:
         try:
             validator_info = client.get_validator_info()
             diagnostics['validator_address'] = decode_pub_key(validator_info.gateway.address)
@@ -25,7 +25,7 @@ def fetch_miner_data(diagnostics):
 
 
 def create_add_gateway_txn(destination_wallet: str) -> dict:
-    with GatewayClient as client:
+    with GatewayClient() as client:
         add_gateway_txn = None
         try:
             add_gateway_txn = client.create_add_gateway_txn(destination_wallet,

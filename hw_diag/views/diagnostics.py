@@ -2,6 +2,7 @@ import json
 import base64
 import os
 import logging
+import traceback
 
 from flask import Blueprint, request
 from flask import render_template
@@ -47,6 +48,7 @@ def read_diagnostics_file():
         diagnostics = {'error': msg}
     except Exception as e:
         msg = 'Diagnostics has encountered an error: %s'
+        traceback.format_exc()
         diagnostics = {'error': msg % str(e)}
 
     return diagnostics
