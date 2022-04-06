@@ -57,16 +57,8 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>Height Status</td>
-                  {% if not diagnostics.MH %}
-                    <td class="text-right">Miner RPC Unavailable</td>
-                  {% else %}
-                    <td class="text-right">{{ diagnostics.MH }}</td>
-                  {% endif %}
-                </tr>
-                <tr>
                   <td>Firmware Version</td>
-                  <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+                  <td class="text-right">{{ diagnostics.FW }}</td>
                 </tr>
                 <tr>
                   <td>Frequency</td>
@@ -85,12 +77,28 @@
                   <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
                 </tr>
                 <tr>
-                  <td>Miner Connected To Validator</td>
+                  <td>Connected Validator</td>
                   {% if diagnostics.validator_uri %}
-                    <td class="text-success text-right">True diagnostics.validator_uri</td>
+                    <td class="text-success text-right">{{ diagnostics.validator_uri }} </td>
                   {% else %}
-                    <td class="text-warning text-right">False</td>
+                    <td class="text-warning text-right">Disconnected</td>
                   {% endif %}
+                </tr>
+                <tr>
+                    <td>Validator Block Height</td>
+                    {% if not diagnostics.MH %}
+                      <td class="text-warning text-right">Disconnected</td>
+                    {% else %}
+                      <td class="text-success text-right">{{ diagnostics.MH }}</td>
+                    {% endif %}
+                  </tr>
+                <tr>
+                    <td>Validator Block Age</td>
+                    {% if diagnostics.block_age %}
+                      <td class="text-success text-right">{{ diagnostics.block_age }} </td>
+                    {% else %}
+                      <td class="text-warning text-right">Disconnected</td>
+                    {% endif %}
                 </tr>
               </table>
             </div>
