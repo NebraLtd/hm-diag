@@ -8,10 +8,11 @@ FROM balenalib/raspberry-pi-debian:buster-build-20211014 as builder
 # Nebra uses /opt by convention
 WORKDIR /opt/
 
+# this installs python 3.7.3 which is buster default and supported by grpcio wheel
 RUN \
     install_packages \
-        python3-minimal=3.7.3-1 \
-        python3-venv=3.7.3-1 \
+        python3-minimal \
+        python3-venv \
         python3-pip \
         build-essential \
         libdbus-glib-1-dev
@@ -19,10 +20,11 @@ RUN \
 # This will be the path that venv uses for installation below
 ENV PATH="/opt/venv/bin:$PATH"
 
+# without pinning the pip version, we get linter warning
 COPY requirements.txt requirements.txt
 RUN python3 -m venv /opt/venv && \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir --upgrade pip==22.0.1 && \
+    pip install --no-cache-dir -r requirements.txt
 
 # firehose build, the tar is obtained from  quectel.
 # there is no install target in Makefile, doing manual copy
@@ -36,7 +38,7 @@ RUN make && \
 
 WORKDIR /opt
 COPY ./ /opt
-RUN pip install .
+RUN pip --no-cache-dir install .
 
 # No need to cleanup the builder
 
@@ -47,7 +49,7 @@ FROM balenalib/raspberry-pi-debian:buster-build-20211014 as runner
 
 RUN \
     install_packages \
-        python3-venv=3.7.3-1 \
+        python3-venv \
         wget \
         i2c-tools \
         libdbus-1-3 \
@@ -80,11 +82,8 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 # copy firmware files
 COPY --from=builder /opt/quectel /quectel
 
-COPY --from=builder /opt/start.sh /opt/start.sh
-
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="/opt:$PYTHONPATH"
 ENV PATH="/opt/venv/bin:$PATH"
 
-# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
-ENTRYPOINT ["/bin/bash", "/opt/start.sh"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
