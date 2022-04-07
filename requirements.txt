@@ -10,3 +10,4 @@ sentry-sdk[Flask]==1.5.1
 dbus-python==1.2.16
 hm-pyhelper==0.13.16
 python-gnupg==0.4.8
+werkzeug==2.0.3
