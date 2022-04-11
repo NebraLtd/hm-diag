@@ -48,6 +48,8 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=nebraltd/hm-diag:buildcache
+          cache-to: type=registry,ref=nebraltd/hm-diag:buildcache,mode=max
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
