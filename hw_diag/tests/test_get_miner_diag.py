@@ -1,7 +1,9 @@
 import unittest
+from unittest.mock import patch
 import grpc
 from concurrent import futures
 
+import hm_pyhelper
 from hm_pyhelper.protos import local_pb2_grpc
 from hm_pyhelper.tests.test_gateway_grpc import TestData, MockServicer
 
@@ -17,21 +19,25 @@ class TestGetMinerDiag(unittest.TestCase):
         self.mock_server.start()
 
     def test_fetch_miner_data_valid(self):
-        self.start_mock_server()
-        expected_data = {
-            'validator_address': TestData.validator_address_decoded,
-            'validator_uri': TestData.height_res.gateway.uri,
-            'block_age': TestData.height_res.block_age,
-            'MH': TestData.height_res.height,
-            'RE': TestData.region_name,
-            'miner_key': TestData.pubkey_decoded,
-            'FW': TestData.expected_summary['gateway_version']
-        }
+        with patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient.__init__,
+                          '__defaults__', (f"localhost:{TestData.server_port}",)):
+            self.start_mock_server()
+            expected_data = {
+                'validator_address': TestData.validator_address_decoded,
+                'validator_uri': TestData.height_res.gateway.uri,
+                'block_age': TestData.height_res.block_age,
+                'MH': TestData.height_res.height,
+                'RE': TestData.region_name,
+                'miner_key': TestData.pubkey_decoded,
+                'FW': TestData.expected_summary['gateway_version']
+            }
 
-        result = fetch_miner_data({})
-        self.assertEqual(result, expected_data)
-        self.mock_server.stop()
+            result = fetch_miner_data({})
+            print(result)
+            self.assertEqual(result, expected_data)
+            self.mock_server.stop(grace=0)
 
     def test_fetch_miner_data_not_connected(self):
-        with self.assertRaises(grpc.RpcError):
-            fetch_miner_data({})
+        diagnostic_data = {}
+        fetch_miner_data(diagnostic_data)
+        self.assertEqual(diagnostic_data, {})
