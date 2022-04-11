@@ -1,6 +1,7 @@
 Flask-APScheduler==1.12.2
 Flask-Caching==1.10.1
 Flask==2.0.1
+werkzeug==2.0.3
 certifi==2021.5.30
 click==7.1.2
 gunicorn==20.1.0
@@ -10,3 +11,4 @@ sentry-sdk[Flask]==1.5.1
 dbus-python==1.2.16
 hm-pyhelper==0.13.16
 python-gnupg==0.4.8
+grpcio==1.44.0
