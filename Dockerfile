@@ -21,7 +21,7 @@ RUN \
 # updating pip to recent version otherwise it doesn't find correct grpcio
 # without pinning the pip version, we get docker linter warning
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir --upgrade pip==22.0.1 && \
+RUN pip3 install --no-cache-dir --upgrade pip==22.0.1 && \
     pip install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" -r requirements.txt
 
 # firehose build, the tar is obtained from  quectel.
@@ -48,7 +48,7 @@ FROM balenalib/raspberry-pi-debian:buster-build-20211014 as runner
 # libatomic is a runtime dependency for grpcio
 RUN \
     install_packages \
-        python3-venv \
+        python3-minimal \
         wget \
         i2c-tools \
         libdbus-1-3 \
