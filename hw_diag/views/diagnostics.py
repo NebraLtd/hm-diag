@@ -8,9 +8,11 @@ from flask import render_template
 from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
+from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
 from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
+from hw_diag.diagnostics.shutdown_gateway_diagnostic import ShutdownGatewayDiagnostic
 from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
@@ -155,5 +157,36 @@ def add_gateway_txn():
         http_code = 200
 
     LOGGER.debug("add_gateway_txn result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.route('/v1/shutdown-gateway', methods=['POST'])
+def shutdown_gateway():
+    """
+    Generates an add_gateway_txn if a destination name and wallets are defined and valid.
+    Diagnostics report will be in the format below if successful.
+
+    """
+
+    shutdown_request_with_signature = request.get_data()
+    if not shutdown_request_with_signature:
+        err_msg = 'Can not find PGP payload.'
+        LOGGER.error(err_msg)
+        diagnostics_report = compose_diagnostics_report_from_err_msg(
+            SHUTDOWN_GATEWAY_KEY, err_msg)
+        return diagnostics_report, 406
+
+    diagnostics = [
+        ShutdownGatewayDiagnostic(GnuPG(), shutdown_request_with_signature),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({SHUTDOWN_GATEWAY_KEY}):
+        http_code = 500
+    else:
+        http_code = 200
+
+    LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
