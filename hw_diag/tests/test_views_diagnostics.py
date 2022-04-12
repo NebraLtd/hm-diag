@@ -50,7 +50,8 @@ class TestGetDiagnostics(unittest.TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.status, '200 OK')
 
-    def test_get_json_output(self):
+    @patch('hm_pyhelper.miner_param.get_mac_address', return_value='A0:32:23:B4:C5:D6')
+    def test_get_json_output(self, mock_get_mac_address):
         # Check the diagnostics JSON output.
         url = '/json'
         # Server perspective
