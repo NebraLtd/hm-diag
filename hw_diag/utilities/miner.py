@@ -26,14 +26,6 @@ def fetch_miner_data(diagnostics):
 
 def create_add_gateway_txn(destination_wallet: str) -> dict:
     with GatewayClient() as client:
-        add_gateway_txn = None
-        try:
-            add_gateway_txn = client.create_add_gateway_txn(destination_wallet,
-                                                            NEBRA_WALLET_ADDRESS)
-        except grpc.RpcError as err:
-            LOGGER.error(f"rpc error: {err.StatusCode}")
-            LOGGER.exception(err)
-        except Exception as err:
-            LOGGER.exception(err)
-        finally:
-            return add_gateway_txn
+        add_gateway_txn = client.create_add_gateway_txn(destination_wallet,
+                                                        NEBRA_WALLET_ADDRESS)
+        return add_gateway_txn

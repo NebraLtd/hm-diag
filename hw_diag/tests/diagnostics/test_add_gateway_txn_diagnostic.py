@@ -6,7 +6,7 @@ import hm_pyhelper
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-# from hm_pyhelper.gateway_grpc.exceptions import MinerMalformedAddGatewayTxn
+from hm_pyhelper.gateway_grpc.exceptions import MinerMalformedAddGatewayTxn
 
 from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
 from hw_diag.utilities.security import GnuPG
@@ -112,18 +112,18 @@ bsoB7mtn
             DESTINATION_ADD_GATEWAY_TXN_KEY: 'Verifying the payload PGP signature failed.',
         })
 
-    # @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
-    #               side_effect=MinerMalformedAddGatewayTxn('Address is incorrect.'))
-    # def test_failure_txn_exception(self, mock):
-    #     diagnostics = [
-    #         AddGatewayTxnDiagnostic(self.gnupg, self.shipping_destination_with_signature),
-    #     ]
-    #     diagnostics_report = DiagnosticsReport(diagnostics)
-    #     diagnostics_report.perform_diagnostics()
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
+                  side_effect=MinerMalformedAddGatewayTxn('Address is incorrect.'))
+    def test_failure_txn_exception(self, mock):
+        diagnostics = [
+            AddGatewayTxnDiagnostic(self.gnupg, self.shipping_destination_with_signature),
+        ]
+        diagnostics_report = DiagnosticsReport(diagnostics)
+        diagnostics_report.perform_diagnostics()
 
-    #     self.assertDictEqual(diagnostics_report, {
-    #         DIAGNOSTICS_PASSED_KEY: False,
-    #         DIAGNOSTICS_ERRORS_KEY: [DESTINATION_ADD_GATEWAY_TXN_KEY,
-    #                                  DESTINATION_ADD_GATEWAY_TXN_KEY],
-    #         DESTINATION_ADD_GATEWAY_TXN_KEY: 'Address is incorrect.',
-    #     })
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: [DESTINATION_ADD_GATEWAY_TXN_KEY,
+                                     DESTINATION_ADD_GATEWAY_TXN_KEY],
+            DESTINATION_ADD_GATEWAY_TXN_KEY: 'Address is incorrect.',
+        })
