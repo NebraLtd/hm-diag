@@ -1,5 +1,6 @@
 from hm_pyhelper.diagnostics import DiagnosticsReport
 from hm_pyhelper.diagnostics.diagnostic import Diagnostic
+
 from hw_diag.utilities.balena_supervisor import get_device_status
 
 

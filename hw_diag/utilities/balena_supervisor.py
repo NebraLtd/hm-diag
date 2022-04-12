@@ -9,7 +9,9 @@ def invoke_balena_supervisor_post(http_verb, endpoint, api_version=API_VERSION):
     supervisor_address = os.environ['BALENA_SUPERVISOR_ADDRESS']
     supervisor_api_key = os.environ['BALENA_SUPERVISOR_API_KEY']
 
-    url = f"{supervisor_address}/{API_VERSION}/{endpoint}?apikey={supervisor_api_key}"
+
+    url = f"{supervisor_address}/{api_version}/{endpoint}?apikey={supervisor_api_key}"
+
     return requests.request(http_verb, url, headers=headers)
 
 
