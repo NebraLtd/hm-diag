@@ -3,7 +3,7 @@
 ####################################################################################################
 ################################## Stage: builder ##################################################
 
-FROM balenalib/raspberry-pi-debian:buster-build-20211014 as builder
+FROM balenalib/raspberry-pi-debian-python:buster-build-20211014 as builder
 
 # Nebra uses /opt by convention
 WORKDIR /opt/
@@ -45,7 +45,7 @@ RUN pip --no-cache-dir install .
 ####################################################################################################
 ################################### Stage: runner ##################################################
 
-FROM balenalib/raspberry-pi-debian:buster-build-20211014 as runner
+FROM balenalib/raspberry-pi-debian-python:buster-build-20211014 as runner
 
 RUN \
     install_packages \
@@ -82,8 +82,7 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 # copy firmware files
 COPY --from=builder /opt/quectel /quectel
 
-# Add python dependencies to PYTHONPATH
-ENV PYTHONPATH="/opt:$PYTHONPATH"
+# Add python venv path
 ENV PATH="/opt/venv/bin:$PATH"
 
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
