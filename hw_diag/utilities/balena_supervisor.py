@@ -17,15 +17,15 @@ def shutdown():
     response = invoke_balena_supervisor_post('POST', 'shutdown')
 
     if (response.status_code == 202):
-        return response.json
+        return response.json()
     else:
-        raise Exception(response.json)
+        raise Exception(response.json())
 
 
 def get_device_status():
     response = invoke_balena_supervisor_post('POST', 'status', api_version='v2')
 
     if response.status_code == 200:
-        return response.json
+        return response.json()
     else:
-        raise Exception(response.json)
+        raise Exception(response.json())
