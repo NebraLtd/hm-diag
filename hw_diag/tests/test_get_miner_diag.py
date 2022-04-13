@@ -18,7 +18,9 @@ class TestGetMinerDiag(unittest.TestCase):
         self.mock_server.add_insecure_port(f'[::]:{TestData.server_port}')
         self.mock_server.start()
 
-    def test_fetch_miner_data_valid(self):
+    @patch('hm_pyhelper.gateway_grpc.client.GatewayClient.get_gateway_version',
+           return_value=TestData.expected_summary['gateway_version'])
+    def test_fetch_miner_data_valid(self, mock_get_gateway_version):
         with patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient.__init__,
                           '__defaults__', (f"localhost:{TestData.server_port}",)):
             self.start_mock_server()
