@@ -1,6 +1,6 @@
 from hm_pyhelper.diagnostics import DiagnosticsReport
 from hw_diag.diagnostics.pgp_signed_json_diagnostic import PgpSignedJsonDiagnostic
-from hw_diag.utilities.balena_supervisor import shutdown
+from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.security import GnuPG
 
 # TODO move to pyhelper constants
@@ -26,7 +26,8 @@ class ShutdownGatewayDiagnostic(PgpSignedJsonDiagnostic):
             return
 
         try:
-            shutdown_response = shutdown()
+            balena_supervisor = BalenaSupervisor.new_from_env()
+            shutdown_response = balena_supervisor.shutdown()
             diagnostics_report.record_result(shutdown_response, self)
         except Exception as e:
             diagnostics_report.record_failure(e, self)
