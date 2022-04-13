@@ -109,7 +109,7 @@ bsoB7mtn
             DIAGNOSTICS_PASSED_KEY: False,
             DIAGNOSTICS_ERRORS_KEY: [DESTINATION_ADD_GATEWAY_TXN_KEY,
                                      DESTINATION_ADD_GATEWAY_TXN_KEY],
-            DESTINATION_ADD_GATEWAY_TXN_KEY: 'Verifying the payload signature failed.',
+            DESTINATION_ADD_GATEWAY_TXN_KEY: 'Verifying the payload PGP signature failed.',
         })
 
     @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
