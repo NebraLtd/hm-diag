@@ -10,7 +10,7 @@ class DeviceStatusDiagnostic(Diagnostic):
     then the diagnostic is considered to have failed.
     """
 
-    KEY = 'DS'
+    KEY = 'device_status'
     FRIENDLY_KEY = "device_status"
 
     def __init__(self):
