@@ -53,7 +53,7 @@ def get_app(name):
 
     # Configure the backend scheduled tasks
     scheduler = APScheduler()
-    scheduler.api_enabled = True
+    scheduler.api_enabled = False
     scheduler.init_app(app)
     scheduler.start()
 
