@@ -14,14 +14,12 @@ def fetch_miner_data(diagnostics):
             diagnostics['MH'] = validator_info.height
             diagnostics['RE'] = client.get_region()
             diagnostics['miner_key'] = client.get_pubkey()
-            diagnostics['FW'] = client.get_gateway_version()
         except grpc.RpcError as err:
-            LOGGER.error(f"rpc error: {err.StatusCode}")
+            LOGGER.error(f"rpc error: {err}")
             LOGGER.exception(err)
         except Exception as err:
             LOGGER.exception(err)
-        finally:
-            return diagnostics
+        return diagnostics
 
 
 def create_add_gateway_txn(destination_wallet: str) -> dict:
