@@ -166,8 +166,18 @@ def add_gateway_txn():
 @DIAGNOSTICS.route('/v1/shutdown-gateway', methods=['POST'])
 def shutdown_gateway():
     """
-    Generates an add_gateway_txn if a destination name and wallets are defined and valid.
-    Diagnostics report will be in the format below if successful.
+    Shuts down the gateway using the Balena supervisor API.
+    Requires a signed PGP payload to be supplied in the format:
+
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA256
+
+    {
+    "shutdown_gateway": true
+    }
+    -----BEGIN PGP SIGNATURE-----
+    [REDACTED]
+    -----END PGP SIGNATURE-----
 
     """
 
