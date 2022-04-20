@@ -4,7 +4,7 @@ from requests.exceptions import ConnectionError, ConnectTimeout
 
 from hm_pyhelper.logger import get_logger
 
-log = get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 
 class BalenaSupervisor:
@@ -26,33 +26,34 @@ class BalenaSupervisor:
             return requests.request(method=http_method, url=url, headers=self.headers)
 
         except (ConnectionError, ConnectTimeout) as requests_exception:
-            log.error(f"Connection error while trying to shutdown device. URL: {url}")
+            LOGGER.error(f"Connection error while trying to shutdown device. URL: {url}")
 
-            log.error(requests_exception)
+            LOGGER.error(requests_exception)
 
         except Exception as exp:
-            log.error(f"Error while trying to shutdown device. URL: {url}")
-            log.error(exp)
+            LOGGER.error(f"Error while trying to shutdown device. URL: {url}")
+            LOGGER.error(exp)
 
         return None
 
     def shutdown(self):
-        "Attempt device shutdown using balena supervisor API."
-        log.info("Attempting device shutdown using Balena supervisor.")
+        """Attempt device shutdown using balena supervisor API."""
+        LOGGER.info("Attempting device shutdown using Balena supervisor.")
 
         response = self._make_request('POST', '/v1/shutdown')
         if response is None or response.ok is False:
-            log.error("Device shutdown attempt failed.")
+            LOGGER.error("Device shutdown attempt failed.")
 
         return response.json()
 
-    def get_device_status(self) -> str:
-        "Get device status from balena supervisor API."
-        log.info("Attempting device shutdown using Balena supervisor.")
+    def get_device_status(self, key_to_return) -> str:
+        """Get device status from balena supervisor API."""
+        LOGGER.info("Retrieving device status using Balena supervisor.")
 
         response = self._make_request('GET', '/v2/state/status')
+        LOGGER.info(response.json())
         if response is None or response.ok is False:
-            log.error("Device status request failed.")
-            return ''
+            LOGGER.error("Device status request failed.")
+            raise Exception("Device status request failed")
 
-        return response.json().get('status', 'unknown')
+        return response.json()[key_to_return]
