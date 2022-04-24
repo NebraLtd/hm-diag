@@ -1,27 +1,54 @@
 import logging
 import datetime
 import json
+from typing import Any
 
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
+from hw_diag.diagnostics.lte_diagnostic import LOGGER
 from hw_diag.utilities.hardware import detect_ecc
 from hw_diag.utilities.hardware import get_serial_number
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
-from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
+from hw_diag.diagnostics.gateway_diagnostics import GatewayDiagnostic
+from hm_pyhelper.diagnostics import DiagnosticsReport
 
 
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
 
+def get_deep_key(source_dict: dict, key_path: list) -> Any:
+    """
+    Returns None if any part of the key in key_path is not found in source_dict else the value
+    """
+    try:
+        for key in key_path:
+            source_dict = source_dict[key]
+        return source_dict
+    except KeyError as err:
+        LOGGER.exception(f"expected key not found {err}")
+        return None
+
+
 def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
-    diagnostics = {}
+    diagnostics = [
+        GatewayDiagnostic()
+    ]
+
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+
+    # TODO:: message should change once all the functions have been
+    # converted to diagnostics.
+    LOGGER.debug("partial refactored diagnostics report is: %s" % diagnostics_report)
+
+    diagnostics = diagnostics_report
 
     now = datetime.datetime.utcnow()
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
@@ -37,9 +64,6 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diagnostics['PK'] = public_keys['key']
     diagnostics['AN'] = public_keys['name']
 
-    # Fetch data from miner container.
-    diagnostics = fetch_miner_data(diagnostics)
-
     set_diagnostics_bt_lte(diagnostics)
 
     # Check the basics if they're fine and set an overall value
@@ -49,7 +73,9 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             diagnostics["ECC"] is True
             and diagnostics["E0"] is not None
             and diagnostics["W0"] is not None
-            and diagnostics["BT"] is True and diagnostics["LOR"] is True
+            and diagnostics["BT"] is True
+            and diagnostics["LOR"] is True
+            and diagnostics["gatewayrs"]["validator_uri"] is not None
     ):
         diagnostics["PF"] = True
     else:

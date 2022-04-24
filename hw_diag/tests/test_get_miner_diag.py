@@ -18,9 +18,7 @@ class TestGetMinerDiag(unittest.TestCase):
         self.mock_server.add_insecure_port(f'[::]:{TestData.server_port}')
         self.mock_server.start()
 
-    @patch('hm_pyhelper.gateway_grpc.client.GatewayClient.get_gateway_version',
-           return_value=TestData.expected_summary['gateway_version'])
-    def test_fetch_miner_data_valid(self, mock_get_gateway_version):
+    def test_fetch_miner_data_valid(self):
         with patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient.__init__,
                           '__defaults__', (f"localhost:{TestData.server_port}",)):
             self.start_mock_server()
@@ -30,8 +28,7 @@ class TestGetMinerDiag(unittest.TestCase):
                 'block_age': TestData.height_res.block_age,
                 'MH': TestData.height_res.height,
                 'RE': TestData.region_name,
-                'miner_key': TestData.pubkey_decoded,
-                'FW': TestData.expected_summary['gateway_version']
+                'miner_key': TestData.pubkey_decoded
             }
 
             result = fetch_miner_data({})
@@ -40,6 +37,6 @@ class TestGetMinerDiag(unittest.TestCase):
             self.mock_server.stop(grace=0)
 
     def test_fetch_miner_data_not_connected(self):
-        diagnostic_data = {}
-        fetch_miner_data(diagnostic_data)
-        self.assertEqual(diagnostic_data, {})
+        with self.assertRaises(grpc.RpcError):
+            diagnostic_data = {}
+            fetch_miner_data(diagnostic_data)
