@@ -30,8 +30,7 @@ class TestGetMinerDiag(unittest.TestCase):
                 'block_age': TestData.height_res.block_age,
                 'MH': TestData.height_res.height,
                 'RE': TestData.region_name,
-                'miner_key': TestData.pubkey_decoded,
-                'FW': TestData.expected_summary['gateway_version']
+                'miner_key': TestData.pubkey_decoded
             }
 
             result = fetch_miner_data({})
@@ -40,6 +39,6 @@ class TestGetMinerDiag(unittest.TestCase):
             self.mock_server.stop(grace=0)
 
     def test_fetch_miner_data_not_connected(self):
-        diagnostic_data = {}
-        fetch_miner_data(diagnostic_data)
-        self.assertEqual(diagnostic_data, {})
+        with self.assertRaises(grpc.RpcError):
+            diagnostic_data = {}
+            fetch_miner_data(diagnostic_data)

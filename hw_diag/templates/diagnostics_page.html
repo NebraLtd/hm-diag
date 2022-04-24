@@ -66,10 +66,10 @@
                 </tr>
                 <tr>
                   <td>Region Plan</td>
-                  {% if not diagnostics.RE %}
-                    <td class="text-right">Unknown Location</td>
+                  {% if diagnostics.gatewayrs.RE %}
+                    <td class="text-right">{{ diagnostics.gatewayrs.RE }}</td>
                   {% else %}
-                    <td class="text-right">{{ diagnostics.RE }}</td>
+                    <td class="text-right">Unknown Location</td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -78,24 +78,24 @@
                 </tr>
                 <tr>
                   <td>Connected Validator</td>
-                  {% if diagnostics.validator_uri %}
-                    <td class="text-success text-right">{{ diagnostics.validator_uri }} </td>
+                  {% if diagnostics.gatewayrs.validator_uri %}
+                    <td class="text-success text-right">{{ diagnostics.gatewayrs.validator_uri }} </td>
                   {% else %}
                     <td class="text-warning text-right">Disconnected</td>
                   {% endif %}
                 </tr>
                 <tr>
                     <td>Validator Block Height</td>
-                    {% if not diagnostics.MH %}
-                      <td class="text-warning text-right">Disconnected</td>
+                    {% if diagnostics.gatewayrs.MH %}
+                        <td class="text-success text-right">{{ diagnostics.gatewayrs.MH }}</td>
                     {% else %}
-                      <td class="text-success text-right">{{ diagnostics.MH }}</td>
+                        <td class="text-warning text-right">Disconnected</td>
                     {% endif %}
                   </tr>
                 <tr>
                     <td>Validator Block Age</td>
-                    {% if diagnostics.block_age %}
-                      <td class="text-success text-right">{{ diagnostics.block_age }} </td>
+                    {% if diagnostics.gatewayrs.block_age %}
+                      <td class="text-success text-right">{{ diagnostics.gatewayrs.block_age }} </td>
                     {% else %}
                       <td class="text-warning text-right">Disconnected</td>
                     {% endif %}
