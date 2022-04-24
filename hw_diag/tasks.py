@@ -3,6 +3,7 @@ import datetime
 import json
 
 from hm_pyhelper.hardware_definitions import variant_definitions
+from hm_pyhelper.miner_param import get_temperatures
 from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.utilities.blockchain import get_helium_blockchain_height
 from hw_diag.utilities.hardware import detect_ecc
@@ -30,6 +31,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
 
     get_ethernet_addresses(diagnostics)
+    get_temperatures(diagnostics)
     get_environment_var(diagnostics)
     get_serial_number(diagnostics)
     detect_ecc(diagnostics)

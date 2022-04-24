@@ -25,6 +25,7 @@ As part of the code the system produces a JSON file which then is used to carry 
 | BT | If the bluetooth module is detected |
 | BUTTON | The GPIO pin of the button on the miner |
 | CELLULAR | Whether the device has optional cellular capability |
+| CPU0 | CPU temperature in centigrade degrees |
 | E0 | MAC Address of the ETH0 interface |
 | ECC | If the ECC Key is detected over I2C |
 | ECCOB | If the miner should have an ECC chip on board |
