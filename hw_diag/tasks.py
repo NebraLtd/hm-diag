@@ -13,7 +13,7 @@ from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
-from hw_diag.diagnostics.gateway_diagnostics import GatewayDiagnostic
+from hw_diag.diagnostics.gateway_diagnostics import GatewayDiagnostics
 from hm_pyhelper.diagnostics import DiagnosticsReport
 
 
@@ -38,7 +38,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
     diagnostics = [
-        GatewayDiagnostic()
+        GatewayDiagnostics()
     ]
 
     diagnostics_report = DiagnosticsReport(diagnostics)
