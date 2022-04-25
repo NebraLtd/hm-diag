@@ -6,8 +6,8 @@ import grpc
 
 
 class GatewayDiagnostic(Diagnostic):
-    KEY = 'GATEWAY'
     FRIENDLY_NAME = "gatewayrs"
+    KEY = FRIENDLY_NAME
 
     def __init__(self):
         super(GatewayDiagnostic, self).__init__(self.KEY, self.FRIENDLY_NAME)
@@ -15,7 +15,7 @@ class GatewayDiagnostic(Diagnostic):
     def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         diagnostics = {}
         try:
-            fetch_miner_data(diagnostics)
+            miner_data = fetch_miner_data(diagnostics)
         except grpc.RpcError as err:
             LOGGER.error(f"rpc error: {err}")
             LOGGER.exception(err)

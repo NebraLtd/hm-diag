@@ -75,7 +75,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             and diagnostics["W0"] is not None
             and diagnostics["BT"] is True
             and diagnostics["LOR"] is True
-            and diagnostics["gatewayrs"]["validator_uri"] is not None
+            and get_deep_key(diagnostics, ["gatewayrs", "validator_uri"]) is not None
     ):
         diagnostics["PF"] = True
     else:
