@@ -1,7 +1,6 @@
 import logging
 import datetime
 import json
-from typing import Any
 
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
@@ -21,19 +20,6 @@ log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
 
-def get_deep_key(source_dict: dict, key_path: list) -> Any:
-    """
-    Returns None if any part of the key in key_path is not found in source_dict else the value
-    """
-    try:
-        for key in source_dict:
-            source_dict = source_dict[key]
-        return source_dict
-    except KeyError as err:
-        LOGGER.exception(f"expected key not found {err}")
-        return None
-
-
 def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
@@ -44,8 +30,6 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diagnostics_report = DiagnosticsReport(diagnostics)
     diagnostics_report.perform_diagnostics()
 
-    # TODO:: message should change once all the functions have been
-    # converted to diagnostics.
     LOGGER.debug("partial refactored diagnostics report is: %s" % diagnostics_report)
 
     diagnostics = diagnostics_report
@@ -75,7 +59,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             and diagnostics["W0"] is not None
             and diagnostics["BT"] is True
             and diagnostics["LOR"] is True
-            and get_deep_key(diagnostics, ["gatewayrs", "validator_uri"]) is not None
+            and not diagnostics.has_errors(["validator_uri"])
     ):
         diagnostics["PF"] = True
     else:

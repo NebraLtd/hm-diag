@@ -5,17 +5,34 @@ from hm_pyhelper.miner_param import LOGGER
 import grpc
 
 
-class GatwayGRPCMethodCallMixin:
-    def call_grpc_and_record_status(self, diagnostics_report: DiagnosticsReport,
-                                    method_name: str, *args,
-                                    **kwargs) -> object:
+class DiagnosticKeyInfo:
+    def __init__(self, friendly_name: str, short_key: str = None,
+                 grpc_method_name: str = None,
+                 composed_attribute_path: str = None):
+        """"
+        Represents a Gateway Diagnostic key required to fetch
+        corresponding value.
+        composed_attribute_path represents the path inside the value returned
+        by grpc call represented by grpc_method_name
+        if short_key is not supplied it defaults to friendly_name
         """
-        Call a method on the gateway grpc client amd record failures if any.
-        Recording success is caller's responsibility.
-        :param method_name: The method name to call.
-        :param args: The arguments to pass to the method.
-        :param kwargs: The keyword arguments to pass to the method.
-        :return: The result of the method call.
+        self.friendly_name = friendly_name
+        self.short_key = short_key
+        if short_key is None:
+            self.short_key = friendly_name
+        self.grpc_method_name = grpc_method_name
+        self.composed_attribute_path = composed_attribute_path
+
+
+class GatewayDiagnostic(Diagnostic):
+    def __init__(self, keyinfo: DiagnosticKeyInfo):
+        super(GatewayDiagnostic, self).__init__(keyinfo.short_key, keyinfo.friendly_name)
+        self.keyinfo = keyinfo
+
+    def call_grpc(self, diagnostics_report: DiagnosticsReport,
+                  method_name: str, *args, **kwargs) -> object:
+        """
+        return value if successful else None
         """
         try:
             with GatewayClient() as client:
@@ -29,92 +46,58 @@ class GatwayGRPCMethodCallMixin:
             diagnostics_report.record_failure(err, self)
         return None
 
-
-class DiagnosticKeyInfo:
-    def __init__(self, friendly_key: str, key: str = None,
-                 grpc_attribute_name: str = None,
-                 composed_attribute_path: str = None):
-        self.grpc_attribute_name = grpc_attribute_name
-        self.friendly_key = friendly_key
-        if key is None:
-            self.key = friendly_key
-        else:
-            self.key = key
-        self.grpc_attribute_name = grpc_attribute_name
-        self.composed_attribute_path = composed_attribute_path
-
-
-class GatewayCompositeValueDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
-    SUPPORTED_VALIDATOR_ATTRIBUTES = [
-        DiagnosticKeyInfo('validator_address'),
-        DiagnosticKeyInfo('validator_uri'),
-        DiagnosticKeyInfo('validator_block_age'),
-        DiagnosticKeyInfo('validator_height', 'MH')
-    ]
-
-    def __init__(self, key: str, friendly_name: str):
-        super(GatewayCompositeValueDiagnostic, self).__init__(key, friendly_name)
-
     def perform_test(self, diagnostics_report):
-        validator_info = self.call_grpc_and_record_status(diagnostics_report, "get_validator_info")
-        if not validator_info:
+        ret_value = self.call_grpc(diagnostics_report,
+                                   self.keyinfo.grpc_method_name)
+
+        # if grpc has failed
+        if not ret_value:
             return
 
-        if self.friendly_key == 'validator_address':
-            diagnostics_report.record_result(
-                decode_pub_key(validator_info.gateway.address), self)
-        elif self.friendly_key == 'validator_uri':
-            diagnostics_report.record_result(validator_info.gateway.uri, self)
-        elif self.friendly_key == 'validator_block_age':
-            diagnostics_report.record_result(validator_info.block_age, self)
-        elif self.friendly_key == 'validator_height':
-            diagnostics_report.record_result(validator_info.height, self)
-        else:
-            diagnostics_report.record_failure(
-                f"{self.friendly_key} is not a validator property", self)
+        # return simple value
+        if not self.keyinfo.composed_attribute_path:
+            diagnostics_report.record_result(ret_value, self)
+            return
 
-
-class GatewaySimpleValueDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
-    SUPPORTED_ATTRIBUTES = [
-
-    ]
-
-
-class RegionDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
-    KEY = 'RE'
-    FRIENDLY_NAME = 'miner_region'
-
-    def __init__(self):
-        super(RegionDiagnostic, self).__init__(self.KEY, self.FRIENDLY_NAME)
-
-    def perform_test(self, diagnostics_report):
-        region = self.call_grpc_and_record_status(diagnostics_report, "get_region")
-        if region:
-            diagnostics_report.record_result(region, self)
-
-
-class MinerPubKeyDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
-    FRIENDLY_NAME = 'miner_pubkey'
-    KEY = FRIENDLY_NAME
-
-    def __init__(self):
-        super(MinerPubKeyDiagnostic, self).__init__(self.KEY, self.FRIENDLY_NAME)
-
-    def perform_test(self, diagnostics_report):
-        miner_pubkey = self.call_grpc_and_record_status(diagnostics_report, "get_pubkey")
-        if miner_pubkey:
-            diagnostics_report.record_result(miner_pubkey, self)
+        # flatten the composite value
+        try:
+            for attribute_name in self.keyinfo.composed_attribute_path.split('.'):
+                ret_value = getattr(ret_value, attribute_name)
+            # this key requires additional decoding
+            if self.keyinfo.friendly_name == 'validator_address':
+                ret_value = decode_pub_key(ret_value)
+            diagnostics_report.record_result(ret_value, self)
+        except Exception as err:
+            diagnostics_report.record_failure(err, self)
 
 
 class GatewayDiagnostics(Diagnostic):
+
+    SUPPORTED_GATEWAY_ATTRIBUTES = [
+        DiagnosticKeyInfo(friendly_name='validator_address',
+                          grpc_method_name='get_validator_info',
+                          composed_attribute_path='gateway.address'),
+        DiagnosticKeyInfo(friendly_name='validator_uri',
+                          grpc_method_name='get_validator_info',
+                          composed_attribute_path='gateway.uri'),
+        DiagnosticKeyInfo(friendly_name='validator_block_age',
+                          grpc_method_name='get_validator_info',
+                          composed_attribute_path='block_age'),
+        DiagnosticKeyInfo(friendly_name='validator_height',
+                          short_key='MH',
+                          grpc_method_name='get_validator_info',
+                          composed_attribute_path='height'),
+        DiagnosticKeyInfo(friendly_name='miner_pubkey',
+                          grpc_method_name='get_pubkey'),
+        DiagnosticKeyInfo(friendly_name='miner_region',
+                          short_key='RE',
+                          grpc_method_name='get_region'),
+    ]
+
     def __init__(self):
-        self.gateway_diagnostics = [
-            RegionDiagnostic(),
-            MinerPubKeyDiagnostic(),
-        ]
-        for attribute in GatewayCompositeValueDiagnostic.SUPPORTED_VALIDATOR_ATTRIBUTES:
-            self.gateway_diagnostics.append(
-                GatewayCompositeValueDiagnostic(attribute.key, attribute.friendly_key))
+        self.gateway_diagnostics = []
+        for attribute in self.SUPPORTED_GATEWAY_ATTRIBUTES:
+            self.gateway_diagnostics.append(GatewayDiagnostic(attribute))
 
     def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         for diagnostic in self.gateway_diagnostics:

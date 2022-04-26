@@ -19,25 +19,7 @@ class TestGetMinerDiag(unittest.TestCase):
         self.mock_server.add_insecure_port(f'[::]:{TestData.server_port}')
         self.mock_server.start()
 
-    def test_fetch_miner_data_valid(self):
-        with patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient.__init__,
-                          '__defaults__', (f"localhost:{TestData.server_port}",)):
-            self.start_mock_server()
-            expected_data = {
-                'validator_address': TestData.validator_address_decoded,
-                'validator_uri': TestData.height_res.gateway.uri,
-                'validator_block_age': TestData.height_res.block_age,
-                'MH': TestData.height_res.height,
-                'RE': TestData.region_name,
-                'miner_key': TestData.pubkey_decoded
-            }
-
-            result = fetch_miner_data({})
-            print(result)
-            self.assertEqual(result, expected_data)
-            self.mock_server.stop(grace=0)
-
-    def test_fetch_miner_data_not_connected(self):
+    def test_gateway_diagnostic_not_connected(self):
         with self.assertRaises(grpc.RpcError):
             diagnostic_data = {}
             fetch_miner_data(diagnostic_data)
@@ -57,7 +39,9 @@ class TestGetMinerDiag(unittest.TestCase):
                 'validator_uri': TestData.height_res.gateway.uri,
                 'validator_block_age': TestData.height_res.block_age,
                 'validator_height': TestData.height_res.height,
+                'MH': TestData.height_res.height,
                 'miner_region': TestData.region_name,
+                'RE': TestData.region_name,
                 'miner_pubkey': TestData.pubkey_decoded
             }
             self.assertDictContainsSubset(expected_data, diagnostics_report)
