@@ -66,8 +66,8 @@
                 </tr>
                 <tr>
                   <td>Region Plan</td>
-                  {% if diagnostics.gatewayrs.RE %}
-                    <td class="text-right">{{ diagnostics.gatewayrs.RE }}</td>
+                  {% if not diagnostics.has_errors([DIAG_CONSTS.GATEWAY_REGION_KEY]) %}
+                    <td class="text-right">{{ diagnostics.get(DIAG_CONSTS.GATEWAY_REGION_KEY) }}</td>
                   {% else %}
                     <td class="text-right">Unknown Location</td>
                   {% endif %}
@@ -78,24 +78,24 @@
                 </tr>
                 <tr>
                   <td>Connected Validator</td>
-                  {% if diagnostics.gatewayrs.validator_uri %}
-                    <td class="text-success text-right">{{ diagnostics.gatewayrs.validator_uri }} </td>
+                  {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_URI_KEY]) %}
+                    <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_URI_KEY) }} </td>
                   {% else %}
                     <td class="text-warning text-right">Disconnected</td>
                   {% endif %}
                 </tr>
                 <tr>
                     <td>Validator Block Height</td>
-                    {% if diagnostics.gatewayrs.MH %}
-                        <td class="text-success text-right">{{ diagnostics.gatewayrs.MH }}</td>
+                    {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY]) %}
+                        <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY) }}</td>
                     {% else %}
                         <td class="text-warning text-right">Disconnected</td>
                     {% endif %}
                   </tr>
                 <tr>
                     <td>Validator Block Age</td>
-                    {% if diagnostics.gatewayrs.block_age %}
-                      <td class="text-success text-right">{{ diagnostics.gatewayrs.block_age }} </td>
+                    {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_BLOCK_AGE]) %}
+                      <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_BLOCK_AGE) }} </td>
                     {% else %}
                       <td class="text-warning text-right">Disconnected</td>
                     {% endif %}
