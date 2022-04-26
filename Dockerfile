@@ -86,4 +86,4 @@ COPY --from=builder /opt/quectel /quectel
 # Add python venv path
 ENV PATH="/opt/venv/bin:$PATH"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi_app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "300", "hw_diag:wsgi_app"]
