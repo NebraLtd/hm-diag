@@ -31,24 +31,29 @@ class GatwayGRPCMethodCallMixin:
 
 
 class DiagnosticKeyInfo:
-    def __init__(self, friendly_key: str, key: str = None):
+    def __init__(self, friendly_key: str, key: str = None,
+                 grpc_attribute_name: str = None,
+                 composed_attribute_path: str = None):
+        self.grpc_attribute_name = grpc_attribute_name
         self.friendly_key = friendly_key
         if key is None:
             self.key = friendly_key
         else:
             self.key = key
+        self.grpc_attribute_name = grpc_attribute_name
+        self.composed_attribute_path = composed_attribute_path
 
 
-class ValidatorDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
+class GatewayCompositeValueDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
     SUPPORTED_VALIDATOR_ATTRIBUTES = [
         DiagnosticKeyInfo('validator_address'),
         DiagnosticKeyInfo('validator_uri'),
-        DiagnosticKeyInfo('block_age'),
+        DiagnosticKeyInfo('validator_block_age'),
         DiagnosticKeyInfo('validator_height', 'MH')
     ]
 
     def __init__(self, key: str, friendly_name: str):
-        super(ValidatorDiagnostic, self).__init__(key, friendly_name)
+        super(GatewayCompositeValueDiagnostic, self).__init__(key, friendly_name)
 
     def perform_test(self, diagnostics_report):
         validator_info = self.call_grpc_and_record_status(diagnostics_report, "get_validator_info")
@@ -60,13 +65,19 @@ class ValidatorDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
                 decode_pub_key(validator_info.gateway.address), self)
         elif self.friendly_key == 'validator_uri':
             diagnostics_report.record_result(validator_info.gateway.uri, self)
-        elif self.friendly_key == 'block_age':
+        elif self.friendly_key == 'validator_block_age':
             diagnostics_report.record_result(validator_info.block_age, self)
         elif self.friendly_key == 'validator_height':
             diagnostics_report.record_result(validator_info.height, self)
         else:
             diagnostics_report.record_failure(
                 f"{self.friendly_key} is not a validator property", self)
+
+
+class GatewaySimpleValueDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
+    SUPPORTED_ATTRIBUTES = [
+
+    ]
 
 
 class RegionDiagnostic(Diagnostic, GatwayGRPCMethodCallMixin):
@@ -101,9 +112,9 @@ class GatewayDiagnostics(Diagnostic):
             RegionDiagnostic(),
             MinerPubKeyDiagnostic(),
         ]
-        for attribute in ValidatorDiagnostic.SUPPORTED_VALIDATOR_ATTRIBUTES:
+        for attribute in GatewayCompositeValueDiagnostic.SUPPORTED_VALIDATOR_ATTRIBUTES:
             self.gateway_diagnostics.append(
-                ValidatorDiagnostic(attribute.key, attribute.friendly_key))
+                GatewayCompositeValueDiagnostic(attribute.key, attribute.friendly_key))
 
     def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         for diagnostic in self.gateway_diagnostics:

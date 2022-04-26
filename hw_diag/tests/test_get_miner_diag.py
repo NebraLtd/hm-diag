@@ -26,7 +26,7 @@ class TestGetMinerDiag(unittest.TestCase):
             expected_data = {
                 'validator_address': TestData.validator_address_decoded,
                 'validator_uri': TestData.height_res.gateway.uri,
-                'block_age': TestData.height_res.block_age,
+                'validator_block_age': TestData.height_res.block_age,
                 'MH': TestData.height_res.height,
                 'RE': TestData.region_name,
                 'miner_key': TestData.pubkey_decoded
@@ -55,7 +55,7 @@ class TestGetMinerDiag(unittest.TestCase):
             expected_data = {
                 'validator_address': TestData.validator_address_decoded,
                 'validator_uri': TestData.height_res.gateway.uri,
-                'block_age': TestData.height_res.block_age,
+                'validator_block_age': TestData.height_res.block_age,
                 'validator_height': TestData.height_res.height,
                 'miner_region': TestData.region_name,
                 'miner_pubkey': TestData.pubkey_decoded

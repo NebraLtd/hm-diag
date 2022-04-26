@@ -66,8 +66,8 @@
                 </tr>
                 <tr>
                   <td>Region Plan</td>
-                  {% if diagnostics.gatewayrs.RE %}
-                    <td class="text-right">{{ diagnostics.gatewayrs.RE }}</td>
+                  {% if diagnostics.miner_region %}
+                    <td class="text-right">{{ diagnostics.miner_region }}</td>
                   {% else %}
                     <td class="text-right">Unknown Location</td>
                   {% endif %}
@@ -78,24 +78,24 @@
                 </tr>
                 <tr>
                   <td>Connected Validator</td>
-                  {% if diagnostics.gatewayrs.validator_uri %}
-                    <td class="text-success text-right">{{ diagnostics.gatewayrs.validator_uri }} </td>
+                  {% if diagnostics.validator_uri %}
+                    <td class="text-success text-right">{{ diagnostics.validator_uri }} </td>
                   {% else %}
                     <td class="text-warning text-right">Disconnected</td>
                   {% endif %}
                 </tr>
                 <tr>
                     <td>Validator Block Height</td>
-                    {% if diagnostics.gatewayrs.MH %}
-                        <td class="text-success text-right">{{ diagnostics.gatewayrs.MH }}</td>
+                    {% if diagnostics.validator_height %}
+                        <td class="text-success text-right">{{ diagnostics.validator_height }}</td>
                     {% else %}
                         <td class="text-warning text-right">Disconnected</td>
                     {% endif %}
                   </tr>
                 <tr>
                     <td>Validator Block Age</td>
-                    {% if diagnostics.gatewayrs.block_age %}
-                      <td class="text-success text-right">{{ diagnostics.gatewayrs.block_age }} </td>
+                    {% if diagnostics.validator_block_age %}
+                      <td class="text-success text-right">{{ diagnostics.validator_block_age }} </td>
                     {% else %}
                       <td class="text-warning text-right">Disconnected</td>
                     {% endif %}

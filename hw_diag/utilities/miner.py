@@ -7,7 +7,7 @@ def fetch_miner_data(diagnostics: dict) -> dict:
         validator_info = client.get_validator_info()
         diagnostics['validator_address'] = decode_pub_key(validator_info.gateway.address)
         diagnostics['validator_uri'] = validator_info.gateway.uri
-        diagnostics['block_age'] = validator_info.block_age
+        diagnostics['validator_block_age'] = validator_info.block_age
         diagnostics['MH'] = validator_info.height
         diagnostics['RE'] = client.get_region()
         diagnostics['miner_key'] = client.get_pubkey()
