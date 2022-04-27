@@ -6,7 +6,7 @@ import hm_pyhelper
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hm_pyhelper.diagnostics.diagnostics_report import \
     DIAGNOSTICS_PASSED_KEY, DIAGNOSTICS_ERRORS_KEY, DiagnosticsReport
-from hm_pyhelper.miner_json_rpc.exceptions import MinerMalformedAddGatewayTxn
+from hm_pyhelper.gateway_grpc.exceptions import MinerMalformedAddGatewayTxn
 
 from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
 from hw_diag.utilities.security import GnuPG
@@ -68,7 +68,7 @@ bsoB7mtn
     def tearDownClass(cls):
         cls.gnupg.cleanup()
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   return_value=mocked_create_add_gateway_txn_result)
     def test_success(self, mock):
         diagnostics = [
@@ -90,7 +90,7 @@ bsoB7mtn
             },
         })
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   return_value=mocked_create_add_gateway_txn_result)
     def test_failure_invalid_signature(self, mock):
         shipping_destination_json_with_invalid_signature = b"""
@@ -112,7 +112,7 @@ bsoB7mtn
             DESTINATION_ADD_GATEWAY_TXN_KEY: 'Verifying the payload PGP signature failed.',
         })
 
-    @patch.object(hm_pyhelper.miner_json_rpc.client.Client, 'create_add_gateway_txn',
+    @patch.object(hm_pyhelper.gateway_grpc.client.GatewayClient, 'create_add_gateway_txn',
                   side_effect=MinerMalformedAddGatewayTxn('Address is incorrect.'))
     def test_failure_txn_exception(self, mock):
         diagnostics = [
