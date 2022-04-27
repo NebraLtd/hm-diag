@@ -49,7 +49,6 @@ FROM balenalib/raspberry-pi-debian-python:buster-build-20211014 as runner
 
 RUN \
     install_packages \
-        python3-minimal \
         python3-venv \
         wget \
         i2c-tools \
