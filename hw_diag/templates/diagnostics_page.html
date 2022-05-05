@@ -79,7 +79,8 @@
                 <tr>
                   <td>Connected Validator</td>
                   {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_URI_KEY]) %}
-                    <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_URI_KEY) }} </td>
+                    <td class="border-0 text-success text-right"><a href="https://explorer.helium.com/validators/{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_ADDRESS_KEY) }}"
+                        target="_blank">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_URI_KEY) }}</a></td>
                   {% else %}
                     <td class="text-warning text-right">Disconnected</td>
                   {% endif %}
