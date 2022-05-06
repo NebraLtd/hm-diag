@@ -49,7 +49,6 @@ FROM balenalib/raspberry-pi-debian-python:buster-build-20211014 as runner
 
 RUN \
     install_packages \
-        python3-venv \
         wget \
         i2c-tools \
         libdbus-1-3 \
