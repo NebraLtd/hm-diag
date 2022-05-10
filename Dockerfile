@@ -11,7 +11,6 @@ WORKDIR /opt/
 # this installs python 3.7.3 which is buster default and supported by grpcio wheel
 RUN \
     install_packages \
-        python3-minimal \
         python3-venv \
         python3-pip \
         build-essential \
