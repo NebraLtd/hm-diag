@@ -8,6 +8,7 @@ from datetime import timedelta
 from flask import Flask
 from flask_apscheduler import APScheduler
 from retry import retry
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
@@ -19,9 +20,15 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
 DSN_SENTRY = os.getenv('SENTRY_DIAG')
+
+sentry_logging = LoggingIntegration(
+    level=logging.CRITICAL,
+    event_level=logging.CRITICAL
+)
+
 sentry_sdk.init(
     dsn=DSN_SENTRY,
-    integrations=[FlaskIntegration()],
+    integrations=[sentry_logging, FlaskIntegration()],
     release=f"diagnostics@{DIAGNOSTICS_VERSION}",
 )
 
