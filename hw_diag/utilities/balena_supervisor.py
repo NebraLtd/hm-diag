@@ -44,12 +44,12 @@ class BalenaSupervisor:
         response = self._make_request('POST', '/v1/shutdown')
         if response is None or response.ok is False:
             LOGGER.error("Device shutdown attempt failed.")
-            raise Exception('supervisor API not accessible')
+            raise RuntimeError('supervisor API not accessible')
 
         try:
             return response.json()
         except Exception:
-            raise Exception('shutdown failed due to supervisor API issue')
+            raise RuntimeError('shutdown failed due to supervisor API issue')
 
     def get_device_status(self, key_to_return) -> str:
         """Get device status from balena supervisor API."""

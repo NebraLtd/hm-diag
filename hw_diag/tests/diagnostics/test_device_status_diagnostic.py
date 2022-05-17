@@ -73,6 +73,3 @@ class TestDeviceStatusDiagnostic(unittest.TestCase):
             DIAGNOSTICS_ERRORS_KEY: ['device_status', 'device_status'],
             'device_status': 'appState is Failed due to supervisor API issue'
         })
-
-        # resp = bs.get_device_status('appState')
-        # self.assertDictEqual(resp, {'appState': 'Failed due to supervisor API issue'})
