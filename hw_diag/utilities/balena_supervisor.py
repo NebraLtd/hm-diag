@@ -1,4 +1,5 @@
 import os
+
 import requests
 from requests.exceptions import ConnectionError, ConnectTimeout
 
@@ -43,17 +44,23 @@ class BalenaSupervisor:
         response = self._make_request('POST', '/v1/shutdown')
         if response is None or response.ok is False:
             LOGGER.error("Device shutdown attempt failed.")
+            raise Exception('supervisor API not accessible')
 
-        return response.json()
+        try:
+            return response.json()
+        except Exception:
+            raise Exception('shutdown failed due to supervisor API issue')
 
     def get_device_status(self, key_to_return) -> str:
         """Get device status from balena supervisor API."""
         LOGGER.info("Retrieving device status using Balena supervisor.")
 
         response = self._make_request('GET', '/v2/state/status')
-        LOGGER.info(response.json())
         if response is None or response.ok is False:
             LOGGER.error("Device status request failed.")
             raise Exception("Device status request failed")
 
-        return response.json()[key_to_return]
+        try:
+            return response.json()[key_to_return]
+        except Exception:
+            return 'Failed due to supervisor API issue'
