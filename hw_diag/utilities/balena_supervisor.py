@@ -58,9 +58,9 @@ class BalenaSupervisor:
         response = self._make_request('GET', '/v2/state/status')
         if response is None or response.ok is False:
             LOGGER.error("Device status request failed.")
-            raise Exception("Device status request failed")
+            raise RuntimeError("Device status request failed")
 
         try:
             return response.json()[key_to_return]
         except Exception:
-            return 'Failed due to supervisor API issue'
+            raise RuntimeError('Supervisor API did not return valid json response')

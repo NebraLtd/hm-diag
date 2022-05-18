@@ -61,7 +61,7 @@ class TestBalenaSupervisor(unittest.TestCase):
 
         bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
 
-        with self.assertRaises(Exception) as exp:
+        with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
 
         assert str(exp.exception) == "Device status request failed"
@@ -76,7 +76,7 @@ class TestBalenaSupervisor(unittest.TestCase):
 
         bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
 
-        with self.assertRaises(Exception) as exp:
+        with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
 
         assert str(exp.exception) == "Device status request failed"
@@ -92,8 +92,10 @@ class TestBalenaSupervisor(unittest.TestCase):
 
         bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
 
-        resp = bs.get_device_status('appState')
-        assert resp == 'Failed due to supervisor API issue'
+        with self.assertRaises(RuntimeError) as exp:
+            bs.get_device_status('appState')
+
+        assert str(exp.exception) == "Supervisor API did not return valid json response"
 
     @responses.activate
     def test_shutdown_gateway_success_response(self):

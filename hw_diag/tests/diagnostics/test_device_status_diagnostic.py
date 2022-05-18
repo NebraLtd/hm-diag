@@ -71,5 +71,5 @@ class TestDeviceStatusDiagnostic(unittest.TestCase):
         self.assertDictEqual(diagnostics_report, {
             DIAGNOSTICS_PASSED_KEY: False,
             DIAGNOSTICS_ERRORS_KEY: ['device_status', 'device_status'],
-            'device_status': 'appState is Failed due to supervisor API issue'
+            'device_status': 'Supervisor API did not return valid json response'
         })
