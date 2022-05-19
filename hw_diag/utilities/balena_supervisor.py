@@ -63,4 +63,8 @@ class BalenaSupervisor:
         try:
             return response.json()[key_to_return]
         except Exception:
+            LOGGER.error(
+                f"Couldn't find {key_to_return} key in response.\n"
+                f"Response content: {response.content}"
+            )
             raise RuntimeError('Supervisor API did not return valid json response')
