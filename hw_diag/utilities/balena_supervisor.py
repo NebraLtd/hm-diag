@@ -66,7 +66,7 @@ class BalenaSupervisor:
                   f"{response.status_code} {response.content}"
 
         if error_msg:
-            LOGGER.error(error_msg)
+            LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
 
         try:
@@ -75,5 +75,5 @@ class BalenaSupervisor:
             error_msg = "Supervisor API did not return valid json response.\n" + \
                         f"Couldn't find {key_to_return} key in response.\n" + \
                         f"Response content: {response.content}"
-            LOGGER.error(error_msg)
+            LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
