@@ -64,7 +64,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
 
-        assert str(exp.exception) == "Device status request failed"
+        assert str(exp.exception).startswith("Device status request failed")
 
     @responses.activate
     def test_device_status_error_on_connection_timeout(self):
@@ -79,7 +79,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
 
-        assert str(exp.exception) == "Device status request failed"
+        assert str(exp.exception).startswith("Device status request failed")
 
     @responses.activate
     def test_device_status_empty_response(self):
@@ -95,7 +95,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
 
-        assert str(exp.exception) == "Supervisor API did not return valid json response"
+        assert str(exp.exception).startswith("Supervisor API did not return valid json response")
 
     @responses.activate
     def test_shutdown_gateway_success_response(self):
