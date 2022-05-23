@@ -20,11 +20,11 @@ class BalenaSupervisor:
         return cls(
             os.environ['BALENA_SUPERVISOR_ADDRESS'], os.environ['BALENA_SUPERVISOR_API_KEY'])
 
-    def _make_request(self, http_method, endpoint):
+    def _make_request(self, http_method, endpoint, **kwargs):
         url = f"{self.supervisor_address}{endpoint}?apikey={self.supervisor_api_key}"
 
         try:
-            return requests.request(method=http_method, url=url, headers=self.headers)
+            return requests.request(method=http_method, url=url, headers=self.headers, **kwargs)
 
         except (ConnectionError, ConnectTimeout) as requests_exception:
             LOGGER.error(f"Connection error while trying to shutdown device. URL: {url}")
@@ -50,6 +50,24 @@ class BalenaSupervisor:
             return response.json()
         except Exception:
             raise RuntimeError('shutdown failed due to supervisor API issue')
+
+    def reboot(self, force: bool = False):
+        """Attempt device reboot using balena supervisor API."""
+        LOGGER.info("Attempting device reboot using Balena supervisor.")
+
+        if force:
+            response = self._make_request('POST', '/v1/reboot', json={'force': True})
+        else:
+            response = self._make_request('POST', '/v1/reboot')
+
+        if response is None or response.ok is False:
+            LOGGER.error("Device restart attempt failed.")
+            raise RuntimeError('supervisor API not accessible')
+
+        try:
+            return response.json()
+        except Exception:
+            raise RuntimeError('reboot failed due to supervisor API issue')
 
     def get_device_status(self, key_to_return) -> str:
         """Get device status from balena supervisor API."""
