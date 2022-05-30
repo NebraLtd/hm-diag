@@ -9,8 +9,8 @@ logging = get_logger(__name__)
 
 
 class NetworkWatchdog:
-    RESTART_FILE_NAME = '/var/data/restarts.csv'
-    RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
+    LAST_RESTART_FILE_NAME = '/var/data/last_restart.txt'
+    LAST_RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
 
     def __init__(self):
         self.systemd_proxy = Systemd()
@@ -23,25 +23,25 @@ class NetworkWatchdog:
         logging.info(f"modem manager restarted: {mm_restarted}")
 
     def get_last_restart(self) -> datetime:
+        last_restart_file = None
         try:
-            f = open(self.RESTART_FILE_NAME)
-            lines = f.read().splitlines()
-            last_line = lines[-1]
-            return datetime.strptime(last_line, self.RESTART_DATE_FORMAT)
+            last_restart_file = open(self.LAST_RESTART_FILE_NAME)
+            return datetime.strptime(last_restart_file.read(), self.LAST_RESTART_DATE_FORMAT)
         except Exception as e:
             logging.info(f"Can not find the previous restart time: {e}")
             return datetime.min
         finally:
             try:
-                f.close()
+                if last_restart_file:
+                    last_restart_file.close()
             except Exception as e:
                 logging.info(f"Can not close the file: {e}")
                 pass
 
     def save_last_restart(self) -> None:
-        with open(self.RESTART_FILE_NAME, 'a') as f:
-            f.write("\n" + datetime.now().strftime(self.RESTART_DATE_FORMAT))
-            f.close()
+        with open(self.LAST_RESTART_FILE_NAME, 'w') as last_restart_file:
+            last_restart_file.write("\n" + datetime.now().strftime(self.LAST_RESTART_DATE_FORMAT))
+            last_restart_file.close()
 
     def check_network_connectivity(self) -> None:
         logging.info("Checking the network connectivity.")
