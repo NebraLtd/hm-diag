@@ -17,7 +17,7 @@ from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-from utilities.network_watchdog import check_network_connectivity
+from utilities.network_watchdog import NetworkWatchdog
 
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
 DSN_SENTRY = os.getenv('SENTRY_DIAG')
@@ -72,9 +72,10 @@ def get_app(name):
     @scheduler.task('interval', id='network_watchdog', hours=1)
     def run_network_watchdog_task():
         try:
-            check_network_connectivity()
+            network_watchdog = NetworkWatchdog()
+            network_watchdog.check_network_connectivity()
         except Exception as e:
-            logging.warning(f'Unknown error while trying to get the network connectivity info : {e}')
+            logging.warning(f'Unknown error while checking the network connectivity : {e}')
             logging.warning(traceback.format_exc())
 
     @scheduler.task('interval', id='quectel_repeating', hours=1)
