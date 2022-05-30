@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from hm_pyhelper.logger import get_logger
 from utilities.balena_supervisor import BalenaSupervisor
@@ -12,10 +13,23 @@ class NetworkWatchdog:
     LAST_RESTART_FILE_NAME = '/var/data/last_restart.txt'
     LAST_RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
 
+    # Full system reboot limited to once a day
+    REBOOT_LIMIT_HOURS = 24
+
+    # Failed connectivity count for the network manager to restart
+    NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))   # rollback back to 3
+
+    # Failed connectivity count for the hotspot to reboot
+    FULL_REBOOT_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 3))  # rollback back to 6
+
     def __init__(self):
         self.systemd_proxy = Systemd()
         self.network_manager_unit = self.systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
         self.network_manager = NetworkManager()
+
+        # Count of lost connectivity
+        self.lost_count = 0
+        logging.info("Starting the network watchdog. The lost connectivity count is reset to 0.")
 
     def restart_network_manager(self):
         """Restart hostOS NetworkManager service"""
@@ -47,25 +61,34 @@ class NetworkWatchdog:
         logging.info("Checking the network connectivity.")
 
         if self.network_manager.is_connected():
+            self.lost_count = 0
             logging.info("Internet is working.")
         else:
-            logging.warning("Network is not connected!")
+            self.lost_count += 1
+            logging.warning(f"Network is not connected! Lost connectivity count={self.lost_count}")
 
-            # Reconnect network
-            logging.info("Restarting the network connection.")
-            self.restart_network_manager()
-            logging.info("Restarted the network connection.")
+            if self.lost_count > self.NM_RESTART_THRESHOLD:
+                logging.warning(
+                    "Reached out to the lost connectivity count to restart the network manager.")
+                self.restart_network_manager()
+                logging.info("Restarted the network connection.")
 
-            if self.network_manager.is_connected():
-                logging.info("Internet is working after restarting the network connection.")
-            else:
-                logging.warning("Internet is still not working.")
-
-                if datetime.now() - timedelta(hours=24) < self.get_last_restart():
-                    logging.info("Device has already been restarted within a day, skipping.")
+                if self.network_manager.is_connected():
+                    self.lost_count = 0
+                    logging.info("Internet is working after restarting the network connection.")
                 else:
-                    self.save_last_restart()
+                    logging.warning("Internet is still not working.")
 
-                    logging.info("Rebooting the device.")
-                    balena_supervisor = BalenaSupervisor.new_from_env()
-                    balena_supervisor.reboot(force=True)
+                    if self.lost_count > self.FULL_REBOOT_THRESHOLD:
+                        logging.warning(
+                            "Reached out to the lost connectivity count to reboot the hotspot.")
+                        if datetime.now() - timedelta(
+                                hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
+                            logging.info(
+                                "Hotspot has already been restarted within a day, skipping.")
+                        else:
+                            self.save_last_restart()
+                            logging.info("Rebooting the device.")
+
+                            balena_supervisor = BalenaSupervisor.new_from_env()
+                            balena_supervisor.reboot(force=True)
