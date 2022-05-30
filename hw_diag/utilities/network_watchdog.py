@@ -9,7 +9,7 @@ logging = get_logger(__name__)
 
 
 class NetworkWatchdog:
-    RESTART_FILE_NAME = 'restarts.csv'
+    RESTART_FILE_NAME = '/var/data/restarts.csv'
     RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
 
     def __init__(self):
