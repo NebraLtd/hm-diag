@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta
 from hm_pyhelper.logger import get_logger
-from utilities.balena_supervisor import BalenaSupervisor
-from utilities.dbus_proxy.dbus_ids import DBusIds
-from utilities.dbus_proxy.network_manager import NetworkManager
-from utilities.dbus_proxy.systemd import Systemd
+from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
+from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
+from hw_diag.utilities.dbus_proxy.systemd import Systemd
 
 logging = get_logger(__name__)
 
@@ -22,14 +22,13 @@ class NetworkWatchdog:
     # Failed connectivity count for the hotspot to reboot
     FULL_REBOOT_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 3))  # rollback back to 6
 
+    # Static variable for saving the lost connectivity count
+    lost_count = 0
+
     def __init__(self):
         self.systemd_proxy = Systemd()
         self.network_manager_unit = self.systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
         self.network_manager = NetworkManager()
-
-        # Count of lost connectivity
-        self.lost_count = 0
-        logging.info("Starting the network watchdog. The lost connectivity count is reset to 0.")
 
     def restart_network_manager(self):
         """Restart hostOS NetworkManager service"""
