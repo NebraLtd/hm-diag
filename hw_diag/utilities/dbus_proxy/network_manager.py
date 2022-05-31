@@ -25,17 +25,17 @@ class NetworkManager(DBusObject):
         self._network_manager_iface = dbus.Interface(self._object_proxy,
                                                      DBusIds.DBUS_NM_IF)
 
-    def get_connectivity_state(self) -> str:
+    def get_connect_state(self) -> str:
         """Get NetworkManager Connectivity State"""
         state = self._network_manager_iface.state()
         state_string = self.nm_state.get(state, 'Unknown')
         return state_string
 
     def is_connected(self) -> bool:
-        return 'Connected' in self.get_connectivity_state()
+        return 'Connected' in self.get_connect_state()
 
 
 if __name__ == '__main__':
     nm = NetworkManager()
-    print('>>> Network connectivity: ', nm.get_connectivity_state())
-    print('>>> Is connected: ', nm.is_connected())
+    print('Network connectivity: ', nm.get_connect_state())
+    print('Is connected: ', nm.is_connected())
