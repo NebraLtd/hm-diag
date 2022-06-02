@@ -55,6 +55,9 @@ class BalenaSupervisor:
         """Attempt device reboot using balena supervisor API."""
         LOGGER.info("Attempting device reboot using Balena supervisor.")
 
+        """Reboots the device. This will first try to stop running services, and fail if
+        there is an update lock. An optional "force" parameter in the body overrides the lock
+        when true (and the lock can also be overridden from the dashboard)."""
         if force:
             response = self._make_request('POST', '/v1/reboot', json={'force': True})
         else:

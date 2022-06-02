@@ -27,7 +27,7 @@ class NetworkWatchdog:
     # Failed connectivity count for the network manager to restart
     NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))  # rollback back to 3
     # Failed connectivity count for the hotspot to reboot
-    FULL_REBOOT_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 3))  # rollback back to 6
+    FULL_REBOOT_THRESHOLD = int(os.environ.get("FULL_REBOOT_THRESHOLD", 3))  # rollback back to 6
 
     # Public DNS server for checking internet connectivity
     PUBLIC_DNS_SERVER = "8.8.8.8"       # NOSONAR
@@ -60,15 +60,15 @@ class NetworkWatchdog:
         if self.temp_dir:
             self.temp_dir.cleanup()
 
-    def have_internet(self) -> bool:
+    def have_internet(self, timeout=10) -> bool:
         try:
+            socket.setdefaulttimeout(timeout)
             sock = socket.create_connection((self.PUBLIC_DNS_SERVER, self.PUBLIC_DNS_PORT))
-            if sock:
-                sock.close()
+            sock.close()
             return True
-        except OSError:
-            pass
-        return False
+        except Exception as e:
+            self.logger.info(f"internet not accessible: {e}")
+            return False
 
     def is_connected(self) -> bool:
         self.logger.info("Checking the network connectivity.")
@@ -98,7 +98,7 @@ class NetworkWatchdog:
         store.set(self.LAST_RESTART_KEY, datetime.now().strftime(self.LAST_RESTART_DATE_FORMAT))
         self.logger.info("Saved the current time before restarting the hotpsot.")
 
-    def run_watchdog(self) -> None:
+    def ensure_network_connection(self) -> None:
         self.logger.info("Running the watchdog...")
 
         if self.is_connected():
@@ -111,26 +111,20 @@ class NetworkWatchdog:
 
             if self.lost_count > self.NM_RESTART_THRESHOLD:
                 self.logger.warning(
-                    "Reached out to the lost connectivity count to restart the network manager.")
+                    "Reached threshold for nm restart for recovering network.")
                 self.restart_network_manager()
                 self.logger.info("Restarted the network connection.")
 
-                if self.is_connected():
-                    self.lost_count = 0
-                    self.logger.info("Network is working after restarting the network connection.")
+            if self.lost_count > self.FULL_REBOOT_THRESHOLD:
+                self.logger.warning(
+                    "Reached threshold for system reboot for recovering network.")
+                if datetime.now() - timedelta(
+                        hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
+                    self.logger.info(
+                        "Hotspot has already been restarted within a day, skipping.")
                 else:
-                    self.logger.warning("Network is still not working.")
+                    self.save_last_restart()
+                    self.logger.info("Rebooting the hotspot.")
 
-                    if self.lost_count > self.FULL_REBOOT_THRESHOLD:
-                        self.logger.warning(
-                            "Reached out to the lost connectivity count to reboot the hotspot.")
-                        if datetime.now() - timedelta(
-                                hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
-                            self.logger.info(
-                                "Hotspot has already been restarted within a day, skipping.")
-                        else:
-                            self.save_last_restart()
-                            self.logger.info("Rebooting the hotspot.")
-
-                            balena_supervisor = BalenaSupervisor.new_from_env()
-                            balena_supervisor.reboot(force=True)
+                    balena_supervisor = BalenaSupervisor.new_from_env()
+                    balena_supervisor.reboot()

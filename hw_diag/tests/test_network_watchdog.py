@@ -93,7 +93,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     def test_run_watchdog_connected(self, _, __, ___):
         watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
-            watchdog.run_watchdog()
+            watchdog.ensure_network_connection()
             self.assertIn('INFO:hw_diag.utilities.network_watchdog:Running the watchdog...',
                           captured_logs.output)
             self.assertIn('INFO:hw_diag.utilities.network_watchdog:Network is working.',
@@ -105,7 +105,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     def test_run_watchdog_disconnected(self, _, __, ___):
         watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
-            watchdog.run_watchdog()
+            watchdog.ensure_network_connection()
             self.assertIn('Running the watchdog...', captured_logs.output[0])
             self.assertIn(
                 'Network is not connected! Lost connectivity count=1', captured_logs.output[1])
