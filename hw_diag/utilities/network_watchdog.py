@@ -13,7 +13,7 @@ from hw_diag.utilities.dbus_proxy.systemd import Systemd
 from hw_diag.utilities.keystore import KeyStore
 
 LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
-_log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s -- %(pathname)s:(%(lineno)d) - %(message)s"  # noqa: F541 E501
+_log_format = "%(asctime)s - [%(levelname)s] - (%(filename)s:%(lineno)d) - %(message)s"
 
 
 class NetworkWatchdog:
