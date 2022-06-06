@@ -127,35 +127,39 @@ class NetworkWatchdog:
     def ensure_network_connection(self) -> None:
         self.LOGGER.info("Running the watchdog...")
 
+        # If network is connected, nothing to do more
         if self.is_connected():
             self.lost_count = 0
             self.LOGGER.info("Network is working.")
-        else:
-            self.lost_count += 1
+            return
+
+        # If network is not working, take the next step
+        self.lost_count += 1
+        self.LOGGER.warning(
+            f"Network is not connected! Lost connectivity count={self.lost_count}")
+
+        if self.lost_count > self.NM_RESTART_THRESHOLD:
             self.LOGGER.warning(
-                f"Network is not connected! Lost connectivity count={self.lost_count}")
+                "Reached threshold for nm restart for recovering network.")
+            self.restart_network_manager()
+            self.LOGGER.info("Restarted the network connection.")
 
-            if self.lost_count > self.NM_RESTART_THRESHOLD:
-                self.LOGGER.warning(
-                    "Reached threshold for nm restart for recovering network.")
-                self.restart_network_manager()
-                self.LOGGER.info("Restarted the network connection.")
+        if self.lost_count > self.FULL_REBOOT_THRESHOLD:
+            self.LOGGER.warning(
+                "Reached threshold for system reboot for recovering network.")
+            if datetime.now() - timedelta(
+                    hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
+                self.LOGGER.info(
+                    "Hotspot has already been restarted within a day, skipping.")
+                return
 
-            if self.lost_count > self.FULL_REBOOT_THRESHOLD:
-                self.LOGGER.warning(
-                    "Reached threshold for system reboot for recovering network.")
-                if datetime.now() - timedelta(
-                        hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
-                    self.LOGGER.info(
-                        "Hotspot has already been restarted within a day, skipping.")
-                else:
-                    self.save_last_restart()
+            self.save_last_restart()
 
-                    force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
+            force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
 
-                    self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
-                    balena_supervisor = BalenaSupervisor.new_from_env()
-                    balena_supervisor.reboot(force=force_reboot)
+            self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
+            balena_supervisor = BalenaSupervisor.new_from_env()
+            balena_supervisor.reboot(force=force_reboot)
 
 
 if __name__ == '__main__':
