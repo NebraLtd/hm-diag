@@ -14,6 +14,8 @@ from hw_diag.utilities.keystore import KeyStore
 
 
 class NetworkWatchdog:
+    _instance = None
+
     VOLUME_PATH = '/var/watchdog/'
     WATCHDOG_LOG_FILE_NAME = 'watchdog.log'
     LAST_RESTART_FILE_NAME = 'last_restart.json'
@@ -38,7 +40,22 @@ class NetworkWatchdog:
     # Static variable for saving the lost connectivity count
     lost_count = 0
 
+    @staticmethod
+    def get_instance():
+        """ Static method to fetch the current instance.
+        """
+        if not NetworkWatchdog._instance:
+            NetworkWatchdog()
+        return NetworkWatchdog._instance
+
     def __init__(self):
+        """ Constructor.
+               """
+        if NetworkWatchdog._instance is None:
+            NetworkWatchdog._instance = self
+        else:
+            raise Exception("You cannot create another SingletonGovt class")
+
         if os.access(self.VOLUME_PATH, os.W_OK):
             self.log_file_path = os.path.join(self.VOLUME_PATH, self.WATCHDOG_LOG_FILE_NAME)
             self.state_file_path = os.path.join(self.VOLUME_PATH, self.LAST_RESTART_FILE_NAME)

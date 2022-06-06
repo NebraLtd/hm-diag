@@ -60,7 +60,7 @@ def init_scheduled_tasks(app) -> None:
     @scheduler.task('interval', id='network_watchdog', hours=1)
     def run_network_watchdog_task():
         try:
-            watchdog = NetworkWatchdog()
+            watchdog = NetworkWatchdog.get_instance()
             watchdog.ensure_network_connection()
         except Exception as e:
             logging.warning(f'Unknown error while checking the network connectivity : {e}')

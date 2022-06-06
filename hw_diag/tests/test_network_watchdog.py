@@ -12,7 +12,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_have_internet(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         have_internet = watchdog.have_internet()
         self.assertTrue(have_internet)
 
@@ -20,7 +20,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_no_internet(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         have_internet = watchdog.have_internet()
         self.assertFalse(have_internet)
 
@@ -29,7 +29,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_is_connected(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         is_connected = watchdog.is_connected()
         self.assertTrue(is_connected)
 
@@ -38,7 +38,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_not_connected(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         is_connected = watchdog.is_connected()
         self.assertFalse(is_connected)
 
@@ -46,7 +46,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_restart_network_manager_success(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.restart_network_manager()
             self.assertIn('Network manager restarted:', captured_logs.output[0])
@@ -55,7 +55,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_get_last_restart_success(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         last_restart = watchdog.get_last_restart()
         expected = datetime.datetime(2022, 6, 1, 8, 24, 14)
         self.assertEqual(last_restart, expected)
@@ -64,7 +64,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_get_last_restart_invalid_input(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         last_restart = watchdog.get_last_restart()
         expected = datetime.datetime.min
         self.assertEqual(last_restart, expected)
@@ -73,7 +73,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_save_last_restart_success(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.save_last_restart()
             self.assertIn('Saved the last_restart.', captured_logs.output[0])
@@ -82,7 +82,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_save_last_restart_fail(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         with self.assertRaises(FileNotFoundError):
             watchdog.save_last_restart()
 
@@ -90,7 +90,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_run_watchdog_connected(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('INFO:hw_diag.utilities.network_watchdog:Running the watchdog...',
@@ -102,7 +102,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_run_watchdog_disconnected(self, _, __, ___):
-        watchdog = NetworkWatchdog()
+        watchdog = NetworkWatchdog.get_instance()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('Running the watchdog...', captured_logs.output[0])
