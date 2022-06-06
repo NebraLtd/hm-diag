@@ -54,7 +54,7 @@ class NetworkWatchdog:
         if NetworkWatchdog._instance is None:
             NetworkWatchdog._instance = self
         else:
-            raise Exception("You cannot create another SingletonGovt class")
+            raise RuntimeError("You cannot create another SingletonGovt class")
 
         if os.access(self.VOLUME_PATH, os.W_OK):
             self.log_file_path = os.path.join(self.VOLUME_PATH, self.WATCHDOG_LOG_FILE_NAME)
@@ -65,20 +65,20 @@ class NetworkWatchdog:
             self.state_file_path = os.path.join(self.temp_dir.name, self.LAST_RESTART_FILE_NAME)
 
         # Set up logger
-        self.logger = get_logger(__name__)
+        self.LOGGER = get_logger(__name__)
         # Add rotating log handler to the logger
         handler = RotatingFileHandler(self.log_file_path, maxBytes=self.MAX_LOG_SIZE, backupCount=3)
         handler.setLevel(logging.INFO)
         handler.setFormatter(
             logging.Formatter("%(asctime)s - [%(levelname)s]:(%(lineno)d) - %(message)s"))
-        self.logger.addHandler(handler)
+        self.LOGGER.addHandler(handler)
 
         self.systemd_proxy = Systemd()
         self.network_manager_unit = self.systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
         self.network_manager = NetworkManager()
 
         # Log the watchdog intro
-        self.logger.info("Watchdog is started!")
+        self.LOGGER.info("Watchdog is started!")
 
     def __del__(self):
         if hasattr(self, 'temp_dir'):
@@ -91,15 +91,15 @@ class NetworkWatchdog:
             sock.close()
             return True
         except Exception as e:
-            self.logger.info(f"internet not accessible: {e}")
+            self.LOGGER.info(f"internet not accessible: {e}")
             return False
 
     def is_connected(self) -> bool:
-        self.logger.info("Checking the network connectivity.")
+        self.LOGGER.info("Checking the network connectivity.")
 
         # Log more details about the network connectivity and internet connectivity
-        self.logger.info(f"Network manager state: {self.network_manager.get_connect_state()}")
-        self.logger.info(f"Internet connectivity: {self.have_internet()}")
+        self.LOGGER.info(f"Network manager state: {self.network_manager.get_connect_state()}")
+        self.LOGGER.info(f"Internet connectivity: {self.have_internet()}")
 
         nm_connected = self.network_manager.is_connected()
         return nm_connected
@@ -107,51 +107,51 @@ class NetworkWatchdog:
     def restart_network_manager(self):
         """Restart hostOS NetworkManager service"""
         nm_restarted = self.network_manager_unit.wait_restart()
-        self.logger.info(f"Network manager restarted: {nm_restarted}")
+        self.LOGGER.info(f"Network manager restarted: {nm_restarted}")
 
     def get_last_restart(self) -> datetime:
         try:
             last_restart = KeyStore(self.state_file_path).get(self.LAST_RESTART_KEY)
             return datetime.strptime(last_restart, self.LAST_RESTART_DATE_FORMAT)
         except Exception as e:
-            self.logger.info(f"Can not find the previous restart time: {e}")
+            self.LOGGER.info(f"Can not find the previous restart time: {e}")
             return datetime.min
 
     def save_last_restart(self) -> None:
         store = KeyStore(self.state_file_path)
         store.set(self.LAST_RESTART_KEY, datetime.now().strftime(self.LAST_RESTART_DATE_FORMAT))
-        self.logger.info("Saved the last_restart.")
+        self.LOGGER.info("Saved the last_restart.")
 
     def ensure_network_connection(self) -> None:
-        self.logger.info("Running the watchdog...")
+        self.LOGGER.info("Running the watchdog...")
 
         if self.is_connected():
             self.lost_count = 0
-            self.logger.info("Network is working.")
+            self.LOGGER.info("Network is working.")
         else:
             self.lost_count += 1
-            self.logger.warning(
+            self.LOGGER.warning(
                 f"Network is not connected! Lost connectivity count={self.lost_count}")
 
             if self.lost_count > self.NM_RESTART_THRESHOLD:
-                self.logger.warning(
+                self.LOGGER.warning(
                     "Reached threshold for nm restart for recovering network.")
                 self.restart_network_manager()
-                self.logger.info("Restarted the network connection.")
+                self.LOGGER.info("Restarted the network connection.")
 
             if self.lost_count > self.FULL_REBOOT_THRESHOLD:
-                self.logger.warning(
+                self.LOGGER.warning(
                     "Reached threshold for system reboot for recovering network.")
                 if datetime.now() - timedelta(
                         hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
-                    self.logger.info(
+                    self.LOGGER.info(
                         "Hotspot has already been restarted within a day, skipping.")
                 else:
                     self.save_last_restart()
 
                     force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
 
-                    self.logger.info(f"Rebooting the hotspot(force={force_reboot}).")
+                    self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
                     balena_supervisor = BalenaSupervisor.new_from_env()
                     balena_supervisor.reboot(force=force_reboot)
 
