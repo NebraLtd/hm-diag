@@ -57,7 +57,7 @@ class NetworkWatchdog:
         self.network_manager = NetworkManager()
 
     def __del__(self):
-        if self.temp_dir:
+        if hasattr(self, 'temp_dir'):
             self.temp_dir.cleanup()
 
     def have_internet(self, timeout=10) -> bool:
@@ -128,3 +128,10 @@ class NetworkWatchdog:
 
                     balena_supervisor = BalenaSupervisor.new_from_env()
                     balena_supervisor.reboot()
+
+
+if __name__ == '__main__':
+    print('Watchdog is running...')
+    watchdog = NetworkWatchdog()
+    is_connected = watchdog.is_connected()
+    print("Is connected:", is_connected)
