@@ -76,8 +76,7 @@ class TestNetworkWatchdog(unittest.TestCase):
         watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.save_last_restart()
-            self.assertIn('Saved the current time before restarting the hotpsot.',
-                          captured_logs.output[0])
+            self.assertIn('Saved the last_restart.', captured_logs.output[0])
 
     @patch.object(hw_diag.utilities.keystore.KeyStore, 'set', side_effect=FileNotFoundError())
     @patch("dbus.SystemBus")

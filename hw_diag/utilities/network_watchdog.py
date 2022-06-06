@@ -25,9 +25,11 @@ class NetworkWatchdog:
     # Full system reboot limited to once a day
     REBOOT_LIMIT_HOURS = 24
     # Failed connectivity count for the network manager to restart
-    NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))  # rollback back to 3
+    NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))
     # Failed connectivity count for the hotspot to reboot
-    FULL_REBOOT_THRESHOLD = int(os.environ.get("FULL_REBOOT_THRESHOLD", 3))  # rollback back to 6
+    FULL_REBOOT_THRESHOLD = int(os.environ.get("FULL_REBOOT_THRESHOLD", 3))
+    # Failed connectivity count for the hotspot to reboot
+    FULL_FORCE_REBOOT_THRESHOLD = int(os.environ.get("FULL_FORCE_REBOOT_THRESHOLD", 6))
 
     # Public DNS server for checking internet connectivity
     PUBLIC_DNS_SERVER = "8.8.8.8"       # NOSONAR
@@ -57,6 +59,9 @@ class NetworkWatchdog:
         self.systemd_proxy = Systemd()
         self.network_manager_unit = self.systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
         self.network_manager = NetworkManager()
+
+        # Log the watchdog intro
+        self.logger.info("Watchdog is started!")
 
     def __del__(self):
         if hasattr(self, 'temp_dir'):
@@ -98,7 +103,7 @@ class NetworkWatchdog:
     def save_last_restart(self) -> None:
         store = KeyStore(self.state_file_path)
         store.set(self.LAST_RESTART_KEY, datetime.now().strftime(self.LAST_RESTART_DATE_FORMAT))
-        self.logger.info("Saved the current time before restarting the hotpsot.")
+        self.logger.info("Saved the last_restart.")
 
     def ensure_network_connection(self) -> None:
         self.logger.info("Running the watchdog...")
@@ -126,10 +131,12 @@ class NetworkWatchdog:
                         "Hotspot has already been restarted within a day, skipping.")
                 else:
                     self.save_last_restart()
-                    self.logger.info("Rebooting the hotspot.")
 
+                    force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
+
+                    self.logger.info(f"Rebooting the hotspot(force={force_reboot}).")
                     balena_supervisor = BalenaSupervisor.new_from_env()
-                    balena_supervisor.reboot()
+                    balena_supervisor.reboot(force=force_reboot)
 
 
 if __name__ == '__main__':
