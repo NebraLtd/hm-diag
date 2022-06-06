@@ -50,6 +50,8 @@ class NetworkWatchdog:
         # Add rotating log handler to the logger
         handler = RotatingFileHandler(self.log_file_path, maxBytes=self.MAX_LOG_SIZE, backupCount=3)
         handler.setLevel(logging.INFO)
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s - [%(levelname)s]:(%(lineno)d) - %(message)s"))
         self.logger.addHandler(handler)
 
         self.systemd_proxy = Systemd()
