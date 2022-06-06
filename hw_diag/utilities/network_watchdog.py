@@ -12,6 +12,9 @@ from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd import Systemd
 from hw_diag.utilities.keystore import KeyStore
 
+LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
+_log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s -- %(pathname)s:(%(lineno)d) - %(message)s"  # noqa: F541 E501
+
 
 class NetworkWatchdog:
     _instance = None
@@ -68,9 +71,8 @@ class NetworkWatchdog:
         self.LOGGER = get_logger(__name__)
         # Add rotating log handler to the logger
         handler = RotatingFileHandler(self.log_file_path, maxBytes=self.MAX_LOG_SIZE, backupCount=3)
-        handler.setLevel(logging.INFO)
-        handler.setFormatter(
-            logging.Formatter("%(asctime)s - [%(levelname)s]:(%(lineno)d) - %(message)s"))
+        handler.setLevel(LOGLEVEL)
+        handler.setFormatter(logging.Formatter(_log_format))
         self.LOGGER.addHandler(handler)
 
         self.systemd_proxy = Systemd()
