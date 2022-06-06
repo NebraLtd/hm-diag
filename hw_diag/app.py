@@ -15,6 +15,7 @@ from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
+from hm_pyhelper.util.sentry import before_send_filter
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 
@@ -30,6 +31,7 @@ sentry_sdk.init(
     dsn=DSN_SENTRY,
     integrations=[sentry_logging, FlaskIntegration()],
     release=f"diagnostics@{DIAGNOSTICS_VERSION}",
+    before_send=before_send_filter
 )
 
 DEBUG = bool(os.getenv('DEBUG', '0'))
