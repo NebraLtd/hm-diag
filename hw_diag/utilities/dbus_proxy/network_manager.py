@@ -3,7 +3,7 @@ from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 from hw_diag.utilities.dbus_proxy.dbus_object import DBusObject
 from hm_pyhelper.logger import get_logger
 
-logging = get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 
 class NetworkManager(DBusObject):
