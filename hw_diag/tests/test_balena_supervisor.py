@@ -117,7 +117,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.POST,
             TEST_SUPERVISOR_SHUTDOWN_URL,
-            body=ConnectionError('Unable to connect')
+            body=ConnectionError('Unable to connect.')
         )
 
         bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
@@ -192,7 +192,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.POST,
             TEST_SUPERVISOR_REBOOT_URL,
-            body=ConnectTimeout('Timout trying to make connection')
+            body=ConnectTimeout('Timout trying to make connection.')
         )
 
         bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
