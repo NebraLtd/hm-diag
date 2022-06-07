@@ -109,8 +109,7 @@ class NetworkWatchdog:
         self.LOGGER.info(f"Network manager state: {self.network_manager.get_connect_state()}")
         self.LOGGER.info(f"Internet connectivity: {self.have_internet()}")
 
-        nm_connected = self.network_manager.is_connected()
-        return nm_connected
+        return self.have_internet()
 
     def restart_network_manager(self):
         """Restart hostOS NetworkManager service"""
