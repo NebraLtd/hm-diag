@@ -26,14 +26,14 @@ class NetworkWatchdog:
     LAST_RESTART_KEY = 'last_restart'
     LAST_RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
 
-    # Full system reboot limited to once a day
-    REBOOT_LIMIT_HOURS = 24
     # Failed connectivity count for the network manager to restart
     NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))
     # Failed connectivity count for the hotspot to reboot
     FULL_REBOOT_THRESHOLD = int(os.environ.get("FULL_REBOOT_THRESHOLD", 3))
     # Failed connectivity count for the hotspot to reboot
     FULL_FORCE_REBOOT_THRESHOLD = int(os.environ.get("FULL_FORCE_REBOOT_THRESHOLD", 6))
+    # Full system reboot limited to once a day
+    REBOOT_LIMIT_HOURS = int(os.environ.get("REBOOT_LIMIT_HOURS", 24))
 
     # Public DNS server for checking internet connectivity
     PUBLIC_DNS_SERVER = "8.8.8.8"       # NOSONAR
