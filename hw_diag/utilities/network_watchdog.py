@@ -10,7 +10,6 @@ from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd import Systemd
-from hw_diag.utilities.keystore import KeyStore
 
 LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
 _log_format = "%(asctime)s - [%(levelname)s] - (%(filename)s:%(lineno)d) - %(message)s"
@@ -40,6 +39,9 @@ class NetworkWatchdog:
     PUBLIC_DNS_SERVER = "8.8.8.8"       # NOSONAR
     PUBLIC_DNS_PORT = 53
 
+    # Static variable for saving the up time of the hotspot
+    up_time = datetime.min
+
     # Static variable for saving the lost connectivity count
     lost_count = 0
 
@@ -59,6 +61,10 @@ class NetworkWatchdog:
         else:
             raise RuntimeError("You cannot create another SingletonGovt class")
 
+        # Save the uptime
+        self.up_time = datetime.now()
+
+        # Prepare the log file location
         if os.access(self.VOLUME_PATH, os.W_OK):
             self.log_file_path = os.path.join(self.VOLUME_PATH, self.WATCHDOG_LOG_FILE_NAME)
             self.state_file_path = os.path.join(self.VOLUME_PATH, self.LAST_RESTART_FILE_NAME)
@@ -111,19 +117,6 @@ class NetworkWatchdog:
         nm_restarted = self.network_manager_unit.wait_restart()
         self.LOGGER.info(f"Network manager restarted: {nm_restarted}")
 
-    def get_last_restart(self) -> datetime:
-        try:
-            last_restart = KeyStore(self.state_file_path).get(self.LAST_RESTART_KEY)
-            return datetime.strptime(last_restart, self.LAST_RESTART_DATE_FORMAT)
-        except Exception as e:
-            self.LOGGER.info(f"Can not find the previous restart time: {e}")
-            return datetime.min
-
-    def save_last_restart(self) -> None:
-        store = KeyStore(self.state_file_path)
-        store.set(self.LAST_RESTART_KEY, datetime.now().strftime(self.LAST_RESTART_DATE_FORMAT))
-        self.LOGGER.info("Saved the last_restart.")
-
     def ensure_network_connection(self) -> None:
         self.LOGGER.info("Running the watchdog...")
 
@@ -147,13 +140,12 @@ class NetworkWatchdog:
         if self.lost_count > self.FULL_REBOOT_THRESHOLD:
             self.LOGGER.warning(
                 "Reached threshold for system reboot for recovering network.")
-            if datetime.now() - timedelta(
-                    hours=self.REBOOT_LIMIT_HOURS) < self.get_last_restart():
+            if self.up_time + timedelta(
+                    hours=self.REBOOT_LIMIT_HOURS) > datetime.now():
                 self.LOGGER.info(
-                    "Hotspot has already been restarted within a day, skipping.")
+                    f"Hotspot has been restarted already within {self.REBOOT_LIMIT_HOURS}hour(s)."
+                    f" Skip the rebooting.")
                 return
-
-            self.save_last_restart()
 
             force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
 

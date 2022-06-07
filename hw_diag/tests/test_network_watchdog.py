@@ -1,4 +1,3 @@
-import datetime
 import unittest
 from unittest.mock import patch
 
@@ -50,41 +49,6 @@ class TestNetworkWatchdog(unittest.TestCase):
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.restart_network_manager()
             self.assertIn('Network manager restarted:', captured_logs.output[0])
-
-    @patch.object(hw_diag.utilities.keystore.KeyStore, 'get', return_value='01/06/2022 08:24:14')
-    @patch("dbus.SystemBus")
-    @patch("dbus.Interface")
-    def test_get_last_restart_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
-        last_restart = watchdog.get_last_restart()
-        expected = datetime.datetime(2022, 6, 1, 8, 24, 14)
-        self.assertEqual(last_restart, expected)
-
-    @patch.object(hw_diag.utilities.keystore.KeyStore, 'get', return_value='')
-    @patch("dbus.SystemBus")
-    @patch("dbus.Interface")
-    def test_get_last_restart_invalid_input(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
-        last_restart = watchdog.get_last_restart()
-        expected = datetime.datetime.min
-        self.assertEqual(last_restart, expected)
-
-    @patch.object(hw_diag.utilities.keystore.KeyStore, 'set')
-    @patch("dbus.SystemBus")
-    @patch("dbus.Interface")
-    def test_save_last_restart_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
-        with self.assertLogs(level='INFO') as captured_logs:
-            watchdog.save_last_restart()
-            self.assertIn('Saved the last_restart.', captured_logs.output[0])
-
-    @patch.object(hw_diag.utilities.keystore.KeyStore, 'set', side_effect=FileNotFoundError())
-    @patch("dbus.SystemBus")
-    @patch("dbus.Interface")
-    def test_save_last_restart_fail(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
-        with self.assertRaises(FileNotFoundError):
-            watchdog.save_last_restart()
 
     @patch.object(NetworkWatchdog, 'is_connected', return_value=True)
     @patch("dbus.SystemBus")
