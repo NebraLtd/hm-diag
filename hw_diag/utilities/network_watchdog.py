@@ -30,8 +30,8 @@ class NetworkWatchdog:
     NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))
     # Failed connectivity count for the hotspot to reboot
     FULL_REBOOT_THRESHOLD = int(os.environ.get("FULL_REBOOT_THRESHOLD", 3))
-    # Failed connectivity count for the hotspot to reboot
-    FULL_FORCE_REBOOT_THRESHOLD = int(os.environ.get("FULL_FORCE_REBOOT_THRESHOLD", 6))
+    # Failed reboot count for the hotspot to reboot forcibly
+    FULL_FORCE_REBOOT_THRESHOLD = int(os.environ.get("FULL_FORCE_REBOOT_THRESHOLD", 3))
     # Full system reboot limited to once a day
     REBOOT_LIMIT_HOURS = int(os.environ.get("REBOOT_LIMIT_HOURS", 24))
 
@@ -44,6 +44,9 @@ class NetworkWatchdog:
 
     # Static variable for saving the lost connectivity count
     lost_count = 0
+
+    # Static variable for saving the failed reboot count
+    failed_reboot_count = 0
 
     @staticmethod
     def get_instance():
@@ -130,13 +133,13 @@ class NetworkWatchdog:
         self.LOGGER.warning(
             f"Network is not connected! Lost connectivity count={self.lost_count}")
 
-        if self.lost_count > self.NM_RESTART_THRESHOLD:
+        if self.lost_count >= self.NM_RESTART_THRESHOLD:
             self.LOGGER.warning(
                 "Reached threshold for nm restart for recovering network.")
             self.restart_network_manager()
             self.LOGGER.info("Restarted the network connection.")
 
-        if self.lost_count > self.FULL_REBOOT_THRESHOLD:
+        if self.lost_count >= self.FULL_REBOOT_THRESHOLD:
             self.LOGGER.warning(
                 "Reached threshold for system reboot for recovering network.")
             if self.up_time + timedelta(
@@ -146,11 +149,14 @@ class NetworkWatchdog:
                     f" Skip the rebooting.")
                 return
 
-            force_reboot = self.lost_count > self.FULL_FORCE_REBOOT_THRESHOLD
+            force_reboot = self.failed_reboot_count >= self.FULL_FORCE_REBOOT_THRESHOLD
 
             self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
             balena_supervisor = BalenaSupervisor.new_from_env()
             balena_supervisor.reboot(force=force_reboot)
+
+            self.failed_reboot_count += 1
+            self.LOGGER.warning(f"Failed to reboot the hotspot(Count={self.failed_reboot_count}).")
 
 
 if __name__ == '__main__':
