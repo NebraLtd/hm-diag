@@ -33,11 +33,12 @@ class TestNetworkWatchdog(unittest.TestCase):
         is_connected = watchdog.is_connected()
         self.assertTrue(is_connected)
 
+    @patch('socket.create_connection', side_effect=TimeoutError())
     @patch.object(hw_diag.utilities.dbus_proxy.network_manager.NetworkManager, 'is_connected',
                   return_value=False)
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
-    def test_not_connected(self, _, __, ___):
+    def test_not_connected(self, _, __, ___, ____):
         watchdog = NetworkWatchdog.get_instance()
         is_connected = watchdog.is_connected()
         self.assertFalse(is_connected)
