@@ -46,7 +46,7 @@ class NetworkWatchdog:
     lost_count = 0
 
     # Static variable for saving the failed reboot count
-    failed_reboot_count = 0
+    reboot_request_count = 0
 
     @staticmethod
     def get_instance():
@@ -149,14 +149,15 @@ class NetworkWatchdog:
                     f" Skip the rebooting.")
                 return
 
-            force_reboot = self.failed_reboot_count >= self.FULL_FORCE_REBOOT_THRESHOLD
+            force_reboot = self.reboot_request_count >= self.FULL_FORCE_REBOOT_THRESHOLD
 
             self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
+
+            self.reboot_request_count += 1
+            self.LOGGER.info(f"Reboot request count={self.reboot_request_count}.")
+
             balena_supervisor = BalenaSupervisor.new_from_env()
             balena_supervisor.reboot(force=force_reboot)
-
-            self.failed_reboot_count += 1
-            self.LOGGER.warning(f"Failed to reboot the hotspot(Count={self.failed_reboot_count}).")
 
 
 if __name__ == '__main__':
