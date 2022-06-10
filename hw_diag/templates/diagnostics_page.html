@@ -88,7 +88,11 @@
                 </tr>
                 <tr>
                   <td>Frequency</td>
-                  <td class="text-right">{{ diagnostics.FR }}</td>
+                  {% if diagnostics.FREQ %}
+                    <td class="text-right">{{ diagnostics.FREQ }}</td>
+                  {% else %}
+                    <td class="text-right">Requires location assertion</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td>Region Plan</td>

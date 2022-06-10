@@ -28,9 +28,6 @@ class EnvVarDiagnostics():
         'ENV_VAR': 'BALENA_APP_NAME',
         'DIAGNOSTIC_KEY': 'BA'
     }, {
-        'ENV_VAR': 'FREQ',
-        'DIAGNOSTIC_KEY': 'FR'
-    }, {
         'ENV_VAR': 'FIRMWARE_VERSION',
         'DIAGNOSTIC_KEY': 'FW'
     }, {

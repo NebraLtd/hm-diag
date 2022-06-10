@@ -51,8 +51,6 @@ class TestEnvVarDiagnostics(unittest.TestCase):
             'ID': 'foo',
             'BALENA_APP_NAME': 'foo',
             'BA': 'foo',
-            'FREQ': 'foo',
-            'FR': 'foo',
             'FIRMWARE_VERSION': 'foo',
             'FW': 'foo',
             'VARIANT': 'foo',

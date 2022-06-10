@@ -90,6 +90,10 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
         # No region found, put a dummy region in
         diagnostics['RE'] = "UN123"
 
+    # add frequency keys
+    diagnostics['FREQ'] = diagnostics['RE']  # friendly key
+    diagnostics['FR'] = diagnostics['RE']  # old key
+
     # Check the basics if they're fine and set an overall value
     # Basics are: ECC valid, Mac addresses aren't FF, BT Is present,
     # and LoRa hasn't failed
