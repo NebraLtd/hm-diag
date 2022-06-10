@@ -87,14 +87,6 @@
                   <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
                 </tr>
                 <tr>
-                  <td>Frequency</td>
-                  {% if diagnostics.FREQ %}
-                    <td class="text-right">{{ diagnostics.FREQ }}</td>
-                  {% else %}
-                    <td class="text-right">Requires location assertion</td>
-                  {% endif %}
-                </tr>
-                <tr>
                   <td>Region Plan</td>
                   {% if diagnostics.RE == 'UN123' %}
                     <td class="text-right">Awaiting Location Assertion</td>

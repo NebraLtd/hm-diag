@@ -28,7 +28,6 @@ As part of the code the system produces a JSON file which then is used to carry 
 | E0 | MAC Address of the ETH0 interface |
 | ECC | If the ECC Key is detected over I2C |
 | ECCOB | If the miner should have an ECC chip on board |
-| FR | The hardware frequency |
 | FRIENDLY | The Friendly name of the hotspot |
 | FW | Firmware running on the unit |
 | ID | Balena UUID |
@@ -69,7 +68,6 @@ Because the stack is tightly intertwined with Balena, the easiest way to test th
 * Use [Etcher](https://www.balena.io/etcher/) to flash the downloaded image
 * Insert flash drive into the Raspberry Pi and boot (don't forget to plugin ethernet if necessary)
 * Set env vars for the application in Balena:
-    * `FREQ`: 868, 915, etc.
     * `VARIANT`: Choose from [here](https://github.com/NebraLtd/helium-hardware-definitions/blob/master/src/hm_hardware_defs/variant.py)
 * Deploy changes to:
     * All devices in application: `balena push BALENA_APPLICATION`
