@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import logging
 import os
 import tempfile
@@ -21,8 +20,6 @@ _log_format = "%(asctime)s - [%(levelname)s] - (%(filename)s:%(lineno)d) - %(mes
 
 
 class NetworkWatchdog:
-    _instance = None
-
     VOLUME_PATH = '/var/watchdog/'
     WATCHDOG_LOG_FILE_NAME = 'watchdog.log'
     MAX_LOG_SIZE = 10 * 1024 * 1024  # 10 Mb
@@ -52,22 +49,7 @@ class NetworkWatchdog:
     # Static variable for saving the failed reboot count
     reboot_request_count = 0
 
-    @staticmethod
-    def get_instance() -> NetworkWatchdog:
-        """ Static method to fetch the current instance.
-        """
-        if not NetworkWatchdog._instance:
-            NetworkWatchdog()
-        return NetworkWatchdog._instance
-
     def __init__(self):
-        """ Constructor.
-               """
-        if NetworkWatchdog._instance is None:
-            NetworkWatchdog._instance = self
-        else:
-            raise RuntimeError("You cannot create another SingletonGovt class")
-
         # Save the uptime
         self.up_time = datetime.now()
 

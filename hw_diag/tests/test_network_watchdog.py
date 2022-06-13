@@ -23,7 +23,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_find_gateway_ip_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         gateway_ip = watchdog.find_gateway_ip()
         self.assertEqual(gateway_ip, self.TEST_GATEWAY_IP)
 
@@ -31,7 +31,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_find_gateway_ip_fail(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         gateway_ip = watchdog.find_gateway_ip()
         self.assertEqual(gateway_ip, '')
 
@@ -39,14 +39,14 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_save_previous_gateway_ip_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         watchdog.save_previous_gateway_ip(self.TEST_GATEWAY_IP)
 
     @patch.object(hw_diag.utilities.keystore.KeyStore, 'get', return_value=TEST_GATEWAY_IP)
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_get_previous_gateway_ip_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         previous_gateway_ip = watchdog.get_previous_gateway_ip()
         self.assertEqual(previous_gateway_ip, self.TEST_GATEWAY_IP)
 
@@ -54,7 +54,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_get_previous_gateway_ip_fail(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         previous_gateway_ip = watchdog.get_previous_gateway_ip()
         self.assertEqual(previous_gateway_ip, '')
 
@@ -64,7 +64,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_icmp_ping_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         result = watchdog.icmp_ping(self.TEST_GATEWAY_IP)
         self.assertTrue(result)
 
@@ -74,7 +74,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_icmp_ping_fail(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         result = watchdog.icmp_ping('')
         self.assertFalse(result)
 
@@ -82,7 +82,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_have_internet(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         have_internet = watchdog.have_internet()
         self.assertTrue(have_internet)
 
@@ -90,7 +90,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_no_internet(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         have_internet = watchdog.have_internet()
         self.assertFalse(have_internet)
 
@@ -101,7 +101,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_is_connected(self, _, __, ___, ____, _____):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         is_connected = watchdog.is_connected()
         self.assertTrue(is_connected)
 
@@ -112,7 +112,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_not_connected(self, _, __, ___, ____, _____):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         is_connected = watchdog.is_connected()
         self.assertFalse(is_connected)
 
@@ -120,7 +120,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_restart_network_manager_success(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.restart_network_manager()
             self.assertIn('Network manager restarted:', captured_logs.output[0])
@@ -129,7 +129,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_ensure_network_connection_connected(self, _, __, ___):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('Ensuring the network connection...', captured_logs.output[0])
@@ -140,7 +140,7 @@ class TestNetworkWatchdog(unittest.TestCase):
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_ensure_network_connection_disconnected(self, _, __, ___, ____):
-        watchdog = NetworkWatchdog.get_instance()
+        watchdog = NetworkWatchdog()
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('Ensuring the network connection...', captured_logs.output[0])
