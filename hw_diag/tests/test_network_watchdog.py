@@ -86,7 +86,7 @@ class TestNetworkWatchdog(unittest.TestCase):
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('Ensuring the network connection...', captured_logs.output[0])
-            self.assertIn('Watchdog has been up for', captured_logs.output[1])
+            self.assertIn('OS has been up for', captured_logs.output[1])
             self.assertIn('Network is working.', captured_logs.output[2])
 
     @patch.object(NetworkWatchdog, 'is_connected', return_value=False)
@@ -98,6 +98,6 @@ class TestNetworkWatchdog(unittest.TestCase):
         with self.assertLogs(level='INFO') as captured_logs:
             watchdog.ensure_network_connection()
             self.assertIn('Ensuring the network connection...', captured_logs.output[0])
-            self.assertIn('Watchdog has been up for', captured_logs.output[1])
+            self.assertIn('OS has been up for', captured_logs.output[1])
             self.assertIn(
                 'Network is not connected! Lost connectivity count=1', captured_logs.output[2])

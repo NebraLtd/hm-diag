@@ -13,3 +13,4 @@ hm-pyhelper==0.13.25
 python-gnupg==0.4.8
 pydantic==1.9.0
 icmplib==3.0.3
+uptime==3.0.1

@@ -2,7 +2,8 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
-from datetime import datetime, timedelta
+from uptime import uptime
+from datetime import timedelta
 from logging.handlers import RotatingFileHandler
 from hm_pyhelper.logger import get_logger
 from icmplib import ping
@@ -31,9 +32,6 @@ class NetworkWatchdog:
 
     PUBLIC_SERVERS = ['8.8.8.8', '1.1.1.1']       # NOSONAR
 
-    # Static variable for saving the up time of the hotspot
-    watchdog_start_time = datetime.min
-
     # Static variable for saving the lost connectivity count
     lost_count = 0
 
@@ -41,9 +39,6 @@ class NetworkWatchdog:
     reboot_request_count = 0
 
     def __init__(self):
-        # Save the watchdog start time
-        self.watchdog_start_time = datetime.now()
-
         # Prepare the log file location
         if os.access(self.VOLUME_PATH, os.W_OK):
             self.log_file_path = os.path.join(self.VOLUME_PATH, self.WATCHDOG_LOG_FILE_NAME)
@@ -58,9 +53,6 @@ class NetworkWatchdog:
         handler.setLevel(LOGLEVEL)
         handler.setFormatter(logging.Formatter(_log_format))
         self.LOGGER.addHandler(handler)
-
-        # Log the watchdog intro
-        self.LOGGER.info("Watchdog started!")
 
     def __del__(self):
         if hasattr(self, 'temp_dir'):
@@ -111,8 +103,8 @@ class NetworkWatchdog:
     def ensure_network_connection(self) -> None:
         self.LOGGER.info("Ensuring the network connection...")
 
-        up_time = datetime.now() - self.watchdog_start_time
-        self.LOGGER.info(f"Watchdog has been up for {up_time}")
+        up_time = timedelta(seconds=uptime())
+        self.LOGGER.info(f"OS has been up for {up_time}")
 
         # If network is connected, nothing to do more
         if self.is_connected():
