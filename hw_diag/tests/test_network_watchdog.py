@@ -14,7 +14,7 @@ class TestNetworkWatchdog(unittest.TestCase):
                                                                         rtts=[0.3, 0.4]))
     def test_icmp_ping_success(self, _):
         watchdog = NetworkWatchdog()
-        result = watchdog.icmp_ping(self.TEST_GATEWAY_IP)
+        result = watchdog.is_ping_reachable(self.TEST_GATEWAY_IP)
         self.assertTrue(result)
 
     @patch('hw_diag.utilities.network_watchdog.ping', return_value=Host(address=TEST_GATEWAY_IP,
@@ -22,10 +22,10 @@ class TestNetworkWatchdog(unittest.TestCase):
                                                                         rtts=[]))
     def test_icmp_ping_fail(self, _):
         watchdog = NetworkWatchdog()
-        result = watchdog.icmp_ping('')
+        result = watchdog.is_ping_reachable('')
         self.assertFalse(result)
 
-    @patch.object(NetworkWatchdog, 'icmp_ping', return_value=True)
+    @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=True)
     @patch.object(NetworkManager, 'get_gateways', return_value=[TEST_GATEWAY_IP])
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
@@ -34,7 +34,7 @@ class TestNetworkWatchdog(unittest.TestCase):
         is_local_network_connected = watchdog.is_local_network_connected()
         self.assertTrue(is_local_network_connected)
 
-    @patch.object(NetworkWatchdog, 'icmp_ping', return_value=False)
+    @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=False)
     @patch.object(NetworkManager, 'get_gateways', return_value=[TEST_GATEWAY_IP])
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
@@ -43,13 +43,13 @@ class TestNetworkWatchdog(unittest.TestCase):
         is_local_network_connected = watchdog.is_local_network_connected()
         self.assertFalse(is_local_network_connected)
 
-    @patch.object(NetworkWatchdog, 'icmp_ping', return_value=True)
+    @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=True)
     def test_internet_connection_success(self, _):
         watchdog = NetworkWatchdog()
         is_internet_connected = watchdog.is_internet_connected()
         self.assertTrue(is_internet_connected)
 
-    @patch.object(NetworkWatchdog, 'icmp_ping', return_value=False)
+    @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=False)
     def test_internet_connection_fail(self, _):
         watchdog = NetworkWatchdog()
         is_internet_connected = watchdog.is_internet_connected()

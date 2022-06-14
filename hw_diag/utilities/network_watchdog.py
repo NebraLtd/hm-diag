@@ -66,7 +66,7 @@ class NetworkWatchdog:
         if hasattr(self, 'temp_dir'):
             self.temp_dir.cleanup()
 
-    def icmp_ping(self, ip: str) -> bool:
+    def is_ping_reachable(self, ip: str) -> bool:
         try:
             ping_target = ping(ip)
             reachable = ping_target and ping_target.address == ip and ping_target.is_alive
@@ -82,13 +82,13 @@ class NetworkWatchdog:
         network_manager = NetworkManager()
         gateways = network_manager.get_gateways()
         for gateway in gateways:
-            if self.icmp_ping(gateway):
+            if self.is_ping_reachable(gateway):
                 return True
         return False
 
     def is_internet_connected(self) -> bool:
         for public_server in self.PUBLIC_SERVERS:
-            if self.icmp_ping(public_server):
+            if self.is_ping_reachable(public_server):
                 return True
         return False
 
