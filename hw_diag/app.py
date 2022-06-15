@@ -59,10 +59,11 @@ def init_scheduled_tasks(app) -> None:
     def run_ship_diagnostics_task():
         perform_hw_diagnostics(ship=True)
 
+    watchdog = NetworkWatchdog()
+
     @scheduler.task('interval', id='network_watchdog', hours=1, jitter=300)
     def run_network_watchdog_task():
         try:
-            watchdog = NetworkWatchdog.get_instance()
             watchdog.ensure_network_connection()
         except Exception as e:
             logging.warning(f'Unknown error while checking the network connectivity : {e}')

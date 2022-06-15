@@ -19,6 +19,8 @@ class DBusIds:
     DBUS_NM_SERVICE = 'org.freedesktop.NetworkManager'
     DBUS_NM_PATH = '/org/freedesktop/NetworkManager'
     DBUS_NM_IF = 'org.freedesktop.NetworkManager'
+    DBUS_NM_ACTIVE_CONNECTION_IF = 'org.freedesktop.NetworkManager.Connection.Active'
+    DBUS_NM_IPV4CONFIG_IF = 'org.freedesktop.NetworkManager.IP4Config'
 
     # Systemd
     SYSTEMD_SERVICE = 'org.freedesktop.systemd1'
