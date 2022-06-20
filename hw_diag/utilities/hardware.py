@@ -1,5 +1,7 @@
+import re
 from time import sleep
 import dbus
+from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
@@ -183,20 +185,47 @@ def set_diagnostics_bt_lte(diagnostics):
     return diagnostics
 
 
+def parse_i2c_bus(address):
+    """
+    Takes i2c bus as input parameter and extracts the bus number and returns it.
+    """
+    i2c_bus_pattern = r'i2c-(\d+)'
+    return re.search(i2c_bus_pattern, address).group(1)
+
+
 def detect_ecc(diagnostics):
     # The order of the values in the lists is important!
     # It determines which value will be available for which key
     variant = diagnostics.get('VA')
 
+    i2c_bus = ''
     try:
-        key_storage_bus = get_variant_attribute(variant, 'KEY_STORAGE_BUS')
+        # Example SWARM_KEY_URI: "ecc://i2c-1:96?slot=0"
+        swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')
+        parse_result = urlparse(swarm_key_uri)
+        i2c_bus = parse_i2c_bus(parse_result.hostname)
+
     except Exception as e:
+        logging.warn("Unable to lookup SWARM_KEY_URI from hardware definitions, "
+                     "Exception message: {}".format(e))
+
+    if not i2c_bus or not i2c_bus.isnumeric():
+        try:
+            # Example KEY_STORAGE_BUS: "/dev/i2c-1"
+            key_storage_bus = get_variant_attribute(variant, 'KEY_STORAGE_BUS')
+            i2c_bus = parse_i2c_bus(key_storage_bus)
+
+        except Exception as e:
+            logging.warn("Unable to lookup KEY_STORAGE_BUS from hardware definitions, "
+                         "Exception message: {}".format(e))
+
+    if not i2c_bus or not i2c_bus.isnumeric():
         logging.warn("Unable to lookup storage bus from hardware definitions, "
-                     "falling back to the default. Exception message: {}".format(e))
-        key_storage_bus = '/dev/i2c-1'
+                     "falling back to the default.")
+        i2c_bus = '1'
 
     commands = [
-            'i2cdetect -y ' + key_storage_bus.split('-')[1]
+            f'i2cdetect -y {i2c_bus}'
     ]
 
     parameters = ["60 --"]
