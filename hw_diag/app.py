@@ -2,36 +2,29 @@ from datetime import datetime
 import logging
 import os
 import traceback
-import sentry_sdk
 from datetime import timedelta
-
 from flask import Flask
 from flask_apscheduler import APScheduler
 from retry import retry
-from sentry_sdk.integrations.logging import LoggingIntegration
-
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
+from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
-from hm_pyhelper.util.sentry import before_send_filter
-from sentry_sdk.integrations.flask import FlaskIntegration
 
+
+SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
-DSN_SENTRY = os.getenv('SENTRY_DIAG')
+BALENA_ID = os.getenv('BALENA_DEVICE_UUID')
+BALENA_APP = os.getenv('BALENA_APP_NAME')
 
-sentry_logging = LoggingIntegration(
-    level=logging.CRITICAL,
-    event_level=logging.CRITICAL
-)
-
-sentry_sdk.init(
-    dsn=DSN_SENTRY,
-    integrations=[sentry_logging, FlaskIntegration()],
-    release=f"diagnostics@{DIAGNOSTICS_VERSION}",
-    before_send=before_send_filter
+init_sentry(
+    sentry_dsn=SENTRY_DSN,
+    release=DIAGNOSTICS_VERSION,
+    balena_id=BALENA_ID,
+    balena_app=BALENA_APP
 )
 
 DEBUG = bool(os.getenv('DEBUG', '0'))
