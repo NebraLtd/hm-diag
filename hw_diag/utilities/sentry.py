@@ -1,9 +1,6 @@
-import logging
-
 import sentry_sdk
 from hm_pyhelper.util.sentry import before_send_filter
 from sentry_sdk.integrations.flask import FlaskIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 def init_sentry(sentry_dsn, release, balena_id, balena_app):
@@ -15,14 +12,9 @@ def init_sentry(sentry_dsn, release, balena_id, balena_app):
     if not sentry_dsn:
         return
 
-    sentry_logging = LoggingIntegration(
-        level=logging.CRITICAL,
-        event_level=logging.CRITICAL
-    )
-
     sentry_sdk.init(
         dsn=sentry_dsn,
-        integrations=[sentry_logging, FlaskIntegration()],
+        integrations=[FlaskIntegration()],
         release=f"diagnostics@{release}",
         before_send=before_send_filter
     )
