@@ -106,7 +106,7 @@ The images are tagged using the docker long and short commit SHAs for that relea
 ## Light hotspot notes
 Helium network is transitioning to light hotspot mode. During the transition, there is a possibility of hotspot going back and forth between light and full blockchain sync mode. We support a environment variable (DISPLAY_MINER_INFO) to disable showing blockchain mining information so that administrators can enable/disable its visibility to avoid confusion among their customers.
 
-The envvar default to true.
+The envvar default to false.
 If set and set to anything other than true, following mining information will be hidden:
 - Sync Percentage
 - Miner Connected To Blockchain
