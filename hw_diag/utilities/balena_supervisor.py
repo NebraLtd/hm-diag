@@ -80,11 +80,11 @@ class BalenaSupervisor:
 
         error_msg = ""
         if response is None:
-            error_msg = "Device status request failed. No response recieved."
+            error_msg = "Device status request failed. No response received."
 
         elif response.ok is False:
             error_msg = "Device status request failed. Got non-OK response: " + \
-                  f"{response.status_code} {response.content}"
+                f"{response.status_code} {response.content}"
 
         if error_msg:
             LOGGER.warning(error_msg)
@@ -95,6 +95,32 @@ class BalenaSupervisor:
         except Exception:
             error_msg = "Supervisor API did not return valid json response.\n" + \
                         f"Couldn't find {key_to_return} key in response.\n" + \
+                        f"Response content: {response.content}"
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+
+    def get_application_state(self) -> str:
+        """Get application state from balena supervisor API."""
+        LOGGER.info("Retrieving application state using Balena supervisor.")
+
+        response = self._make_request('GET', '/v2/applications/state')
+
+        error_msg = ""
+        if response is None:
+            error_msg = "Application state request failed. No response recieved."
+
+        elif response.ok is False:
+            error_msg = "Application state request failed. Got non-OK response: " + \
+                f"{response.status_code} {response.content}"
+
+        if error_msg:
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+
+        try:
+            return response.json()
+        except Exception:
+            error_msg = "Supervisor API did not return valid json response.\n" + \
                         f"Response content: {response.content}"
             LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
