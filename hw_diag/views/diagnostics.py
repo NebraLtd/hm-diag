@@ -69,9 +69,13 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+    display_miner = os.getenv("DISPLAY_MINER_INFO", "true").lower() == "true"
+    template_filename = 'diagnostics_page_light_miner.html'
+    if display_miner:
+        template_filename = 'diagnostics_page.html'
 
     return render_template(
-        'diagnostics_page.html',
+        template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now
