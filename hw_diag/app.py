@@ -12,7 +12,6 @@ from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
-from hw_diag.utilities.event_streamer import process_queued_events
 from hm_pyhelper.miner_param import provision_key
 
 
@@ -74,10 +73,6 @@ def init_scheduled_tasks(app) -> None:
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
-
-    # add processing of queued diag events every hour.
-    scheduler.add_job(id='process_events', func=process_queued_events,
-                      trigger='interval', minutes=15, jitter=300)
 
 
 def get_app(name):

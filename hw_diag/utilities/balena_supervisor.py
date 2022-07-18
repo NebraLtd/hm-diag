@@ -103,11 +103,11 @@ class BalenaSupervisor:
         """Get application state from balena supervisor API."""
         LOGGER.info("Retrieving application state using Balena supervisor.")
 
-        response = self._make_request('GET', '/v2/applications/state')
+        response = self._make_request('GET', '/v2/state/status')
 
         error_msg = ""
         if response is None:
-            error_msg = "Application state request failed. No response recieved."
+            error_msg = "Application state request failed. No response received."
 
         elif response.ok is False:
             error_msg = "Application state request failed. Got non-OK response: " + \

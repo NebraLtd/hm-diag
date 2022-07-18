@@ -1,10 +1,9 @@
 from __future__ import annotations
 import logging
 import os
-import json
 import tempfile
 from uptime import uptime
-from datetime import timedelta
+from datetime import timedelta, datetime
 from logging.handlers import RotatingFileHandler
 from hm_pyhelper.logger import get_logger
 from icmplib import ping
@@ -12,8 +11,8 @@ from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd import Systemd
-from hw_diag.utilities.event_streamer import EVENT_TYPE_KEY, DiagEvent, DiagAction, \
-    enqueue_event, event_fingerprint
+from hw_diag.utilities.event_streamer import EVENT_TYPE_KEY, ACTION_TYPE_KEY, \
+    DiagEvent, DiagAction, enqueue_event, event_fingerprint
 from hw_diag.utilities import system_metrics
 
 LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
@@ -122,28 +121,27 @@ class NetworkWatchdog:
         self.last_event = event_type
         self.last_action = action_type
 
-        balena_state = system_metrics.get_balena_metrics()
-        # print(json.dumps(balena_state, indent=4))
         network_stats = system_metrics.get_network_statistics()
         event = {
-            EVENT_TYPE_KEY: event_type,
-            'action_type': action_type,
+            # using names instead of values as our models have enums as strings
+            EVENT_TYPE_KEY: event_type.name,
+            ACTION_TYPE_KEY: action_type.name,
             'msg': msg,
             'serial': system_metrics.get_serial_number(),
             'variant': system_metrics.get_variant(),
             'firmware_version': system_metrics.get_firmware_version(),
             'region_override': system_metrics.get_region_override(),
-            'uptime': str(timedelta(seconds=uptime())),
-            'balena_health': system_metrics.are_all_services_up(balena_state),
+            # uptime in hours rounded to two decimal places
+            'uptime_hours': round(float(uptime())/3600, 2),
             'packet_errors': system_metrics.total_packet_errors(network_stats),
-            'balena_state': json.dumps(balena_state),
-            'network_stats': json.dumps(system_metrics.get_network_statistics()),
+            'generated_ts': datetime.utcnow().timestamp()
         }
+        event.update(system_metrics.get_balena_metrics())
         enqueue_event(event)
 
     def network_event_type(self) -> DiagEvent:
         if self.is_internet_connected():
-            return DiagEvent.NETWORK_CONNECTED
+            return DiagEvent.NETWORK_INTERNET_CONNECTED
         elif self.is_local_network_connected():
             return DiagEvent.NETWORK_LOCAL_CONNECTED
         else:

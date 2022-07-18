@@ -1,0 +1,74 @@
+[
+  {
+    "name": "generated_ts",
+    "type": "TIMESTAMP",
+    "mode": "REQUIRED",
+    "description": "generation timestamp"
+  },
+  {
+    "name": "event_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "serial",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "variant",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "firmware_version",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "region_override",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "packet_errors",
+    "type": "INTEGER",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "msg",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "action_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "uptime_hours",
+    "type": "FLOAT",
+    "mode": "NULLABLE",
+    "description": "uptime in hours"
+  },
+  {
+    "name": "balena_app_state",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "balena_release",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "balena_all_running",
+    "type": "BOOLEAN",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "balena_failed_containers",
+    "type": "STRING",
+    "mode": "REPEATED"
+  }
+]
