@@ -70,5 +70,10 @@
     "name": "balena_failed_containers",
     "type": "STRING",
     "mode": "REPEATED"
+  },
+  {
+    "name": "balena_api_status",
+    "type": "STRING",
+    "mode": "NULLABLE"
   }
 ]
