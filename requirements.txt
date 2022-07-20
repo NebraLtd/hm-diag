@@ -14,3 +14,4 @@ python-gnupg==0.4.8
 pydantic==1.9.0
 icmplib==3.0.3
 uptime==3.0.1
+persist-queue==0.8.0

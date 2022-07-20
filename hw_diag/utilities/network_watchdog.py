@@ -78,7 +78,6 @@ class NetworkWatchdog:
             return False
 
     def is_local_network_connected(self) -> bool:
-        # return True
         network_manager = NetworkManager()
         gateways = network_manager.get_gateways()
         for gateway in gateways:
@@ -87,14 +86,12 @@ class NetworkWatchdog:
         return False
 
     def is_internet_connected(self) -> bool:
-        # return True
         for public_server in self.PUBLIC_SERVERS:
             if self.is_ping_reachable(public_server):
                 return True
         return False
 
     def is_connected(self) -> bool:
-        # return True
         is_local_network_connected = self.is_local_network_connected()
         self.LOGGER.info(f"Local network connection: {is_local_network_connected}")
 
@@ -156,7 +153,7 @@ class NetworkWatchdog:
         # If network is connected, nothing to do more
         if self.is_connected():
             self.lost_count = 0
-            msg = "Network is connected"
+            msg = "Network is working."
             self.LOGGER.info(msg)
             self._send_network_event(self.network_event_type(), DiagAction.ACTION_NONE, msg)
             return
