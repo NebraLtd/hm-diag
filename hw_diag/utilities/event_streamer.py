@@ -1,16 +1,20 @@
 from enum import Enum, auto
 import os
+import json
 import requests
 import logging
-from persistqueue import Queue
+
 
 from hw_diag.utilities import system_metrics
 from hw_diag.utilities.events_bq_data_model import EventDataModel
+from hw_diag.utilities.osutils import get_rw_storage_path
+from hw_diag.utilities.fifo_disk_queue import FifoDiskQueue
 
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
-VOLUME_PATH = '/var/watchdog/events'
+VOLUME_PATH = '/var/watchdog'
+EVENTS_FOLDER = 'events'
 
 NETWORK_EVENT_BASE = 0
 CONTAINER_EVENT_BASE = 1000
@@ -41,7 +45,7 @@ URL = 'https://www.googleapis.com/upload/storage/v1/b/%s/o?uploadType=media' \
     % BUCKET_NAME
 
 
-event_queue = Queue(VOLUME_PATH, maxsize=1000)
+event_queue = FifoDiskQueue(get_rw_storage_path(VOLUME_PATH, EVENTS_FOLDER), maxsize=1000)
 EVENT_TYPE_KEY = 'event_type'
 ACTION_TYPE_KEY = 'action_type'
 
@@ -52,35 +56,50 @@ def event_fingerprint(event_type, action_type=DiagAction.ACTION_NONE, msg="") ->
     return fingerprint[:128]
 
 
-def enqueue_event(event):
+def enqueue_event(event) -> None:
+    try:
+        EventDataModel(**event)
+    except Exception as e:
+        logging.error(f"failed to enforce bigquery datamodel, modify schema or event to fix: {e}")
+        return
+
     event_queue.put(event)
-    process_queued_events()
+
+    # if process events throws exception, empty the queue to recover
+    try:
+        process_queued_events()
+    except Exception as e:
+        logging.error(f"emptying queue due to corruption: {e}")
+        empty_queued_events()
+
+
+def empty_queued_events():
+    while not event_queue.empty():
+        event_queue.get()
+        event_queue.task_done()
 
 
 def process_queued_events():
     while not event_queue.empty():
-        event = event_queue.get()
+        # we don't need to worry about get blocking as we are not working with
+        # threads here.
+        event = event_queue.peek()
         if not _upload_event(event):
             return
+        # remove the event from the queue
+        event_queue.get()
         event_queue.task_done()
 
 
 def _upload_event(event: dict) -> bool:
+    '''returns false if network request fails'''
 
     # add serial number to filename to prevent overwriting
     cloud_filename = f'{system_metrics.get_serial_number()}-{event["generated_ts"]}.json'
 
-    # enqueue only if it passes the big query data model
-    try:
-        # validate and filter diagnostic data as per big query model
-        validated_data = EventDataModel(**event)
-    except Exception as err:
-        log.error(f'Failed to enforce biquery data model on diagnostics dict {err}')
-        return False
-
     upload_url = '%s&name=%s' % (URL, cloud_filename)
     headers = {'Content-Type': 'application/json'}
-    content = validated_data.json()
+    content = json.dumps(event)
 
     print(f"uploading event: {content}")
 

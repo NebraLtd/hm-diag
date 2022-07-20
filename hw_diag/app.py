@@ -8,6 +8,7 @@ from flask_apscheduler import APScheduler
 from retry import retry
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
+from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
@@ -54,10 +55,17 @@ def init_scheduled_tasks(app) -> None:
 
     watchdog = NetworkWatchdog()
 
-    @scheduler.task('interval', id='network_watchdog', hours=1, jitter=300)
+    def modify_network_watchdog_next_run(minutes=60):
+        watchdog_job = scheduler.get_job('network_watchdog')
+        watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=minutes))
+
+    @scheduler.task('interval', id='network_watchdog', minutes=60, jitter=300)
     def run_network_watchdog_task():
         try:
-            watchdog.ensure_network_connection()
+            network_state_event = watchdog.ensure_network_connection()
+            if network_state_event == DiagEvent.NETWORK_DISCONNECTED:
+                # accelerate the check for network connectivity
+                modify_network_watchdog_next_run(minutes=15)
         except Exception as e:
             logging.warning(f'Unknown error while checking the network connectivity : {e}')
 
