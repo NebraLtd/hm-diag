@@ -136,7 +136,7 @@ class NetworkWatchdog:
         event.update(system_metrics.get_balena_metrics())
         enqueue_event(event)
 
-    def network_event_type(self) -> DiagEvent:
+    def get_current_network_state(self) -> DiagEvent:
         if self.is_internet_connected():
             return DiagEvent.NETWORK_INTERNET_CONNECTED
         elif self.is_local_network_connected():
@@ -144,19 +144,21 @@ class NetworkWatchdog:
         else:
             return DiagEvent.NETWORK_DISCONNECTED
 
-    def ensure_network_connection(self) -> None:
+    def ensure_network_connection(self) -> DiagEvent:
         self.LOGGER.info("Ensuring the network connection...")
 
         up_time = timedelta(seconds=uptime())
         self.LOGGER.info(f"OS has been up for {up_time}")
 
+        network_state_event = self.get_current_network_state()
+
         # If network is connected, nothing to do more
-        if self.is_connected():
+        if network_state_event != DiagEvent.NETWORK_DISCONNECTED:
             self.lost_count = 0
             msg = "Network is working."
             self.LOGGER.info(msg)
-            self._send_network_event(self.network_event_type(), DiagAction.ACTION_NONE, msg)
-            return
+            self._send_network_event(network_state_event, DiagAction.ACTION_NONE, msg)
+            return network_state_event
 
         # If network is not working, take the next step
         self.lost_count += 1
@@ -170,9 +172,9 @@ class NetworkWatchdog:
                 msg = f"Hotspot has been restarted already within {self.REBOOT_LIMIT_HOURS}hour(s)."
                 " Skip the rebooting."
                 self.LOGGER.info(msg)
-                self._send_network_event(DiagEvent.NETWORK_DISCONNECTED,
+                self._send_network_event(network_state_event,
                                          DiagAction.ACTION_NONE, msg)
-                return
+                return network_state_event
 
             force_reboot = self.reboot_request_count >= self.FULL_FORCE_REBOOT_THRESHOLD
 
@@ -182,7 +184,7 @@ class NetworkWatchdog:
 
             msg = f"Rebooting the hotspot(force={force_reboot})."
             self.LOGGER.info(msg)
-            self._send_network_event(DiagEvent.NETWORK_DISCONNECTED, action, msg)
+            self._send_network_event(network_state_event, action, msg)
 
             self.reboot_request_count += 1
             self.LOGGER.info(f"Reboot request count={self.reboot_request_count}.")
@@ -192,10 +194,11 @@ class NetworkWatchdog:
         elif self.lost_count >= self.NM_RESTART_THRESHOLD:
             msg = "Reached threshold for Network Manager restart to recover network."
             self.LOGGER.warning(msg)
-            self._send_network_event(DiagEvent.NETWORK_DISCONNECTED,
+            self._send_network_event(network_state_event,
                                      DiagAction.ACTION_NM_RESTART,
                                      msg)
             self.restart_network_manager()
+        return network_state_event
 
 
 if __name__ == '__main__':
