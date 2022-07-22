@@ -1,13 +1,18 @@
 from persistqueue import Queue
 from time import time as _time
 from persistqueue.exceptions import Empty
+import os
 
 
 class FifoDiskQueue(Queue):
     '''extends persistqueue.Queue class to implement peek method'''
 
     def __init__(self, path, maxsize=0):
-        super().__init__(path, maxsize=maxsize)
+        # use temp dir on the same path as storage dir
+        tempdir = os.path.join(path, 'temp')
+        if not os.path.exists(tempdir):
+            os.makedirs(tempdir)
+        super().__init__(path, tempdir=tempdir, maxsize=maxsize)
 
     def peek(self, block=True, timeout=None):
         self.not_empty.acquire()
@@ -44,3 +49,8 @@ class FifoDiskQueue(Queue):
         data = self.serializer.load(self.tailf)
         self.tailf.seek(old_pos)
         return data
+
+    def close(self):
+        for fd in [self.headf, self.tailf]:
+            if fd and not fd.closed:
+                fd.close()

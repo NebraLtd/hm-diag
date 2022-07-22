@@ -7,10 +7,10 @@ from hm_pyhelper.logger import get_logger
 logging = get_logger(__name__)
 
 
-BUCKET_NAME = 'helium-miner-events'
-PROJECT_ID = 'nebra-production'
-DATASET_NAME = 'hotspot_events_data'
-TABLE_NAME = 'events'
+BUCKET_NAME = ''
+PROJECT_ID = ''
+DATASET_NAME = ''
+TABLE_NAME = ''
 TABLE_ID = '%s.%s.%s' % (PROJECT_ID, DATASET_NAME, TABLE_NAME)
 
 
@@ -40,12 +40,12 @@ def delete_file(file_name):
     bucket.delete_blob(file_name)
 
 
-def import_diagnostics_data(event, context):  # NOSONAR
+def import_events_data(event, context):  # NOSONAR
     file_name = event.get('name')
-    logging.info("Processing file: %s." % file_name)
+    logging.info(f"Processing file: {file_name}.")
     data = download_file(file_name)
-    logging.info("Inserting file %s into BigQuery." % file_name)
+    logging.info(f"Inserting file {file_name} into BigQuery.")
     insert_into_bigquery(data)
-    logging.info("Deleting file: %s." % file_name)
+    logging.info(f"Deleting file: {file_name}.")
     delete_file(file_name)
-    logging.info("Finished importing file: %s." % file_name)
+    logging.info(f"Finished importing file: {file_name}.")

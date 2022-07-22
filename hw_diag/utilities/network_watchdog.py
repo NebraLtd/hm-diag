@@ -12,7 +12,7 @@ from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd import Systemd
 from hw_diag.utilities.event_streamer import EVENT_TYPE_KEY, ACTION_TYPE_KEY, \
-    DiagEvent, DiagAction, enqueue_event, event_fingerprint
+    DiagEvent, DiagAction, event_streamer, event_fingerprint
 from hw_diag.utilities import system_metrics
 
 LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
@@ -134,7 +134,7 @@ class NetworkWatchdog:
             'generated_ts': datetime.utcnow().timestamp()
         }
         event.update(system_metrics.get_balena_metrics())
-        enqueue_event(event)
+        event_streamer.enqueue_event(event)
 
     def get_current_network_state(self) -> DiagEvent:
         if self.is_internet_connected():

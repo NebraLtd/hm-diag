@@ -1,7 +1,6 @@
-from typing import Dict, Any, Union
+from typing import Dict, Any
 import logging
 import os
-import json
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 
 
@@ -19,7 +18,7 @@ def get_failed_services(container_list: list) -> list:
 def get_balena_metrics() -> Dict:
     try:
         supervisor = BalenaSupervisor.new_from_env()
-        app_state = json.loads(supervisor.get_application_state())
+        app_state = supervisor.get_device_status()
     except Exception as e:
         log.error(f"error while getting container state from supervisor {e}")
         return {"balena_api_status": "error", "balena_failed_containers": []}
@@ -39,7 +38,7 @@ def get_balena_metrics() -> Dict:
     return metrics
 
 
-def read_proc_file(file_path: str, default_value: Union[str, int]) -> Any:
+def read_proc_file(file_path: str, default_value: str) -> Any:
     try:
         with open(file_path, 'r') as f:
             return f.read()
@@ -73,8 +72,12 @@ def get_network_statistics(interface_list=['wlan0', 'eth0']) -> Dict:
     stats = {}
     for iface_name in interface_list:
         stats[iface_name] = {
-            "rx_errors": int(read_proc_file(f"/sys/class/net/{iface_name}/statistics/rx_bytes", 0)),
-            "tx_errors": int(read_proc_file(f"/sys/class/net/{iface_name}/statistics/tx_bytes", 0))
+            "rx_errors": int(
+                read_proc_file(f"/sys/class/net/{iface_name}/statistics/rx_errors", "0")
+                ),
+            "tx_errors": int(
+                read_proc_file(f"/sys/class/net/{iface_name}/statistics/tx_errors", "0")
+                )
         }
     return stats
 
