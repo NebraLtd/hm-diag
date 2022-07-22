@@ -1,10 +1,11 @@
 from enum import Enum, auto
 import os
 import json
+import shutil
 import requests
 import logging
 
-
+from persistqueue import Full
 from hw_diag.utilities import system_metrics
 from hw_diag.utilities.events_bq_data_model import EventDataModel
 from hw_diag.utilities.osutils import get_rw_storage_path
@@ -22,6 +23,17 @@ CONTAINER_EVENT_BASE = 1000
 NETWORK_ACTION_BASE = 10000
 CONTAINER_ACTION_BASE = 11000
 
+EVENT_TYPE_KEY = 'event_type'
+ACTION_TYPE_KEY = 'action_type'
+
+GCS_BUCKET_NAME = os.getenv(
+    'MINER_EVENTS_GCS_BUCKET',
+    'helium-miner-events'
+)
+
+URL = 'https://www.googleapis.com/upload/storage/v1/b/%s/o?uploadType=media' \
+    % GCS_BUCKET_NAME
+
 
 class DiagEvent(Enum):
     NETWORK_DISCONNECTED = NETWORK_ACTION_BASE  # completely disconnected.
@@ -34,61 +46,6 @@ class DiagAction(Enum):
     ACTION_NM_RESTART = NETWORK_ACTION_BASE
     ACTION_SYSTEM_REBOOT = auto()
     ACTION_SYSTEM_REBOOT_FORCED = auto()
-
-
-BUCKET_NAME = os.getenv(
-    'MINER_EVENTS_GCS_BUCKET',
-    'helium-miner-events'
-)
-
-URL = 'https://www.googleapis.com/upload/storage/v1/b/%s/o?uploadType=media' \
-    % BUCKET_NAME
-
-
-event_queue = FifoDiskQueue(get_rw_storage_path(VOLUME_PATH, EVENTS_FOLDER), maxsize=1000)
-EVENT_TYPE_KEY = 'event_type'
-ACTION_TYPE_KEY = 'action_type'
-
-
-def event_fingerprint(event_type, action_type=DiagAction.ACTION_NONE, msg="") -> str:
-    # right now event fingerprint is decided base on only these three"
-    fingerprint = f"{event_type}_{action_type}_{msg}"
-    return fingerprint[:128]
-
-
-def enqueue_event(event) -> None:
-    try:
-        EventDataModel(**event)
-    except Exception as e:
-        logging.error(f"failed to enforce bigquery datamodel, modify schema or event to fix: {e}")
-        return
-
-    event_queue.put(event)
-
-    # if process events throws exception, empty the queue to recover
-    try:
-        process_queued_events()
-    except Exception as e:
-        logging.error(f"emptying queue due to corruption: {e}")
-        empty_queued_events()
-
-
-def empty_queued_events():
-    while not event_queue.empty():
-        event_queue.get()
-        event_queue.task_done()
-
-
-def process_queued_events():
-    while not event_queue.empty():
-        # we don't need to worry about get blocking as we are not working with
-        # threads here.
-        event = event_queue.peek()
-        if not _upload_event(event):
-            return
-        # remove the event from the queue
-        event_queue.get()
-        event_queue.task_done()
 
 
 def _upload_event(event: dict) -> bool:
@@ -118,3 +75,64 @@ def _upload_event(event: dict) -> bool:
 
     log.debug('event Submitted to GCS Bucket Successfully')
     return True
+
+
+def event_fingerprint(event_type, action_type=DiagAction.ACTION_NONE, msg="") -> str:
+    # right now event fingerprint is decided base on only these three"
+    fingerprint = f"{event_type}_{action_type}_{msg}"
+    return fingerprint[:128]
+
+
+class EventStreamer(object):
+    def __init__(self, max_size=1000) -> None:
+        self._max_size = max_size
+        self._storage_path = get_rw_storage_path(VOLUME_PATH, EVENTS_FOLDER)
+        self._event_queue = FifoDiskQueue(self._storage_path, maxsize=self._max_size)
+
+    def reset_queue(self) -> None:
+        self._event_queue.close()
+        shutil.rmtree(self._storage_path)
+        self._event_queue = FifoDiskQueue(self._storage_path, maxsize=self._max_size)
+
+    def clear_queued_events(self) -> None:
+        while not self._event_queue.empty():
+            self._event_queue.get()
+            self._event_queue.task_done()
+
+    def _enqueue_event_after_validation(self, event: dict) -> None:
+        try:
+            EventDataModel(**event)
+        except Exception as e:
+            logging.error(
+                f"failed to enforce bigquery datamodel, modify schema or event to fix: {e}")
+            return
+
+        try:
+            self._event_queue.put(event)
+        except Full as e:
+            logging.error(f"event queue is full, dropping event: {e}")
+        except Exception as e:
+            logging.error(f"failed to enqueue event: {e}")
+
+    def enqueue_event(self, event) -> None:
+        self._enqueue_event_after_validation(event)
+        # if process events throws exception, empty the queue to recover
+        try:
+            self.process_queued_events()
+        except Exception as e:
+            logging.error(f"emptying queue due to corruption: {e}")
+            self.reset_queue()
+
+    def process_queued_events(self) -> None:
+        while not self._event_queue.empty():
+            # we don't need to worry about get blocking as we are not working with
+            # threads here.
+            event = self._event_queue.peek()
+            if not _upload_event(event):
+                return
+            # remove the event from the queue
+            self._event_queue.get()
+            self._event_queue.task_done()
+
+
+event_streamer = EventStreamer()

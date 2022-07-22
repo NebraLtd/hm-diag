@@ -44,3 +44,8 @@ class FifoDiskQueue(Queue):
         data = self.serializer.load(self.tailf)
         self.tailf.seek(old_pos)
         return data
+
+    def close(self):
+        for fd in [self.headf, self.tailf]:
+            if fd and not fd.closed:
+                fd.close()
