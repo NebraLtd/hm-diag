@@ -72,5 +72,5 @@ class TestDeviceStatusDiagnostic(unittest.TestCase):
             DIAGNOSTICS_PASSED_KEY: False,
             DIAGNOSTICS_ERRORS_KEY: ['device_status', 'device_status'],
             'device_status': "Supervisor API did not return valid json response.\n"
-                             "Couldn't find appState key in response.\nResponse content: b''"
+                             "Response content: b''"
         })

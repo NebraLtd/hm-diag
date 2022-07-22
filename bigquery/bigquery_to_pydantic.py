@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # Long options
     long_options = ["help", "input=", "output="]
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:o:m", ["input=", "output=", "model="])
+        opts, args = getopt.getopt(sys.argv[1:], "i:o:m:", ["input=", "output=", "model="])
     except getopt.GetoptError:
         print("Usage: bq_to_pydantic.py -i <bq_schema_filename> -o <output_filename>")
         sys.exit(2)

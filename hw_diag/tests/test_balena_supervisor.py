@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
-
+from functools import lru_cache
+from os.path import abspath, dirname, join
+import json
 import responses
 from requests.exceptions import ConnectionError, ConnectTimeout
 
@@ -16,6 +18,12 @@ TEST_SUPERVISOR_SHUTDOWN_URL = 'http://127.0.0.1/v1/shutdown?apikey=secret'
 TEST_SUPERVISOR_REBOOT_URL = 'http://127.0.0.1/v1/reboot?apikey=secret'
 
 
+@lru_cache(maxsize=None)
+def valid_status_json():
+    json_full_path = join(dirname(abspath(__file__)), 'data/valid_device_state_response.json')
+    return json.load(open(json_full_path, 'r'))
+
+
 class TestBalenaSupervisor(unittest.TestCase):
 
     def test_creation(self):
@@ -28,8 +36,8 @@ class TestBalenaSupervisor(unittest.TestCase):
     @patch.dict(
         balena_supervisor.os.environ,
         {
-          'BALENA_SUPERVISOR_ADDRESS': TEST_SUPERVISOR_ADDRESS,
-          'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY
+            'BALENA_SUPERVISOR_ADDRESS': TEST_SUPERVISOR_ADDRESS,
+            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY
         },
         clear=True
     )
@@ -39,6 +47,18 @@ class TestBalenaSupervisor(unittest.TestCase):
         assert bs.supervisor_address == TEST_SUPERVISOR_ADDRESS
         assert bs.supervisor_api_key == TEST_SUPERVISOR_API_KEY
         assert bs.headers == {'Content-type': 'application/json'}
+
+    @responses.activate
+    def test_device_status_success_response_full(self):
+        responses.add(
+            responses.GET,
+            TEST_SUPERVISOR_DEVICE_STATUS_URL,
+            status=200,
+            json=valid_status_json()
+        )
+
+        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        assert bs.get_device_status() == valid_status_json()
 
     @responses.activate
     def test_device_status_success_response(self):
