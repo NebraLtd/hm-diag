@@ -72,8 +72,9 @@ class BalenaSupervisor:
         except Exception:
             raise RuntimeError('reboot failed due to supervisor API issue')
 
-    def get_device_status(self, key_to_return) -> str:
-        """Get device status from balena supervisor API."""
+    def get_device_status(self, key_to_return=None) -> str:
+        """Get device status from balena supervisor API.
+        Returns value of the supplied key_to_return other full response json object."""
         LOGGER.info("Retrieving device status using Balena supervisor.")
 
         response = self._make_request('GET', '/v2/state/status')
@@ -91,10 +92,16 @@ class BalenaSupervisor:
             raise RuntimeError(error_msg)
 
         try:
-            return response.json()[key_to_return]
-        except Exception:
+            if key_to_return:
+                return response.json()[key_to_return]
+            return response.json()
+        except ValueError:
             error_msg = "Supervisor API did not return valid json response.\n" + \
-                        f"Couldn't find {key_to_return} key in response.\n" + \
+                        f"Response content: {response.content}"
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+        except Exception:
+            error_msg = f"Couldn't find {key_to_return} key in response.\n" + \
                         f"Response content: {response.content}"
             LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)

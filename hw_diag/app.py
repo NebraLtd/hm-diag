@@ -55,11 +55,11 @@ def init_scheduled_tasks(app) -> None:
 
     watchdog = NetworkWatchdog()
 
-    def modify_network_watchdog_next_run(minutes=60):
+    def modify_network_watchdog_next_run(minutes=5):
         watchdog_job = scheduler.get_job('network_watchdog')
         watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=minutes))
 
-    @scheduler.task('interval', id='network_watchdog', minutes=60, jitter=300)
+    @scheduler.task('interval', id='network_watchdog', minutes=5, jitter=30)
     def run_network_watchdog_task():
         try:
             network_state_event = watchdog.ensure_network_connection()

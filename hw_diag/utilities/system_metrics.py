@@ -1,7 +1,6 @@
 from typing import Dict, Any, Union
 import logging
 import os
-import json
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 
 
@@ -19,7 +18,7 @@ def get_failed_services(container_list: list) -> list:
 def get_balena_metrics() -> Dict:
     try:
         supervisor = BalenaSupervisor.new_from_env()
-        app_state = json.loads(supervisor.get_device_status())
+        app_state = supervisor.get_device_status()
     except Exception as e:
         log.error(f"error while getting container state from supervisor {e}")
         return {"balena_api_status": "error", "balena_failed_containers": []}

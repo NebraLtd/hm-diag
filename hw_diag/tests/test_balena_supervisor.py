@@ -15,6 +15,58 @@ TEST_SUPERVISOR_DEVICE_STATUS_URL = 'http://127.0.0.1/v2/state/status?apikey=sec
 TEST_SUPERVISOR_SHUTDOWN_URL = 'http://127.0.0.1/v1/shutdown?apikey=secret'
 TEST_SUPERVISOR_REBOOT_URL = 'http://127.0.0.1/v1/reboot?apikey=secret'
 
+valid_status_json = {
+    "status": "success",
+    "containers": [
+        {
+            "status": "Running",
+            "serviceName": "packet-forwarder",
+            "appId": 1803709,
+            "imageId": 5147947,
+            "serviceId": 952414,
+            "containerId": "11fda396392c86ddaa394b9455b987f491f97bb07d4615ac2d60c6a05802650a",
+            "createdAt": "2022-07-15T00:20:01.011Z"
+        },
+        {
+            "status": "Running",
+            "serviceName": "helium-miner",
+            "appId": 1803709,
+            "imageId": 5147949,
+            "serviceId": 952412,
+            "containerId": "0cb4f1c07c54d3f56e1f68e2f2f50f4f3312f9da0bdcaaa73571e80e92314be4",
+            "createdAt": "2022-07-15T00:19:55.693Z"
+        },
+        {
+            "status": "Running",
+            "serviceName": "gateway-config",
+            "appId": 1803709,
+            "imageId": 5147946,
+            "serviceId": 952413,
+            "containerId": "89b7cbbbb221d1643681266aa44f4d42a6963cc6d734c42794cb3bfcc2474e5a",
+            "createdAt": "2022-07-15T00:19:50.221Z"
+        },
+        {
+            "status": "Running",
+            "serviceName": "diagnostics",
+            "appId": 1803709,
+            "imageId": 5147948,
+            "serviceId": 952411,
+            "containerId": "e5af0b42372bdea0f7c3f84981aa9fec853a1e9eff4839ecf43bdfbee672ad33",
+            "createdAt": "2022-07-15T00:19:40.688Z"
+        },
+        {
+            "status": "Running",
+            "serviceName": "dbus-session",
+            "appId": 1803709,
+            "imageId": 5147950,
+            "serviceId": 1254941,
+            "containerId": "49e907602cf037ba90b34680096702a65fdb136abd31fe0eb117460fb7abebc8",
+            "createdAt": "2022-07-15T00:19:34.312Z"
+        }
+    ],
+    "release": "8575a4193de1739b8b6651f4f575ab0b"
+}
+
 
 class TestBalenaSupervisor(unittest.TestCase):
 
@@ -42,6 +94,18 @@ class TestBalenaSupervisor(unittest.TestCase):
 
     @responses.activate
     def test_device_status_success_response(self):
+        responses.add(
+            responses.GET,
+            TEST_SUPERVISOR_DEVICE_STATUS_URL,
+            status=200,
+            json=valid_status_json
+        )
+
+        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        assert bs.get_device_status() == valid_status_json
+
+    @responses.activate
+    def test_device_status_success_response_full(self):
         responses.add(
             responses.GET,
             TEST_SUPERVISOR_DEVICE_STATUS_URL,
