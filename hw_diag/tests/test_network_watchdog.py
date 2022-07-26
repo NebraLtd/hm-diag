@@ -3,6 +3,7 @@ from unittest.mock import patch
 from icmplib import Host
 from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd_unit import SystemDUnit
+from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 
 
@@ -33,6 +34,8 @@ class TestNetworkWatchdog(unittest.TestCase):
         watchdog = NetworkWatchdog()
         is_local_network_connected = watchdog.is_local_network_connected()
         self.assertTrue(is_local_network_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_INTERNET_CONNECTED)
 
     @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=False)
     @patch.object(NetworkManager, 'get_gateways', return_value=[TEST_GATEWAY_IP])
@@ -42,18 +45,30 @@ class TestNetworkWatchdog(unittest.TestCase):
         watchdog = NetworkWatchdog()
         is_local_network_connected = watchdog.is_local_network_connected()
         self.assertFalse(is_local_network_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_DISCONNECTED)
 
     @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=True)
-    def test_internet_connection_success(self, _):
+    @patch.object(NetworkManager, 'get_gateways', return_value=[TEST_GATEWAY_IP])
+    @patch("dbus.SystemBus")
+    @patch("dbus.Interface")
+    def test_internet_connection_success(self, _, __, ___, ____):
         watchdog = NetworkWatchdog()
         is_internet_connected = watchdog.is_internet_connected()
         self.assertTrue(is_internet_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_INTERNET_CONNECTED)
 
     @patch.object(NetworkWatchdog, 'is_ping_reachable', return_value=False)
-    def test_internet_connection_fail(self, _):
+    @patch.object(NetworkManager, 'get_gateways', return_value=[TEST_GATEWAY_IP])
+    @patch("dbus.SystemBus")
+    @patch("dbus.Interface")
+    def test_internet_connection_fail(self, _, __, ___, ____):
         watchdog = NetworkWatchdog()
         is_internet_connected = watchdog.is_internet_connected()
         self.assertFalse(is_internet_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_DISCONNECTED)
 
     @patch.object(NetworkWatchdog, 'is_local_network_connected', return_value=True)
     @patch.object(NetworkWatchdog, 'is_internet_connected', return_value=True)
@@ -61,6 +76,8 @@ class TestNetworkWatchdog(unittest.TestCase):
         watchdog = NetworkWatchdog()
         is_connected = watchdog.is_connected()
         self.assertTrue(is_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_INTERNET_CONNECTED)
 
     @patch.object(NetworkWatchdog, 'is_local_network_connected', return_value=False)
     @patch.object(NetworkWatchdog, 'is_internet_connected', return_value=False)
@@ -68,6 +85,8 @@ class TestNetworkWatchdog(unittest.TestCase):
         watchdog = NetworkWatchdog()
         is_connected = watchdog.is_connected()
         self.assertFalse(is_connected)
+        network_state_event = watchdog.get_current_network_state()
+        self.assertEqual(network_state_event, DiagEvent.NETWORK_DISCONNECTED)
 
     @patch.object(SystemDUnit, 'wait_restart')
     @patch("dbus.SystemBus")
@@ -78,7 +97,7 @@ class TestNetworkWatchdog(unittest.TestCase):
             watchdog.restart_network_manager()
             self.assertIn('Network manager restarted:', captured_logs.output[0])
 
-    @patch.object(NetworkWatchdog, 'is_connected', return_value=True)
+    @patch.object(NetworkWatchdog, 'is_local_network_connected', return_value=True)
     @patch("dbus.SystemBus")
     @patch("dbus.Interface")
     def test_ensure_network_connection_connected(self, _, __, ___):
