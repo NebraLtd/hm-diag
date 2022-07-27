@@ -10,10 +10,8 @@ from hw_diag.utilities.hardware import get_serial_number
 from hw_diag.utilities.hardware import lora_module_test
 from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
-from hw_diag.utilities.miner import fetch_miner_data
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
-from hm_pyhelper.miner_json_rpc.exceptions import MinerFailedFetchData
 from requests.exceptions import ConnectTimeout, ReadTimeout
 
 
@@ -39,14 +37,6 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diagnostics['OK'] = public_keys['key']
     diagnostics['PK'] = public_keys['key']
     diagnostics['AN'] = public_keys['name']
-
-    # Fetch data from miner container.
-    try:
-        diagnostics = fetch_miner_data(diagnostics)
-    except MinerFailedFetchData as e:
-        log.exception(e)
-    except Exception as e:
-        log.exception(e)
 
     # Get the blockchain height from the Helium API
     value = None
