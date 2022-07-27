@@ -48,7 +48,7 @@ class TestUploadDiagnostics(unittest.TestCase):
         mock_requests.post = MagicMock()
         mock_requests.post.return_value = OKResponse()
         diag_data = valid_diagnostic_data().copy()
-        diag_data.pop('serial_number')
+        diag_data.pop('last_updated')
         retval = upload_diagnostics(diag_data, True)
         self.assertFalse(retval)
 

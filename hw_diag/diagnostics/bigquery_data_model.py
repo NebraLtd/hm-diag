@@ -8,18 +8,18 @@ class DiagnosticDataModel(BaseModel):
     last_updated: str
     E0: Optional[str]
     W0: Optional[str]
-    BN: str
-    ID: str
-    BA: str
-    FR: str
-    FW: str
-    VA: str
-    serial_number: str
+    BN: Optional[str]
+    ID: Optional[str]
+    BA: Optional[str]
+    FR: Optional[str]
+    FW: Optional[str]
+    VA: Optional[str]
+    serial_number: Optional[str]
     ECC: Optional[bool]
     LOR: Optional[bool]
-    PK: str
-    OK: str
-    AN: str
+    PK: Optional[str]
+    OK: Optional[str]
+    AN: Optional[str]
     MC: Optional[bool]
     MD: Optional[bool]
     MH: Optional[int]
