@@ -19,3 +19,4 @@ class EventDataModel(BaseModel):
     balena_all_running: Optional[bool]
     balena_failed_containers: List[str]
     balena_api_status: Optional[str]
+    network_state: Optional[str]
