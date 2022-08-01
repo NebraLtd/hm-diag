@@ -14,6 +14,7 @@ from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
+from functools import partial
 
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
@@ -42,41 +43,54 @@ def perform_key_provisioning():
         raise ValueError
 
 
+def run_ship_diagnostics_task():
+    perform_hw_diagnostics(ship=True)
+
+
+def run_quectel_health_task():
+    try:
+        ensure_quectel_health()
+    except Exception as e:
+        logging.error(f'Unknown error encountered while trying to update Quectel modem '
+                      f'for network compatibility: {e}')
+        logging.error(traceback.format_exc())
+
+
+def run_network_watchdog_task(watchdog, scheduler):
+    try:
+        network_state_event = watchdog.ensure_network_connection()
+        if network_state_event == DiagEvent.NETWORK_DISCONNECTED:
+            # accelerate the check for network connectivity
+            watchdog_job = scheduler.get_job('network_watchdog')
+            watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=15))
+    except Exception as e:
+        logging.warning(f'Unknown error while checking the network connectivity : {e}')
+
+
+def run_heartbeat_task(watchdog):
+    try:
+        watchdog.emit_heartbeat()
+    except Exception as e:
+        logging.warning(f'Unknown error while emitting heartbeat : {e}')
+
+
 def init_scheduled_tasks(app) -> None:
     # Configure the backend scheduled tasks
     scheduler = APScheduler()
     scheduler.api_enabled = False
     scheduler.init_app(app)
     scheduler.start()
-
-    @scheduler.task('cron', id='ship_diagnostics', minute='0')
-    def run_ship_diagnostics_task():
-        perform_hw_diagnostics(ship=True)
-
     watchdog = NetworkWatchdog()
 
-    def modify_network_watchdog_next_run(minutes=60):
-        watchdog_job = scheduler.get_job('network_watchdog')
-        watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=minutes))
-
-    @scheduler.task('interval', id='network_watchdog', minutes=60, jitter=300)
-    def run_network_watchdog_task():
-        try:
-            network_state_event = watchdog.ensure_network_connection()
-            if network_state_event == DiagEvent.NETWORK_DISCONNECTED:
-                # accelerate the check for network connectivity
-                modify_network_watchdog_next_run(minutes=15)
-        except Exception as e:
-            logging.warning(f'Unknown error while checking the network connectivity : {e}')
-
-    @scheduler.task('interval', id='quectel_repeating', hours=1)
-    def run_quectel_health_task():
-        try:
-            ensure_quectel_health()
-        except Exception as e:
-            logging.error(f'Unknown error encountered while trying to update Quectel modem '
-                          f'for network compatibility: {e}')
-            logging.error(traceback.format_exc())
+    scheduler.add_job(id='ship_diagnostics', func=run_ship_diagnostics_task,
+                      trigger='cron', minute='0')
+    scheduler.add_job(id='quectel_repeating', func=run_quectel_health_task,
+                      trigger='interval', hours=1)
+    scheduler.add_job(id='network_watchdog',
+                      func=partial(run_network_watchdog_task, watchdog, scheduler),
+                      trigger='interval', minutes=60, jitter=300)
+    scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
+                      trigger='interval', minutes=60, jitter=300)
 
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')

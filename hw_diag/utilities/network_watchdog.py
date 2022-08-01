@@ -2,6 +2,7 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
+from typing import Dict
 from uptime import uptime
 from datetime import timedelta, datetime
 from logging.handlers import RotatingFileHandler
@@ -41,9 +42,9 @@ class NetworkWatchdog:
     # Static variable for saving the failed reboot count
     reboot_request_count = 0
 
-    last_event = DiagEvent.NETWORK_DISCONNECTED
-    last_action = DiagAction.ACTION_NONE
-    last_fingerprint = ""
+    last_network_event = DiagEvent.NETWORK_DISCONNECTED
+    last_network_action = DiagAction.ACTION_NONE
+    last_network_event_fingerprint = ""
 
     def __init__(self):
         # Prepare the log file location
@@ -107,17 +108,8 @@ class NetworkWatchdog:
         nm_restarted = network_manager_unit.wait_restart()
         self.LOGGER.info(f"Network manager restarted: {nm_restarted}")
 
-    def _send_network_event(self, event_type, action_type, msg) -> None:
-        # don't repeat the events unnecessarily
-        new_fingerprint = event_fingerprint(event_type, action_type, msg)
-        if new_fingerprint == self.last_fingerprint:
-            return
-
-        # save last state
-        self.last_fingerprint = new_fingerprint
-        self.last_event = event_type
-        self.last_action = action_type
-
+    def _prepare_event(self, event_type: DiagEvent,
+                       action_type: DiagAction, msg: str) -> Dict:
         network_stats = system_metrics.get_network_statistics()
         event = {
             # using names instead of values as our models have enums as strings
@@ -131,10 +123,26 @@ class NetworkWatchdog:
             # uptime in hours rounded to two decimal places
             'uptime_hours': round(float(uptime())/3600, 2),
             'packet_errors': system_metrics.total_packet_errors(network_stats),
-            'generated_ts': datetime.utcnow().timestamp()
+            'generated_ts': datetime.utcnow().timestamp(),
+            'network_state': self.get_current_network_state().name
         }
         event.update(system_metrics.get_balena_metrics())
-        event_streamer.enqueue_event(event)
+        return event
+
+    def _send_network_event(self, event_type: DiagEvent,
+                            action_type: DiagAction, msg: str) -> None:
+        # don't repeat the events unnecessarily
+        new_fingerprint = event_fingerprint(event_type, action_type, msg)
+        if new_fingerprint == self.last_network_event_fingerprint:
+            return
+
+        # save last state
+        self.last_network_event_fingerprint = new_fingerprint
+        self.last_network_event = event_type
+        self.last_network_action = action_type
+
+        event = self._prepare_event(event_type, action_type, msg)
+        event_streamer.enqueue_persistent_event(event)
 
     def get_current_network_state(self) -> DiagEvent:
         if self.is_internet_connected():
@@ -143,6 +151,10 @@ class NetworkWatchdog:
             return DiagEvent.NETWORK_LOCAL_CONNECTED
         else:
             return DiagEvent.NETWORK_DISCONNECTED
+
+    def emit_heartbeat(self) -> None:
+        event = self._prepare_event(DiagEvent.HEARTBEAT, DiagAction.ACTION_NONE, "")
+        event_streamer.enqueue_event(event)
 
     def ensure_network_connection(self) -> DiagEvent:
         self.LOGGER.info("Ensuring the network connection...")

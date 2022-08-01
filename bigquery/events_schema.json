@@ -75,5 +75,10 @@
     "name": "balena_api_status",
     "type": "STRING",
     "mode": "NULLABLE"
+  },
+  {
+    "name": "network_state",
+    "type": "STRING",
+    "mode": "NULLABLE"
   }
 ]
