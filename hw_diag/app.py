@@ -83,7 +83,7 @@ def init_scheduled_tasks(app) -> None:
     watchdog = NetworkWatchdog()
 
     scheduler.add_job(id='ship_diagnostics', func=run_ship_diagnostics_task,
-                      trigger='cron', minute='0')
+                      trigger='interval', minutes=60, jitter=300)
     scheduler.add_job(id='quectel_repeating', func=run_quectel_health_task,
                       trigger='interval', hours=1)
     scheduler.add_job(id='network_watchdog',
