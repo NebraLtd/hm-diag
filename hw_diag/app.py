@@ -21,6 +21,10 @@ SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
 BALENA_ID = os.getenv('BALENA_DEVICE_UUID')
 BALENA_APP = os.getenv('BALENA_APP_NAME')
+HEARTBEAT_INTERVAL_HOURS = float(os.getenv('HEARTBEAT_INTERVAL_HOURS', 24))
+SHIP_DIAG_INTERVAL_HOURS = float(os.getenv('SHIP_DIAG_INTERVAL_HOURS', 1))
+NETWORK_WATCHDOG_INTERVAL_HOURS = float(os.getenv('NETWORK_WATCHDOG_INTERVAL_HOURS', 1))
+
 
 init_sentry(
     sentry_dsn=SENTRY_DSN,
@@ -83,14 +87,14 @@ def init_scheduled_tasks(app) -> None:
     watchdog = NetworkWatchdog()
 
     scheduler.add_job(id='ship_diagnostics', func=run_ship_diagnostics_task,
-                      trigger='interval', minutes=60, jitter=300)
+                      trigger='interval', hours=SHIP_DIAG_INTERVAL_HOURS, jitter=300)
     scheduler.add_job(id='quectel_repeating', func=run_quectel_health_task,
                       trigger='interval', hours=1)
     scheduler.add_job(id='network_watchdog',
                       func=partial(run_network_watchdog_task, watchdog, scheduler),
-                      trigger='interval', minutes=60, jitter=300)
+                      trigger='interval', hours=NETWORK_WATCHDOG_INTERVAL_HOURS, jitter=300)
     scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
-                      trigger='interval', hours=24, jitter=300)
+                      trigger='interval', hours=HEARTBEAT_INTERVAL_HOURS, jitter=300)
 
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
