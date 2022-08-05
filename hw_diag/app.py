@@ -90,7 +90,7 @@ def init_scheduled_tasks(app) -> None:
                       func=partial(run_network_watchdog_task, watchdog, scheduler),
                       trigger='interval', minutes=60, jitter=300)
     scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
-                      trigger='interval', minutes=60, jitter=300)
+                      trigger='interval', hours=24, jitter=300)
 
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
