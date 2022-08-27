@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 import logging
 import os
 import traceback
@@ -14,6 +15,7 @@ from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
 from hm_pyhelper.miner_param import provision_key
+from hm_pyhelper.logger import get_logger
 from functools import partial
 
 
@@ -35,15 +37,16 @@ init_sentry(
 
 DEBUG = bool(os.getenv('DEBUG', '0'))
 
-log = logging.getLogger()
+log = get_logger('DIAG-APP')
 if DEBUG:
     # Defaults to INFO if not explicitly set.
     log.setLevel(logging.DEBUG)
 
 
-@retry(ValueError, tries=10, delay=1, backoff=2, logger=log)
+@retry(ValueError, tries=10, delay=15, backoff=0, logger=log)
 def perform_key_provisioning():
     if not provision_key():
+        log.error("Key provisioning failed, retrying ...")
         raise ValueError
 
 
@@ -104,6 +107,7 @@ def init_scheduled_tasks(app) -> None:
 def get_app(name):
     try:
         if os.getenv('BALENA_DEVICE_TYPE', False):
+            sleep(5)
             perform_key_provisioning()
     except Exception as e:
         log.error('Failed to provision key: {}'
