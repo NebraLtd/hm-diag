@@ -1,30 +1,29 @@
+from __future__ import annotations
 import logging
 import os
 import tempfile
-from datetime import datetime, timedelta
+from typing import Dict
+from uptime import uptime
+from datetime import timedelta, datetime
 from logging.handlers import RotatingFileHandler
-import socket
-
 from hm_pyhelper.logger import get_logger
+from icmplib import ping
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.dbus_proxy.dbus_ids import DBusIds
 from hw_diag.utilities.dbus_proxy.network_manager import NetworkManager
 from hw_diag.utilities.dbus_proxy.systemd import Systemd
+from hw_diag.utilities.event_streamer import EVENT_TYPE_KEY, ACTION_TYPE_KEY, \
+    DiagEvent, DiagAction, event_streamer, event_fingerprint
+from hw_diag.utilities import system_metrics
 
 LOGLEVEL = os.environ.get("LOGLEVEL", "DEBUG")
 _log_format = "%(asctime)s - [%(levelname)s] - (%(filename)s:%(lineno)d) - %(message)s"
 
 
 class NetworkWatchdog:
-    _instance = None
-
     VOLUME_PATH = '/var/watchdog/'
     WATCHDOG_LOG_FILE_NAME = 'watchdog.log'
-    LAST_RESTART_FILE_NAME = 'last_restart.json'
-
     MAX_LOG_SIZE = 10 * 1024 * 1024  # 10 Mb
-    LAST_RESTART_KEY = 'last_restart'
-    LAST_RESTART_DATE_FORMAT = '%d/%m/%Y %H:%M:%S'
 
     # Failed connectivity count for the network manager to restart
     NM_RESTART_THRESHOLD = int(os.environ.get("NM_RESTART_THRESHOLD", 1))
@@ -35,12 +34,7 @@ class NetworkWatchdog:
     # Full system reboot limited to once a day
     REBOOT_LIMIT_HOURS = int(os.environ.get("REBOOT_LIMIT_HOURS", 24))
 
-    # Public DNS server for checking internet connectivity
-    PUBLIC_DNS_SERVER = "8.8.8.8"       # NOSONAR
-    PUBLIC_DNS_PORT = 53
-
-    # Static variable for saving the up time of the hotspot
-    up_time = datetime.min
+    PUBLIC_SERVERS = ['8.8.8.8', '1.1.1.1']       # NOSONAR
 
     # Static variable for saving the lost connectivity count
     lost_count = 0
@@ -48,33 +42,17 @@ class NetworkWatchdog:
     # Static variable for saving the failed reboot count
     reboot_request_count = 0
 
-    @staticmethod
-    def get_instance():
-        """ Static method to fetch the current instance.
-        """
-        if not NetworkWatchdog._instance:
-            NetworkWatchdog()
-        return NetworkWatchdog._instance
+    last_network_event = DiagEvent.NETWORK_DISCONNECTED
+    last_network_action = DiagAction.ACTION_NONE
+    last_network_event_fingerprint = ""
 
     def __init__(self):
-        """ Constructor.
-               """
-        if NetworkWatchdog._instance is None:
-            NetworkWatchdog._instance = self
-        else:
-            raise RuntimeError("You cannot create another SingletonGovt class")
-
-        # Save the uptime
-        self.up_time = datetime.now()
-
         # Prepare the log file location
         if os.access(self.VOLUME_PATH, os.W_OK):
             self.log_file_path = os.path.join(self.VOLUME_PATH, self.WATCHDOG_LOG_FILE_NAME)
-            self.state_file_path = os.path.join(self.VOLUME_PATH, self.LAST_RESTART_FILE_NAME)
         else:
             self.temp_dir = tempfile.TemporaryDirectory()
             self.log_file_path = os.path.join(self.temp_dir.name, self.WATCHDOG_LOG_FILE_NAME)
-            self.state_file_path = os.path.join(self.temp_dir.name, self.LAST_RESTART_FILE_NAME)
 
         # Set up logger
         self.LOGGER = get_logger(__name__)
@@ -84,84 +62,157 @@ class NetworkWatchdog:
         handler.setFormatter(logging.Formatter(_log_format))
         self.LOGGER.addHandler(handler)
 
-        self.systemd_proxy = Systemd()
-        self.network_manager_unit = self.systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
-        self.network_manager = NetworkManager()
-
-        # Log the watchdog intro
-        self.LOGGER.info("Watchdog is started!")
-
     def __del__(self):
         if hasattr(self, 'temp_dir'):
             self.temp_dir.cleanup()
 
-    def have_internet(self, timeout=10) -> bool:
+    def is_ping_reachable(self, ip: str) -> bool:
         try:
-            socket.setdefaulttimeout(timeout)
-            sock = socket.create_connection((self.PUBLIC_DNS_SERVER, self.PUBLIC_DNS_PORT))
-            sock.close()
-            return True
-        except Exception as e:
-            self.LOGGER.info(f"internet not accessible: {e}")
+            ping_target = ping(ip)
+            reachable = ping_target and ping_target.address == ip and ping_target.is_alive
+            if reachable:
+                self.LOGGER.info(f'{ip} is reachable.')
+            else:
+                self.LOGGER.info(f'{ip} is not reachable.')
+            return reachable
+        except Exception:
             return False
 
+    def is_local_network_connected(self) -> bool:
+        network_manager = NetworkManager()
+        gateways = network_manager.get_gateways()
+        for gateway in gateways:
+            if self.is_ping_reachable(gateway):
+                return True
+        return False
+
+    def is_internet_connected(self) -> bool:
+        for public_server in self.PUBLIC_SERVERS:
+            if self.is_ping_reachable(public_server):
+                return True
+        return False
+
     def is_connected(self) -> bool:
-        self.LOGGER.info("Checking the network connectivity.")
+        is_local_network_connected = self.is_local_network_connected()
+        self.LOGGER.info(f"Local network connection: {is_local_network_connected}")
 
-        # Log more details about the network connectivity and internet connectivity
-        self.LOGGER.info(f"Network manager state: {self.network_manager.get_connect_state()}")
-        self.LOGGER.info(f"Internet connectivity: {self.have_internet()}")
+        is_internet_connected = self.is_internet_connected()
+        self.LOGGER.info(f"Internet connection: {is_internet_connected}")
 
-        return self.have_internet()
+        return is_local_network_connected
 
-    def restart_network_manager(self):
+    def restart_network_manager(self) -> None:
         """Restart hostOS NetworkManager service"""
-        nm_restarted = self.network_manager_unit.wait_restart()
+        systemd_proxy = Systemd()
+        network_manager_unit = systemd_proxy.get_unit(DBusIds.NETWORK_MANAGER_UNIT_NAME)
+        nm_restarted = network_manager_unit.wait_restart()
         self.LOGGER.info(f"Network manager restarted: {nm_restarted}")
 
-    def ensure_network_connection(self) -> None:
-        self.LOGGER.info("Running the watchdog...")
+    def _prepare_event(self, event_type: DiagEvent,
+                       action_type: DiagAction, msg: str) -> Dict:
+        network_stats = system_metrics.get_network_statistics()
+        event = {
+            # using names instead of values as our models have enums as strings
+            EVENT_TYPE_KEY: event_type.name,
+            ACTION_TYPE_KEY: action_type.name,
+            'msg': msg,
+            'serial': system_metrics.get_serial_number(),
+            'variant': system_metrics.get_variant(),
+            'firmware_version': system_metrics.get_firmware_version(),
+            'region_override': system_metrics.get_region_override(),
+            # uptime in hours rounded to two decimal places
+            'uptime_hours': round(float(uptime())/3600, 2),
+            'packet_errors': system_metrics.total_packet_errors(network_stats),
+            'generated_ts': datetime.utcnow().timestamp(),
+            'network_state': self.get_current_network_state().name
+        }
+        event.update(system_metrics.get_balena_metrics())
+        return event
+
+    def _send_network_event(self, event_type: DiagEvent,
+                            action_type: DiagAction, msg: str) -> None:
+        # don't repeat the events unnecessarily
+        new_fingerprint = event_fingerprint(event_type, action_type, msg)
+        if new_fingerprint == self.last_network_event_fingerprint:
+            return
+
+        # save last state
+        self.last_network_event_fingerprint = new_fingerprint
+        self.last_network_event = event_type
+        self.last_network_action = action_type
+
+        event = self._prepare_event(event_type, action_type, msg)
+        event_streamer.enqueue_persistent_event(event)
+
+    def get_current_network_state(self) -> DiagEvent:
+        if self.is_internet_connected():
+            return DiagEvent.NETWORK_INTERNET_CONNECTED
+        elif self.is_local_network_connected():
+            return DiagEvent.NETWORK_LOCAL_CONNECTED
+        else:
+            return DiagEvent.NETWORK_DISCONNECTED
+
+    def emit_heartbeat(self) -> None:
+        event = self._prepare_event(DiagEvent.HEARTBEAT, DiagAction.ACTION_NONE, "")
+        event_streamer.enqueue_event(event)
+
+    def ensure_network_connection(self) -> DiagEvent:
+        self.LOGGER.info("Ensuring the network connection...")
+
+        up_time = timedelta(seconds=uptime())
+        self.LOGGER.info(f"OS has been up for {up_time}")
+
+        network_state_event = self.get_current_network_state()
 
         # If network is connected, nothing to do more
-        if self.is_connected():
+        if network_state_event != DiagEvent.NETWORK_DISCONNECTED:
             self.lost_count = 0
-            self.LOGGER.info("Network is working.")
-            return
+            msg = "Network is working."
+            self.LOGGER.info(msg)
+            self._send_network_event(network_state_event, DiagAction.ACTION_NONE, msg)
+            return network_state_event
 
         # If network is not working, take the next step
         self.lost_count += 1
         self.LOGGER.warning(
             f"Network is not connected! Lost connectivity count={self.lost_count}")
 
-        if self.lost_count >= self.NM_RESTART_THRESHOLD:
-            self.LOGGER.warning(
-                "Reached threshold for nm restart for recovering network.")
-            self.restart_network_manager()
-            self.LOGGER.info("Restarted the network connection.")
-
         if self.lost_count >= self.FULL_REBOOT_THRESHOLD:
             self.LOGGER.warning(
-                "Reached threshold for system reboot for recovering network.")
-            if self.up_time + timedelta(
-                    hours=self.REBOOT_LIMIT_HOURS) > datetime.now():
-                self.LOGGER.info(
-                    f"Hotspot has been restarted already within {self.REBOOT_LIMIT_HOURS}hour(s)."
-                    f" Skip the rebooting.")
-                return
+                "Reached threshold for system reboot to recover network.")
+            if up_time < timedelta(hours=self.REBOOT_LIMIT_HOURS):
+                msg = f"Hotspot has been restarted already within {self.REBOOT_LIMIT_HOURS}hour(s)."
+                " Skip the rebooting."
+                self.LOGGER.info(msg)
+                self._send_network_event(network_state_event,
+                                         DiagAction.ACTION_NONE, msg)
+                return network_state_event
 
             force_reboot = self.reboot_request_count >= self.FULL_FORCE_REBOOT_THRESHOLD
 
-            self.LOGGER.info(f"Rebooting the hotspot(force={force_reboot}).")
+            action = DiagAction.ACTION_SYSTEM_REBOOT
+            if force_reboot:
+                action = DiagAction.ACTION_SYSTEM_REBOOT_FORCED
+
+            msg = f"Rebooting the hotspot(force={force_reboot})."
+            self.LOGGER.info(msg)
+            self._send_network_event(network_state_event, action, msg)
 
             self.reboot_request_count += 1
             self.LOGGER.info(f"Reboot request count={self.reboot_request_count}.")
 
             balena_supervisor = BalenaSupervisor.new_from_env()
             balena_supervisor.reboot(force=force_reboot)
+        elif self.lost_count >= self.NM_RESTART_THRESHOLD:
+            msg = "Reached threshold for Network Manager restart to recover network."
+            self.LOGGER.warning(msg)
+            self._send_network_event(network_state_event,
+                                     DiagAction.ACTION_NM_RESTART,
+                                     msg)
+            self.restart_network_manager()
+        return network_state_event
 
 
 if __name__ == '__main__':
-    print('Watchdog is running...')
     watchdog = NetworkWatchdog()
-    is_connected = watchdog.is_connected()
-    print("Is connected:", is_connected)
+    watchdog.ensure_network_connection()

@@ -19,6 +19,36 @@
   </header>
   <section class="container pb-4">
 
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <h2 class="alert-heading">What happened to sync percentage?</h2>
+            <p>Helium has converted all existing hotspots into <a
+                    href="https://blog.helium.com/light-hotspots-explained-everything-you-need-to-know-f86612f571c6"
+                    target="_blank">light hotspots</a>. Sync percentage and other blockchain features are now handled by
+                validators, not hotspots. We appreciate your patience with any issues during the transition period.</p>
+            <a href="https://engineering.helium.com/2022/07/14/miner-hotspot-release.html" target="_blank"
+                class="btn btn-light">More Information</a>
+            <style>
+                .alert {
+                    border-radius: 8px;
+                }
+
+                .alert-primary {
+                    background-color: #02A8F5;
+                    color: white;
+                }
+
+                .alert-primary a {
+                    color: white;
+                    font-weight: 600;
+                }
+
+                .alert-primary .btn-light {
+                    color: #02A8F5;
+                    border-radius: 50px;
+                }
+            </style>
+        </div>
+
       {% if diagnostics.error %}
         <div class="text-center pb-4 mb-4 border-bottom border-light">
           <h1>Diagnostics Information</h1>
@@ -86,6 +116,14 @@
                   {% endif %}
                 </tr>
                 <tr>
+                    <td>Radio Operational</td>
+                    {% if diagnostics.LOR %}
+                      <td class="text-success text-right">True</td>
+                    {% else %}
+                      <td class="text-danger text-right">False</td>
+                    {% endif %}
+                </tr>
+                <tr>
                     <td>Validator Block Height</td>
                     {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY]) %}
                         <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY) }}</td>
@@ -108,11 +146,11 @@
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                  <td>ECC Detected</td>
+                  <td class="border-0">ECC Detected</td>
                   {% if diagnostics.ECC %}
-                    <td class="text-success text-right">True</td>
+                    <td class="border-0 text-success text-right">True</td>
                   {% else %}
-                    <td class="text-danger text-right">False</td>
+                    <td class="border-0 text-danger text-right">False</td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -138,14 +176,6 @@
                 <tr>
                   <td>Bluetooth Detected</td>
                   {% if diagnostics.BT %}
-                    <td class="text-success text-right">True</td>
-                  {% else %}
-                    <td class="text-danger text-right">False</td>
-                  {% endif %}
-                </tr>
-                <tr>
-                  <td>LoRa Operational</td>
-                  {% if diagnostics.LOR %}
                     <td class="text-success text-right">True</td>
                   {% else %}
                     <td class="text-danger text-right">False</td>

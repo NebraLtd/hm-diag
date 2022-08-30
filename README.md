@@ -102,3 +102,15 @@ This repo automatically builds docker containers and uploads them to two reposit
 - [hm-diag on GitHub Packages](https://github.com/NebraLtd/hm-diag/pkgs/container/hm-diag)
 
 The images are tagged using the docker long and short commit SHAs for that release. The current version deployed to miners can be found in the [helium-miner-software repo](https://github.com/NebraLtd/helium-miner-software/blob/production/docker-compose.yml).
+
+## Light hotspot notes
+Helium network is transitioning to light hotspot mode. During the transition, there is a possibility of hotspot going back and forth between light and full blockchain sync mode. We support a environment variable (DISPLAY_MINER_INFO) to disable showing blockchain mining information so that administrators can enable/disable its visibility to avoid confusion among their customers.
+
+The envvar default to false.
+If set and set to anything other than true, following mining information will be hidden:
+- Sync Percentage
+- Miner Connected To Blockchain
+- Height Status
+- Miner Relayed
+
+This is a temporary capability that will be removed when hotspots moves to gateway-rs. Instead validator information will be shown.

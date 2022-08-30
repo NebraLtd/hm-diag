@@ -72,10 +72,11 @@ def get_diagnostics():
     diag_report = DiagnosticsReport.from_json_dict(diagnostics)
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+    template_filename = 'diagnostics_page_light_miner.html'
 
     return render_template(
-        'diagnostics_page.html',
-        diagnostics=diag_report.from_json_dict(diagnostics),
+        template_filename,
+        diagnostics=diagnostics,
         display_lte=display_lte,
         DIAG_CONSTS=DIAG_CONSTS,
         now=now
