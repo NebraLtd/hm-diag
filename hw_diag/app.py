@@ -1,12 +1,15 @@
-from datetime import datetime
-from time import sleep
 import logging
 import os
 import traceback
+from datetime import datetime
+from functools import partial
 from datetime import timedelta
+
 from flask import Flask
 from flask_apscheduler import APScheduler
-from retry import retry
+
+from hm_pyhelper.logger import get_logger
+
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.utilities.event_streamer import DiagEvent
@@ -14,10 +17,6 @@ from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.utilities.quectel import ensure_quectel_health
-from hm_pyhelper.miner_param import provision_key
-from hm_pyhelper.logger import get_logger
-from functools import partial
-
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -41,13 +40,6 @@ log = get_logger('DIAG-APP')
 if DEBUG:
     # Defaults to INFO if not explicitly set.
     log.setLevel(logging.DEBUG)
-
-
-@retry(ValueError, tries=10, delay=15, backoff=0, logger=log)
-def perform_key_provisioning():
-    if not provision_key():
-        log.error("Key provisioning failed, retrying ...")
-        raise ValueError
 
 
 def run_ship_diagnostics_task():
@@ -105,18 +97,9 @@ def init_scheduled_tasks(app) -> None:
 
 
 def get_app(name):
-    try:
-        if os.getenv('BALENA_DEVICE_TYPE', False):
-            sleep(5)
-            perform_key_provisioning()
-    except Exception as e:
-        log.error('Failed to provision key: {}'
-                  .format(e))
 
     app = Flask(name)
-
     cache.init_app(app)
-
     init_scheduled_tasks(app)
 
     # Register Blueprints
