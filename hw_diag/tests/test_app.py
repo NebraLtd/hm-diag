@@ -2,8 +2,6 @@ import unittest
 import os
 from flask import Flask
 from unittest.mock import patch
-from hm_pyhelper.exceptions import ECCMalfunctionException
-
 
 # Test cases
 from hw_diag.app import get_app
