@@ -2,7 +2,6 @@ from hm_pyhelper.diagnostics import DiagnosticsReport
 from hm_pyhelper.miner_param import provision_key
 
 from hw_diag.diagnostics.pgp_signed_json_diagnostic import PgpSignedJsonDiagnostic
-from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.security import GnuPG
 
 KEY_PROVISIONING_KEY = 'provision_key'
