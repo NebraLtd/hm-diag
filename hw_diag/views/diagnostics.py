@@ -12,8 +12,11 @@ from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
+
 from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import ShutdownGatewayDiagnostic
+from hw_diag.diagnostics.provision_key_diagnostic import ProvisionKeyDiagnostic
+
 from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
@@ -69,7 +72,6 @@ def get_diagnostics_json():
 @cache.cached(timeout=60)
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
-    diag_report = DiagnosticsReport.from_json_dict(diagnostics)
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
     template_filename = 'diagnostics_page_light_miner.html'
@@ -196,6 +198,53 @@ def shutdown_gateway():
 
     diagnostics = [
         ShutdownGatewayDiagnostic(GnuPG(), shutdown_request_with_signature),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({SHUTDOWN_GATEWAY_KEY}):
+        http_code = 500
+    else:
+        http_code = 200
+
+    LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.route('/v1/mfr-init', methods=['POST'])
+def provision_key_view():
+    """
+    Tries key provisioning.
+    Requires a signed PGP payload to be supplied in the format:
+
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA256
+
+    {
+        "slot": int,
+        "force": boolean
+    }
+    -----BEGIN PGP SIGNATURE-----
+    [REDACTED]
+    -----END PGP SIGNATURE-----
+
+    :param slot: The slot number to use for key provisioning.
+    :param force: If set to True then if "provision" operation fails, "key --generate" operation
+                  is tried.
+    :return: In case of success returns the provisioned json that include the onboarding key
+             and animal name. In case of failure, returns the error message.
+    """
+
+    provision_request_with_signature = request.get_data()
+    if not provision_request_with_signature:
+        err_msg = 'Can not find PGP payload.'
+        LOGGER.error(err_msg)
+        diagnostics_report = compose_diagnostics_report_from_err_msg(
+            SHUTDOWN_GATEWAY_KEY, err_msg)
+        return diagnostics_report, 406
+
+    diagnostics = [
+        ProvisionKeyDiagnostic(GnuPG(), provision_request_with_signature),
     ]
     diagnostics_report = DiagnosticsReport(diagnostics)
     diagnostics_report.perform_diagnostics()
