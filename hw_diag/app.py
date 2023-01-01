@@ -1,5 +1,6 @@
 import logging
 import os
+import uuid
 import traceback
 from datetime import datetime
 from functools import partial
@@ -16,6 +17,7 @@ from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
+from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
@@ -102,7 +104,12 @@ def get_app(name):
     cache.init_app(app)
     init_scheduled_tasks(app)
 
+    # Use a random UUID for session key, this will change each time the app
+    # starts, so with reboot / update etc... users will need to reauthenticate.
+    app.secret_key = str(uuid.uuid4())
+
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
+    app.register_blueprint(AUTH)
 
     return app

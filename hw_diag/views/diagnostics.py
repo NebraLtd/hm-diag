@@ -28,31 +28,16 @@ from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
 from hw_diag.diagnostics.device_status_diagnostic import DeviceStatusDiagnostic
 from hw_diag.utilities.diagnostics import compose_diagnostics_report_from_err_msg
 from hw_diag.utilities.hardware import should_display_lte
-from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
+from hw_diag.utilities.auth import authenticate
+from hw_diag.utilities.diagnostics import read_diagnostics_file
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
-
-
-def read_diagnostics_file():
-    diagnostics = {}
-
-    try:
-        perform_hw_diagnostics()
-        with open('diagnostic_data.json', 'r') as f:
-            diagnostics = json.load(f)
-    except FileNotFoundError:
-        msg = 'Diagnostics have not yet run, please try again in a few minutes'
-        diagnostics = {'error': msg}
-    except Exception as e:
-        msg = 'Diagnostics has encountered an error: %s'
-        diagnostics = {'error': msg % str(e)}
-
-    return diagnostics
 
 
 @DIAGNOSTICS.route('/json')
@@ -67,7 +52,7 @@ def get_diagnostics_json():
 
 
 @DIAGNOSTICS.route('/')
-@cache.cached(timeout=60)
+@authenticate
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
