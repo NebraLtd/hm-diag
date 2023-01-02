@@ -4,7 +4,7 @@ import os
 import logging
 
 from flask import Blueprint, request
-from flask import render_template
+from flask import render_template, Response
 from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
@@ -60,10 +60,11 @@ def read_diagnostics_file():
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
     response = jsonify(diagnostics)
-    response.headers.set('X-Robots-Tag', 'none')
     response.headers.set('Content-Disposition',
                          'attachment;filename=nebra-diag.json'
                          )
+    response.headers.set('X-Robots-Tag', 'none')
+
     return response
 
 
@@ -81,7 +82,6 @@ def get_diagnostics():
         display_lte=display_lte,
         now=now
     )
-    response.headers.set('X-Robots-Tag', 'none')
 
     return response
 
@@ -113,8 +113,15 @@ def get_initialisation_file():
 
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
-    response_b64.headers.set('X-Robots-Tag', 'none')
     return response_b64
+
+
+@DIAGNOSTICS.route('/robots.txt')
+@cache.cached(timeout=60)
+def noindex():
+    robots = Response(response="User-Agent: *\nDisallow: /\n", status=200, mimetype="text/plain")
+    robots.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return robots
 
 
 @DIAGNOSTICS.route('/version')
@@ -125,8 +132,6 @@ def version_information():
         'diagnostics_version': os.getenv('DIAGNOSTICS_VERSION', 'unknown'),
         'firmware_short_hash': os.getenv('FIRMWARE_SHORT_HASH', 'unknown'),
     }
-
-    response.headers.set('X-Robots-Tag', 'none')
 
     return response
 
@@ -260,3 +265,10 @@ def provision_key_view():
     LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.after_app_request
+def add_security_headers(response):
+    response.headers['X-Robots-Tag'] = 'none'
+
+    return response
