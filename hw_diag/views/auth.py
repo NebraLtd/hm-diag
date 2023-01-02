@@ -14,6 +14,7 @@ from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.auth import check_password
 from hw_diag.utilities.auth import authenticate
+from hw_diag.utilities.auth import write_password_file
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -85,6 +86,7 @@ def handle_password_change():
         )
 
     if not error:
+        write_password_file(new_password)
         msg = 'Password updated successfully.'
 
     diagnostics = read_diagnostics_file()

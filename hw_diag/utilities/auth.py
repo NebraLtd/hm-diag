@@ -20,6 +20,19 @@ def authenticate(f):
     return wrapper
 
 
+def write_password_file(password):
+    password = password.enocde('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password, salt)
+    hashed_str = hashed.decode('utf-8')
+    auth_data = {
+        'pw_hash': hashed_str
+    }
+    with open(AUTH_FILE, 'w') as f:
+        json.dump(auth_data, f)
+    return auth_data
+
+
 def read_password_file():
     auth_data = None
     try:
@@ -29,15 +42,7 @@ def read_password_file():
         diagnostics = read_diagnostics_file()
         eth_mac = diagnostics.get('E0')
         default_password = eth_mac.replace(':', '')
-        default_password = default_password.encode('utf-8')
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(default_password, salt)
-        hashed_str = hashed.decode('utf-8')
-        auth_data = {
-            'pw_hash': hashed_str
-        }
-        with open(AUTH_FILE, 'w') as f:
-            json.dump(auth_data, f)
+        auth_data = write_password_file(default_password)
     return auth_data
 
 
