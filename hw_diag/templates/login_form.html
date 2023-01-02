@@ -30,12 +30,12 @@
             <br/>
             <br/>
             {% if msg %}
-                <p><font color="red">Incorrect password, please try again!</font></p>
+                <p><font color="red">{{ msg }}</font></p>
             {% endif %}
             <form method="POST" action="/login">
                 <div class="form-group">
                     <label for="txtPassword">Password</label>
-                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password">
+                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" style="width: 400px">
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>

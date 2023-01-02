@@ -1,3 +1,4 @@
+include hw_diag/templates/template.html
 include hw_diag/templates/diagnostics_page.html
 include hw_diag/templates/login_form.html
 include hw_diag/templates/diagnostics_page_light_miner.html
