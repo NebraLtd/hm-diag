@@ -20,6 +20,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
 AUTH = Blueprint('AUTH', __name__)
+LOGIN_FORM_TEMPLATE = 'login_form.html'
 
 
 @AUTH.route('/login', methods=['GET'])
@@ -27,10 +28,9 @@ def get_login_form():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.datetime.utcnow()
-    template_filename = 'login_form.html'
 
     return render_template(
-        template_filename,
+        LOGIN_FORM_TEMPLATE,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now
@@ -106,10 +106,9 @@ def handle_logout():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.datetime.utcnow()
-    template_filename = 'login_form.html'
 
     return render_template(
-        template_filename,
+        LOGIN_FORM_TEMPLATE,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now,
@@ -125,7 +124,6 @@ def handle_login():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.datetime.utcnow()
-    template_filename = 'login_form.html'
 
     password = request.form.get('txtPassword')
     if check_password(password):
@@ -133,7 +131,7 @@ def handle_login():
         return redirect('/')
 
     return render_template(
-        template_filename,
+        LOGIN_FORM_TEMPLATE,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now,
