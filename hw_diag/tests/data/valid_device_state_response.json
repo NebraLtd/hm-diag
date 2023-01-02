@@ -1,0 +1,100 @@
+{
+    "status": "success",
+    "appState": "applied",
+    "overallDownloadProgress": null,
+    "containers": [
+      {
+        "status": "Running",
+        "serviceName": "packet-forwarder",
+        "appId": 1884658,
+        "imageId": 5164038,
+        "serviceId": 1319258,
+        "containerId": "22be27c8b153f048ffd205a579cddff6863b22ad13db27fa4a1c45ea1576de50",
+        "createdAt": "2022-07-19T11:27:38.977Z"
+      },
+      {
+        "status": "Running",
+        "serviceName": "gateway-config",
+        "appId": 1884658,
+        "imageId": 5164040,
+        "serviceId": 1319257,
+        "containerId": "f53ad5d527dbe28b1ff97ecddb0e45c856b620c0f3924f243522982947a1c458",
+        "createdAt": "2022-07-19T11:27:35.676Z"
+      },
+      {
+        "status": "Running",
+        "serviceName": "helium-miner",
+        "appId": 1884658,
+        "imageId": 5164041,
+        "serviceId": 1319259,
+        "containerId": "b3245f07e2ac4f43b78045ad662575735f3174015c361f76d82cef6079b9f60c",
+        "createdAt": "2022-07-19T11:27:35.663Z"
+      },
+      {
+        "status": "Running",
+        "serviceName": "diagnostics",
+        "appId": 1884658,
+        "imageId": 5164039,
+        "serviceId": 1319260,
+        "containerId": "97e07d3bfe932dbf1dff7970276fb8ea9756086a94663a6a2e51110fb8dc4d5d",
+        "createdAt": "2022-07-19T11:27:32.305Z"
+      },
+      {
+        "status": "Running",
+        "serviceName": "dbus-session",
+        "appId": 1884658,
+        "imageId": 5164042,
+        "serviceId": 1319262,
+        "containerId": "e42ef6931aab6ca91e4f8c3dbf9e470d7999b1f367ffe2133b52618b09e79091",
+        "createdAt": "2022-07-19T11:27:28.951Z"
+      }
+    ],
+    "images": [
+      {
+        "name": "registry2.balena-cloud.com/v2/04a7d037794c8f473e58148a8013e317@sha256:8dc540aa5b7c37dbef893e3431ef2abffe471b87e6f45b27333af3451ad3c389",
+        "appId": 1884658,
+        "serviceName": "packet-forwarder",
+        "imageId": 5164038,
+        "dockerImageId": "sha256:166b6ba191144704aad64dd41e11a5891ccee984cc051ad11ac061521f3d699d",
+        "status": "Downloaded",
+        "downloadProgress": null
+      },
+      {
+        "name": "registry2.balena-cloud.com/v2/89d8f0e54078fd950a1427ea3bea5123@sha256:b8aff177b71416d5a6e145a8aadd4c76f7bb667fcf4ff6f83f02ab33e9bfe8ca",
+        "appId": 1884658,
+        "serviceName": "gateway-config",
+        "imageId": 5164040,
+        "dockerImageId": "sha256:617330ab48c129520e161a7ec07b3974404dfc6b6a98e89cdedef65c9c692899",
+        "status": "Downloaded",
+        "downloadProgress": null
+      },
+      {
+        "name": "registry2.balena-cloud.com/v2/75a37282510ac95bee20e6614ab12c13@sha256:1cbb4ffc274e40c54fae728314a347b5f421ac9b70edd8fe1bb7f40234e7bc38",
+        "appId": 1884658,
+        "serviceName": "helium-miner",
+        "imageId": 5164041,
+        "dockerImageId": "sha256:f5a919b0222d5d6a177f26675feb39d2c582831d44865e168a762b370205d1e2",
+        "status": "Downloaded",
+        "downloadProgress": null
+      },
+      {
+        "name": "registry2.balena-cloud.com/v2/c99cd1099d2ef4ff5497c0b35fa165f7@sha256:ad1f0b44c65aa9749e083174098bd4a82f97267a753d3032c0dd70ca89d52e23",
+        "appId": 1884658,
+        "serviceName": "dbus-session",
+        "imageId": 5164042,
+        "dockerImageId": "sha256:5ce1dc1fad6f5463b34a40dc1ecb790280855fa69a3998efb8324a7bcf5d018f",
+        "status": "Downloaded",
+        "downloadProgress": null
+      },
+      {
+        "name": "registry2.balena-cloud.com/v2/6570a97690da6e4ec5d24ac5acd3243a@sha256:7b5680755e021708706925e5e2d954fd604301b26fbe8db8652f325bc2bdd240",
+        "appId": 1884658,
+        "serviceName": "diagnostics",
+        "imageId": 5164039,
+        "dockerImageId": "sha256:2dd8b9d61d65b041592aff197d502dfd20d662451664d94bd7fd555890df1127",
+        "status": "Downloaded",
+        "downloadProgress": null
+      }
+    ],
+    "release": "56066599b7e151c9c78d3f311115f8d8"
+  }

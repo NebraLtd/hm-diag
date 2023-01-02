@@ -19,12 +19,12 @@ class DeviceStatusDiagnostic(Diagnostic):
     def perform_test(self, diagnostics_report: DiagnosticsReport) -> None:
         try:
             balena_supervisor = BalenaSupervisor.new_from_env()
-            device_status = balena_supervisor.get_device_status()
+            device_status = balena_supervisor.get_device_status('appState')
 
-            if device_status == 'success':
+            if device_status == 'applied':
                 diagnostics_report.record_result("device_ready", self)
             else:
-                diagnostics_report.record_failure(device_status, self)
+                diagnostics_report.record_failure(f"appState is {device_status}", self)
 
         except Exception as e:
-            diagnostics_report.record_failure(str(e), self)
+            diagnostics_report.record_failure(e, self)

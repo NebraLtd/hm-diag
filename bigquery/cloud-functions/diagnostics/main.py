@@ -1,10 +1,12 @@
 import json
+import logging
 from google.cloud import storage
 from google.cloud import bigquery
-from hm_pyhelper.logger import get_logger
+import google.cloud.logging
 
-
-logging = get_logger(__name__)
+logging_client = google.cloud.logging.Client()
+logging_client.setup_logging()
+logging.getLogger().setLevel(logging.INFO)
 
 
 BUCKET_NAME = ''
@@ -48,12 +50,15 @@ def delete_file(file_name):
     bucket.delete_blob(file_name)
 
 
-def import_diagnostics_data(event, context):
+def import_diagnostics_data(event, context):  # NOSONAR
     file_name = event.get('name')
-    logging.info("Processing file: %s." % file_name)
-    data = download_file(file_name)
-    logging.info("Inserting file %s into BigQuery." % file_name)
-    insert_into_bigquery(data)
-    logging.info("Deleting file: %s." % file_name)
-    delete_file(file_name)
-    logging.info("Finished importing file: %s." % file_name)
+    logging.info(f"Processing file: {file_name}.")
+    try:
+        data = download_file(file_name)
+        logging.info(f"Inserting file {file_name} into BigQuery.")
+        insert_into_bigquery(data)
+        logging.info(f"Deleting file: {file_name}.")
+        delete_file(file_name)
+    except Exception as err:
+        logging.error(f"Error importing file: {file_name} - {err}")
+    logging.info(f"Finished importing file: {file_name}.")

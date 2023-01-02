@@ -3,9 +3,19 @@ import unittest
 from unittest.mock import patch
 from unittest.mock import MagicMock
 
+from functools import lru_cache
+import json
+from os.path import abspath, dirname, join
+
 from hw_diag.utilities.gcs_shipper import add_timestamp_to_diagnostics,\
                                           generate_hash
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
+
+
+@lru_cache(maxsize=None)
+def valid_diagnostic_data():
+    json_full_path = join(dirname(abspath(__file__)), 'data/valid_diagnostics.json')
+    return json.load(open(json_full_path, 'r'))
 
 
 class OKResponse(object):
@@ -30,21 +40,36 @@ class TestUploadDiagnostics(unittest.TestCase):
     def test_upload_diagnostics_valid(self, mock_requests):
         mock_requests.post = MagicMock()
         mock_requests.post.return_value = OKResponse()
-        diagnostics = {'PK': 'my_key'}
-        retval = upload_diagnostics(diagnostics, True)
+        retval = upload_diagnostics(valid_diagnostic_data(), True)
         self.assertTrue(retval)
 
     @patch('hw_diag.utilities.gcs_shipper.requests')
-    def test_upload_diagnostics_invalid(self, mock_requests):
+    def test_diagnostics_missing_required_field(self, mock_requests):
+        mock_requests.post = MagicMock()
+        mock_requests.post.return_value = OKResponse()
+        diag_data = valid_diagnostic_data().copy()
+        diag_data.pop('last_updated')
+        retval = upload_diagnostics(diag_data, True)
+        self.assertFalse(retval)
+
+    @patch('hw_diag.utilities.gcs_shipper.requests')
+    def test_diagnostics_missing_optional_field(self, mock_requests):
+        mock_requests.post = MagicMock()
+        mock_requests.post.return_value = OKResponse()
+        diag_data = valid_diagnostic_data().copy()
+        diag_data.pop('ECC')
+        retval = upload_diagnostics(diag_data, True)
+        self.assertTrue(retval)
+
+    @patch('hw_diag.utilities.gcs_shipper.requests')
+    def test_upload_diagnostics_failed_upload(self, mock_requests):
         mock_requests.post = MagicMock()
         mock_requests.post.return_value = ErrorResponse()
-        diagnostics = {'PK': 'my_key'}
-        retval = upload_diagnostics(diagnostics, True)
+        retval = upload_diagnostics(valid_diagnostic_data(), True)
         self.assertFalse(retval)
 
     def test_upload_diagnostics_should_not_ship(self):
-        diagnostics = {'PK': 'my_key'}
-        retval = upload_diagnostics(diagnostics, False)
+        retval = upload_diagnostics(valid_diagnostic_data(), False)
         self.assertIsNone(retval)
 
     def test_add_timestamp_to_diagnostics(self):
