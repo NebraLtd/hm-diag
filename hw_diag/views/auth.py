@@ -12,6 +12,7 @@ from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.auth import check_password
+from hw_diag.utilities.auth import authenticate
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -31,6 +32,21 @@ def get_login_form():
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
+        now=now
+    )
+
+
+@AUTH.route('/change_password', methods=['GET'])
+@authenticate
+def get_password_change_form():
+    diagnostics = read_diagnostics_file()
+    now = datetime.datetime.utcnow()
+    template_filename = 'password_change_form.html'
+
+    return render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        display_lte=False,
         now=now
     )
 
