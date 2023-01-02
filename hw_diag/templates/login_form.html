@@ -30,17 +30,17 @@
             <br/>
             <br/>
             {% if msg %}
-                <p><font color="red">{{ msg }}</font></p>
+                <p style="color: red;">{{ msg }}</p>
             {% endif %}
             <form method="POST" action="/login">
                 <div class="form-group">
-                    <center><input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" style="width: 400px"></center>
+                    <span style="text-align: center;"><input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" style="width: 400px"></span>
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
             <br/>
             <br/>
-            <p><font color="blue">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</font></p>
+            <p style="color: blue;">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</p>
         </div>
     <div class="text-center">
       {% if diagnostics.last_updated %}
