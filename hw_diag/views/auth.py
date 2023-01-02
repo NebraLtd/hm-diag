@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+from password_strength import PasswordPolicy
 from hm_pyhelper.logger import get_logger
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
@@ -48,6 +49,54 @@ def get_password_change_form():
         diagnostics=diagnostics,
         display_lte=False,
         now=now
+    )
+
+
+@AUTH.route('/change_password', methods=['POST'])
+@authenticate
+def handle_password_change():
+    error = False
+    msg = ''
+    current_password = request.form.get('txtOriginalPassword')
+    new_password = request.form.get('txtNewPassword')
+    confirm_password = request.form.get('txtConfirmPassword')
+
+    if not check_password(current_password):
+        error = True
+        msg = 'Current password is not valid.'
+
+    if new_password != confirm_password:
+        error = True
+        msg = 'New password and password confirmation do not match.'
+
+    policy = PasswordPolicy.from_names(
+        length=8,  # min length: 8
+        uppercase=1,  # need min. 2 uppercase letters
+        numbers=1,  # need min. 2 digits
+        special=1,  # need min. 2 special characters
+        nonletters=0,  # need min. 2 non-letter characters (digits, specials, anything)
+    )
+
+    if len(policy.test(new_password)) > 0:
+        error = True
+        msg = (
+            'Password is not complex enough, please ensure password is greater than 8 '
+            'characters, has atleast 1 number, 1 uppercase character and 1 special character.'
+        )
+
+    if not error:
+        msg = 'Password updated successfully.'
+
+    diagnostics = read_diagnostics_file()
+    now = datetime.datetime.utcnow()
+    template_filename = 'password_change_form.html'
+
+    return render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        display_lte=False,
+        now=now,
+        msg=msg
     )
 
 
