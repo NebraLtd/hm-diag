@@ -21,7 +21,7 @@ def authenticate(f):
 
 
 def write_password_file(password):
-    password = password.enocde('utf-8')
+    password = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
     hashed_str = hashed.decode('utf-8')
