@@ -1,4 +1,6 @@
 werkzeug==2.0.3
+bcrypt==3.2.2
+password-strength==0.0.3.post2
 Flask-APScheduler==1.12.3
 Flask-Caching==1.10.1
 Flask==2.0.1
