@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="300">
-  <title>Nebra Hotspot Diagnostics &middot; Login</title>
+  <title>Nebra Hotspot &middot; Login</title>
   <!-- Bootstrap core CSS -->
   <link href="/static/css/bootstrap.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="/static/images/favicon.ico">
@@ -19,7 +18,7 @@
   </header>
   <section class="container pb-4">
         <div class="text-center pb-4 mb-4 border-bottom border-light">
-            <h1>Login</h1>
+            <h1>Hotspot Management</h1>
             <br />
             <h3>
               {% if not diagnostics.AN %}
@@ -31,14 +30,14 @@
             <br/>
             <br/>
             {% if msg %}
-
+                <p><font color="red">Incorrect password, please try again!</font></p>
             {% endif %}
             <form method="POST" action="/login">
                 <div class="form-group">
                     <label for="txtPassword">Password</label>
                     <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Login</button>
             </form>
             <br/>
             <br/>
