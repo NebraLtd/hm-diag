@@ -17,31 +17,43 @@
     </a>
   </header>
   <section class="container pb-4">
-        <div class="text-center pb-4 mb-4 border-bottom border-light">
-            <h1>Hotspot Management</h1>
-            <br />
-            <h3>
-              {% if not diagnostics.AN %}
+    <div class="text-center pb-4 mb-4 border-bottom border-light">
+        <h1>Hotspot Management</h1>
+        <br />
+        <h3>
+            {% if not diagnostics.AN %}
                 Animal Name Unavailable
-              {% else %}
+            {% else %}
                 {{ diagnostics.AN }}
-              {% endif %}
-            </h3>
-            <br/>
-            <br/>
-            {% if msg %}
-                <p style="color: red;">{{ msg }}</p>
             {% endif %}
-            <form method="POST" action="/login">
-                <div class="form-group">
-                    <span style="text-align: center;"><input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" style="width: 400px"></span>
+        </h3>
+        <div class="row mb-4">
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
+            <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+                <div class="card mb-0 h-100">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-10">
+                            <br />
+                            {% if msg %}
+                                <span style="color: red; text-align: center;">{{ msg }}</span><br/><br/>
+                            {% endif %}
+                            <form method="POST" action="/login">
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" style="width: 90%" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                            <br/>
+                            <p style="color: blue;">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</p>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-            <br/>
-            <br/>
-            <p style="color: blue;">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</p>
+            </div>
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
         </div>
+    </div>
     <div class="text-center">
       {% if diagnostics.last_updated %}
         <p>Last Updated: {{ diagnostics.last_updated }}</p>
