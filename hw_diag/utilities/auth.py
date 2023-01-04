@@ -4,6 +4,7 @@ import bcrypt
 from functools import wraps
 from flask import redirect
 from flask import session
+from password_strength import PasswordPolicy
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 
@@ -54,3 +55,40 @@ def check_password(password):
         return True
     else:
         return False
+
+
+def write_new_password(current_password, new_password, confirm_password):
+    error = False
+    msg = ''
+
+    if not check_password(current_password):
+        error = True
+        msg = 'Current password is not valid.'
+
+    if new_password != confirm_password:
+        error = True
+        msg = 'New password and password confirmation do not match.'
+
+    policy = PasswordPolicy.from_names(
+        length=8,  # min length: 8
+        uppercase=1,  # need min. 2 uppercase letters
+        numbers=1,  # need min. 2 digits
+        special=1,  # need min. 2 special characters
+        nonletters=0,  # need min. 2 non-letter characters (digits, specials, anything)
+    )
+
+    if len(policy.test(new_password)) > 0:
+        error = True
+        msg = (
+            'Password is not complex enough, please ensure password is greater than 8 '
+            'characters, has atleast 1 number, 1 uppercase character and 1 special character.'
+        )
+
+    if not error:
+        write_password_file(new_password)
+        msg = 'Password updated successfully.'
+
+    return {
+        'error': error,
+        'msg': msg
+    }
