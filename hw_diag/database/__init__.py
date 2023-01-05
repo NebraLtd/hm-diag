@@ -24,3 +24,4 @@ def get_db_session(debug=False):
 # they are not used in this file but are required for
 # alembic to include tables in revision generation.
 from hw_diag.database.models.auth import AuthKeyValue  # noqa: E402,F401
+from hw_diag.database.models.auth import AuthFailure  # noqa: E402,F401
