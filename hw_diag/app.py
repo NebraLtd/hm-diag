@@ -104,7 +104,7 @@ def init_scheduled_tasks(app) -> None:
 
 
 def get_app(name):
-    # Before we spawn the app lets run the DB migrations...
+    # Run database migrations on start...
     run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)

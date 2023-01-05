@@ -12,19 +12,23 @@ from hw_diag.views.auth import AUTH
 
 class TestGetApp(unittest.TestCase):
 
-    def test_returns_flask_app(self):
+    @patch('alembic.command.upgrade')
+    def test_returns_flask_app(self, mock_alembic):
         # Check a flask app is returned by get_app.
         app = get_app(__name__)
         self.assertIsInstance(app, Flask)
 
     @patch.dict(os.environ, {"BALENA_DEVICE_TYPE": "False"})
-    def test_returns_flask_app_with_gateway_exception(self):
+    @patch('alembic.command.upgrade')
+    def test_returns_flask_app_with_gateway_exception(self, mock_alembic):
         app = get_app(__name__)
         self.assertIsInstance(app, Flask)
 
     @patch('flask.Flask.register_blueprint')
+    @patch('alembic.command.upgrade')
     def test_blueprints_registered(
             self,
+            mock_alembic,
             mock_register_blueprint
     ):
         # Check the blueprint is registered during app creation.
@@ -36,8 +40,10 @@ class TestGetApp(unittest.TestCase):
         mock_register_blueprint.assert_has_calls(calls, any_order=False)
 
     @patch('flask_apscheduler.APScheduler')
+    @patch('alembic.command.upgrade')
     def test_apscheduler_invoked(
             self,
+            mock_alembic,
             mock_apscheduler
     ):
         # Check APScheduler object is instantiated and api_enabled attribute

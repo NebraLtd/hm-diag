@@ -28,6 +28,13 @@ jobs:
       run: |
         pip install flake8
         flake8 hw_diag/. --count --max-complexity=10 --statistics
+    - name: Move migrations to expected location
+      run: |
+        mkdir /opt/migrations
+        cp -r migrations /opt/migrations/.
+        cp -r alembic.ini /opt/migrations/.
+        sudo mkdir /var/data
+        sudo chmod 777 /var/data
     - name: Unit tests
       run: |
         pip install pytest
