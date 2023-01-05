@@ -1,12 +1,14 @@
-import json
 import bcrypt
 
 from functools import wraps
 from flask import redirect
 from flask import session
+from flask import g
+from sqlalchemy.exc import NoResultFound
 from password_strength import PasswordPolicy
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.database.models.auth import AuthKeyValue
 
 
 AUTH_FILE = '/var/data/auth.json'
@@ -21,35 +23,44 @@ def authenticate(f):
     return wrapper
 
 
-def write_password_file(password):
+def write_password(password):
     password = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password, salt)
     hashed_str = hashed.decode('utf-8')
-    auth_data = {
-        'pw_hash': hashed_str
-    }
-    with open(AUTH_FILE, 'w') as f:
-        json.dump(auth_data, f)
-    return auth_data
 
-
-def read_password_file():
-    auth_data = None
     try:
-        with open(AUTH_FILE, 'r') as f:
-            auth_data = json.load(f)
-    except FileNotFoundError:
+        password_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_hash'). \
+            one()
+        password_row.value = hashed_str
+    except NoResultFound:
+        password_row = AuthKeyValue(
+            key='password_hash',
+            value=hashed_str
+        )
+        g.db.add(password_row)
+    g.db.commit()
+
+    return password_row
+
+
+def read_password():
+    try:
+        password_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_hash'). \
+            one()
+    except NoResultFound:
         diagnostics = read_diagnostics_file()
         eth_mac = diagnostics.get('E0')
         default_password = eth_mac.replace(':', '')
-        auth_data = write_password_file(default_password)
-    return auth_data
+        password_row = write_password(default_password)
+    return password_row
 
 
 def check_password(password):
-    auth_data = read_password_file()
-    hashed_password = auth_data.get('pw_hash').encode('utf-8')
+    password_row = read_password()
+    hashed_password = password_row.value.encode('utf-8')
     password = password.encode('utf-8')
     if bcrypt.checkpw(password, hashed_password):
         return True
@@ -57,7 +68,7 @@ def check_password(password):
         return False
 
 
-def write_new_password(current_password, new_password, confirm_password):
+def update_password(current_password, new_password, confirm_password):
     error = False
     msg = ''
 
@@ -85,7 +96,7 @@ def write_new_password(current_password, new_password, confirm_password):
         )
 
     if not error:
-        write_password_file(new_password)
+        write_password(new_password)
         msg = 'Password updated successfully.'
 
     return {

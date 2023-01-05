@@ -7,6 +7,7 @@ from functools import partial
 from datetime import timedelta
 
 from flask import Flask
+from flask import g
 from flask_apscheduler import APScheduler
 from alembic.config import Config
 from alembic import command
@@ -22,6 +23,7 @@ from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
 from hw_diag.database.config import DB_URL
+from hw_diag.database import get_db_session
 
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
@@ -112,11 +114,24 @@ def init_scheduled_tasks(app) -> None:
 
 def get_app(name):
     # Before we spawn the app lets run the DB migrations...
-    run_migrations('/opt/migrations', DB_URL)
+    run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)
     cache.init_app(app)
     init_scheduled_tasks(app)
+
+    # Setup DB Session
+    @app.before_request
+    def pre_request():
+        g.db = get_db_session()
+
+    @app.after_request
+    def post_request(resp):
+        try:
+            g.db.close()
+        except Exception:
+            pass
+        return resp
 
     # Use a random UUID for session key, this will change each time the app
     # starts, so with reboot / update etc... users will need to reauthenticate.

@@ -13,7 +13,7 @@ from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.auth import check_password
 from hw_diag.utilities.auth import authenticate
-from hw_diag.utilities.auth import write_new_password
+from hw_diag.utilities.auth import update_password
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -59,7 +59,7 @@ def handle_password_change():
     new_password = request.form.get('txtNewPassword')
     confirm_password = request.form.get('txtConfirmPassword')
 
-    result = write_new_password(
+    result = update_password(
         current_password,
         new_password,
         confirm_password
