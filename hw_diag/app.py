@@ -8,6 +8,8 @@ from datetime import timedelta
 
 from flask import Flask
 from flask_apscheduler import APScheduler
+from alembic.config import Config
+from alembic import command
 
 from hm_pyhelper.logger import get_logger
 
@@ -19,6 +21,8 @@ from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
+from hw_diag.database.config import DB_URL
+
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -75,6 +79,14 @@ def run_heartbeat_task(watchdog):
         logging.warning(f'Unknown error while emitting heartbeat : {e}')
 
 
+def run_migrations(script_location, dsn):
+    logging.info('Running DB migrations in %r on %r', script_location, dsn)
+    alembic_cfg = Config()
+    alembic_cfg.set_main_option('script_location', script_location)
+    alembic_cfg.set_main_option('sqlalchemy.url', dsn)
+    command.upgrade(alembic_cfg, 'head')
+
+
 def init_scheduled_tasks(app) -> None:
     # Configure the backend scheduled tasks
     scheduler = APScheduler()
@@ -99,6 +111,8 @@ def init_scheduled_tasks(app) -> None:
 
 
 def get_app(name):
+    # Before we spawn the app lets run the DB migrations...
+    run_migrations('/opt/migrations', DB_URL)
 
     app = Flask(name)
     cache.init_app(app)

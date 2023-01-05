@@ -3,14 +3,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
+from hw_diag.database.config import DB_URL
+
+
 BASE = declarative_base()
 
 
-CONN_STR = 'sqlite:////var/data/hm_diag.db'
-
-
 def get_db_engine(debug=False):
-    engine = create_engine(CONN_STR, echo=debug)
+    engine = create_engine(DB_URL, echo=debug)
     return engine
 
 
