@@ -4,7 +4,7 @@ import os
 import logging
 
 from flask import Blueprint, request
-from flask import render_template
+from flask import render_template, Response
 from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
@@ -48,6 +48,8 @@ def get_diagnostics_json():
     response.headers.set('Content-Disposition',
                          'attachment;filename=nebra-diag.json'
                          )
+    response.headers.set('X-Robots-Tag', 'none')
+
     return response
 
 
@@ -59,12 +61,14 @@ def get_diagnostics():
     now = datetime.utcnow()
     template_filename = 'diagnostics_page_light_miner.html'
 
-    return render_template(
+    response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now
     )
+
+    return response
 
 
 @DIAGNOSTICS.route('/initFile.txt')
@@ -95,6 +99,14 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route('/robots.txt')
+@cache.cached(timeout=60)
+def noindex():
+    robots = Response(response="User-Agent: *\nDisallow: /\n", status=200, mimetype="text/plain")
+    robots.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return robots
 
 
 @DIAGNOSTICS.route('/version')
@@ -238,3 +250,10 @@ def provision_key_view():
     LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.after_app_request
+def add_security_headers(response):
+    response.headers['X-Robots-Tag'] = 'none'
+
+    return response
