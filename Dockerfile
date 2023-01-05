@@ -11,10 +11,6 @@ RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
 
-RUN mkdir /opt/migrations
-COPY ./migrations /opt/migrations/migrations
-COPY ./alembic.ini /opt/migrations/alemibc.ini
-
 RUN \
     install_packages \
             build-essential \
@@ -72,8 +68,12 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 # copy firmware files
 COPY --from=builder /tmp/build/quectel /quectel
 
+# copy db migration files
+COPY --from=builder /tmp/build/migrations /opt/migrations/migrations
+COPY --from=builder /tmp/build/alembic.ini /opt/migrations/alembic.ini
+
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag:wsgi:wsgi_app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag.wsgi:wsgi_app"]
