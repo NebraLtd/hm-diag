@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table('auth_failures',
     sa.Column('dt', sa.DateTime(), nullable=False),
     sa.Column('ip', sa.String(length=45), nullable=True),
-    sa.PrimaryKeyConstraint('key')
+    sa.PrimaryKeyConstraint('dt')
     )
     # ### end Alembic commands ###
 

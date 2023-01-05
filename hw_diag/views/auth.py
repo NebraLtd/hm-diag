@@ -14,6 +14,8 @@ from hw_diag.utilities.hardware import should_display_lte
 from hw_diag.utilities.auth import check_password
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.auth import update_password
+from hw_diag.utilities.auth import count_recent_auth_failures
+from hw_diag.utilities.auth import add_login_failure
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -104,10 +106,23 @@ def handle_login():
     display_lte = should_display_lte(diagnostics)
     now = datetime.datetime.utcnow()
 
+    minutes = 10
+    if count_recent_auth_failures(minutes=minutes) > 4:
+        return render_template(
+            LOGIN_FORM_TEMPLATE,
+            diagnostics=diagnostics,
+            display_lte=display_lte,
+            now=now,
+            msg=('Login locked due to too many login failures. Please '
+                 'wait %s minutes and try again.' % minutes)
+        )
+
     password = request.form.get('txtPassword')
     if check_password(password):
         session['logged_in'] = True
         return redirect('/')
+    else:
+        add_login_failure(request.remote_addr)
 
     return render_template(
         LOGIN_FORM_TEMPLATE,

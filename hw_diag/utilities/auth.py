@@ -1,3 +1,4 @@
+import datetime
 import bcrypt
 
 from functools import wraps
@@ -9,6 +10,7 @@ from password_strength import PasswordPolicy
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.database.models.auth import AuthKeyValue
+from hw_diag.database.models.auth import AuthFailure
 
 
 AUTH_FILE = '/var/data/auth.json'
@@ -103,3 +105,22 @@ def update_password(current_password, new_password, confirm_password):
         'error': error,
         'msg': msg
     }
+
+
+def count_recent_auth_failures(minutes=10):
+    now = datetime.datetime.utcnow()
+    dt = now - datetime.timedelta(minutes=minutes)
+    failure_count = g.db.query(AuthFailure). \
+        filter(AuthFailure.dt > dt). \
+        count()
+    return failure_count
+
+
+def add_login_failure(ip):
+    now = datetime.datetime.utcnow()
+    auth_failure = AuthFailure(
+        dt=now,
+        ip=ip
+    )
+    g.db.add(auth_failure)
+    g.db.commit()
