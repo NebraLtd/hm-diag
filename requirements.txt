@@ -1,4 +1,6 @@
 werkzeug==2.0.3
+alembic==1.9.1
+SQLAlchemy==1.4.46
 bcrypt==3.2.2
 password-strength==0.0.3.post2
 Flask-APScheduler==1.12.3
