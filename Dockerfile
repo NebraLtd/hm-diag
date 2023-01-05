@@ -11,7 +11,9 @@ RUN mkdir /tmp/build
 COPY ./ /tmp/build
 WORKDIR /tmp/build
 
-
+RUN mkdir /opt/migrations
+COPY ./migrations /opt/migrations/migrations
+COPY ./alembic.ini /opt/migrations/alemibc.ini
 
 RUN \
     install_packages \
