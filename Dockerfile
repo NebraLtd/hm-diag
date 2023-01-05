@@ -3,7 +3,7 @@
 ####################################################################################################
 ################################## Stage: builder ##################################################
 
-FROM balenalib/raspberry-pi-debian-python:bookworm-build-20221215 as builder
+FROM balenalib/raspberry-pi-debian-python:bullseye-build-20221215 as builder
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
@@ -34,7 +34,7 @@ RUN make && \
 ####################################################################################################
 ################################### Stage: runner ##################################################
 
-FROM balenalib/raspberry-pi-debian-python:bookworm-run-20221215 as runner
+FROM balenalib/raspberry-pi-debian-python:bullseye-run-20221215 as runner
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
