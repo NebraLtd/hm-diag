@@ -124,3 +124,43 @@ def add_login_failure(ip):
     )
     g.db.add(auth_failure)
     g.db.commit()
+
+
+def update_password_reset_expiry():
+    now = datetime.datetime.utcnow()
+    expiry = now + datetime.timedelta(minutes=1)
+
+    try:
+        reset_expiry_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_reset_expiry'). \
+            one()
+        reset_expiry_row.value = expiry.isoformat()
+        g.db.commit()
+    except NoResultFound:
+        reset_expiry_row = AuthKeyValue(
+            key='password_reset_expiry',
+            value=expiry.isoformat()
+        )
+        g.db.add(reset_expiry_row)
+        g.db.commit()
+
+
+def check_password_reset_expiry():
+    now = datetime.datetime.utcnow()
+    expiry = now + datetime.timedelta(minutes=1)
+
+    try:
+        reset_expiry_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_reset_expiry'). \
+            one()
+        reset_expiry_row.value = expiry.isoformat()
+        g.db.commit()
+    except NoResultFound:
+        reset_expiry_row = AuthKeyValue(
+            key='password_reset_expiry',
+            value=expiry.isoformat()
+        )
+        g.db.add(reset_expiry_row)
+        g.db.commit()
+
+    return expiry

@@ -16,6 +16,7 @@ from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.auth import update_password
 from hw_diag.utilities.auth import count_recent_auth_failures
 from hw_diag.utilities.auth import add_login_failure
+from hw_diag.utilities.auth import update_password_reset_expiry
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -130,4 +131,20 @@ def handle_login():
         display_lte=display_lte,
         now=now,
         msg='Incorrect password. Please try again!'
+    )
+
+
+@AUTH.route('/reset_password')
+def display_password_reset_page():
+    diagnostics = read_diagnostics_file()
+    display_lte = should_display_lte(diagnostics)
+    now = datetime.datetime.utcnow()
+
+    update_password_reset_expiry()
+
+    return render_template(
+        'password_reset.html',
+        diagnostics=diagnostics,
+        display_lte=display_lte,
+        now=now
     )
