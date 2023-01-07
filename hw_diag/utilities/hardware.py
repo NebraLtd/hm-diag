@@ -7,6 +7,7 @@ from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
 from hw_diag.utilities.shell import config_search_param
 
+
 logging = get_logger(__name__)
 
 DBUS_PROPERTIES = 'org.freedesktop.DBus.Properties'
@@ -299,6 +300,12 @@ def get_public_keys_and_ignore_errors():
         }
 
     return public_keys
+
+
+def is_button_present(diagnostics):
+    variant = diagnostics.get('VA')
+    button = get_variant_attribute(variant, 'BUTTON')
+    return bool(button)
 
 
 if __name__ == '__main__':

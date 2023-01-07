@@ -13,6 +13,7 @@ from hm_pyhelper.logger import get_logger
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.hardware import should_display_lte
+from hw_diag.utilities.hardware import is_button_present
 from hw_diag.utilities.auth import check_password
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.auth import update_password
@@ -150,12 +151,14 @@ def display_password_reset_page():
     now = datetime.datetime.utcnow()
 
     update_password_reset_expiry()
+    button = is_button_present(diagnostics)
 
     return render_template(
         'password_reset.html',
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        button=button
     )
 
 
