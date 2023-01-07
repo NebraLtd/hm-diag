@@ -145,22 +145,62 @@ def update_password_reset_expiry():
         g.db.commit()
 
 
-def check_password_reset_expiry():
+def set_last_password_reset():
     now = datetime.datetime.utcnow()
-    expiry = now + datetime.timedelta(minutes=1)
+    try:
+        reset_expiry_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_last_reset'). \
+            one()
+        reset_expiry_row.value = now.isoformat()
+        g.db.commit()
+    except NoResultFound:
+        reset_expiry_row = AuthKeyValue(
+            key='password_last_reset',
+            value=now.isoformat()
+        )
+        g.db.add(reset_expiry_row)
+        g.db.commit()
+
+
+def password_updated_in_last_minute():
+    now = datetime.datetime.utcnow()
+    one_min_ago = now - datetime.timedelta(minutes=1)
+    try:
+        last_reset_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'password_last_reset'). \
+            one()
+        last_reset = datetime.datetime.fromisoformat(last_reset_row.value)
+
+        if last_reset > one_min_ago:
+            valid = True
+        else:
+            valid = False
+    except Exception:
+        valid = False
+
+    return valid
+
+
+def perform_password_reset():
+    now = datetime.datetime.utcnow()
 
     try:
         reset_expiry_row = g.db.query(AuthKeyValue). \
             filter(AuthKeyValue.key == 'password_reset_expiry'). \
             one()
-        reset_expiry_row.value = expiry.isoformat()
-        g.db.commit()
-    except NoResultFound:
-        reset_expiry_row = AuthKeyValue(
-            key='password_reset_expiry',
-            value=expiry.isoformat()
-        )
-        g.db.add(reset_expiry_row)
-        g.db.commit()
+        expiry = datetime.datetime.fromisoformat(reset_expiry_row.value)
 
-    return expiry
+        if expiry > now:
+            diagnostics = read_diagnostics_file()
+            eth_mac = diagnostics.get('E0')
+            default_password = eth_mac.replace(':', '')
+            write_password(default_password)
+            set_last_password_reset()
+            valid = True
+        else:
+            valid = False
+
+    except Exception:
+        valid = False
+
+    return valid

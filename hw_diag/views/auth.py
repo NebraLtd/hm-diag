@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+from flask import jsonify
 from hm_pyhelper.logger import get_logger
 
 from hw_diag.utilities.diagnostics import read_diagnostics_file
@@ -17,6 +18,8 @@ from hw_diag.utilities.auth import update_password
 from hw_diag.utilities.auth import count_recent_auth_failures
 from hw_diag.utilities.auth import add_login_failure
 from hw_diag.utilities.auth import update_password_reset_expiry
+from hw_diag.utilities.auth import perform_password_reset
+from hw_diag.utilities.auth import password_updated_in_last_minute
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -136,6 +139,9 @@ def handle_login():
 
 @AUTH.route('/reset_password')
 def display_password_reset_page():
+    if session.get('logged_in'):
+        return redirect('/')
+
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.datetime.utcnow()
@@ -148,3 +154,17 @@ def display_password_reset_page():
         display_lte=display_lte,
         now=now
     )
+
+
+@AUTH.route('/password_reset', methods=['POST'])
+def handle_reset_password():
+    # Check this originates from the docker private subnet, only
+    # internal containers should be privileged to reset the password.
+    password_reset = perform_password_reset()
+    return jsonify({'password_updated': password_reset})
+
+
+@AUTH.route('/password_reset', methods=['GET'])
+def validate_password_reset():
+    result = password_updated_in_last_minute()
+    return jsonify({'password_updated': result})
