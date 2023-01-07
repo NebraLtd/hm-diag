@@ -16,6 +16,7 @@ dbus-python==1.2.16
 hm-pyhelper==0.13.45
 python-gnupg==0.5.0
 pydantic==1.10.4
+ipaddress==1.0.23
 icmplib==3.0.3
 uptime==3.0.1
 persist-queue==0.8.0

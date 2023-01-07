@@ -1,6 +1,7 @@
 import logging
 import os
 import datetime
+import ipaddress
 
 from flask import Blueprint
 from flask import render_template
@@ -27,6 +28,8 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 LOGGER = get_logger(__name__)
 AUTH = Blueprint('AUTH', __name__)
 LOGIN_FORM_TEMPLATE = 'login_form.html'
+
+DOCKER_SUBNET = '172.17.0.0/16'
 
 
 @AUTH.route('/login', methods=['GET'])
@@ -160,6 +163,10 @@ def display_password_reset_page():
 def handle_reset_password():
     # Check this originates from the docker private subnet, only
     # internal containers should be privileged to reset the password.
+    request_ip = request.remote_addr
+    if ipaddress.ip_address(request_ip) not in ipaddress.ip_network(DOCKER_SUBNET):
+        return 'Unauthorised', 401
+
     password_reset = perform_password_reset()
     return jsonify({'password_updated': password_reset})
 
