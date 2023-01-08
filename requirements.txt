@@ -2,6 +2,10 @@ werkzeug==2.2.2
 Flask-APScheduler==1.12.4
 Flask-Caching==2.0.1
 Flask==2.2.2
+alembic==1.9.1
+SQLAlchemy==1.4.46
+bcrypt==3.2.2
+password-strength==0.0.3.post2
 certifi==2022.12.7
 click==8.1.3
 gunicorn==20.1.0
@@ -12,6 +16,7 @@ dbus-python==1.2.16
 hm-pyhelper==0.13.45
 python-gnupg==0.5.0
 pydantic==1.10.4
+ipaddress==1.0.23
 icmplib==3.0.3
 uptime==3.0.1
 persist-queue==0.8.0

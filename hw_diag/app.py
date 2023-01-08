@@ -1,11 +1,13 @@
 import logging
 import os
+import uuid
 import traceback
 from datetime import datetime
 from functools import partial
 from datetime import timedelta
 
 from flask import Flask
+from flask import g
 from flask_apscheduler import APScheduler
 
 from hm_pyhelper.logger import get_logger
@@ -16,7 +18,12 @@ from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
+from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
+from hw_diag.database.config import DB_URL
+from hw_diag.database import get_db_session
+from hw_diag.database.migrations import run_migrations
+
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -97,12 +104,32 @@ def init_scheduled_tasks(app) -> None:
 
 
 def get_app(name):
+    # Run database migrations on start...
+    run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)
     cache.init_app(app)
     init_scheduled_tasks(app)
 
+    # Setup DB Session
+    @app.before_request
+    def pre_request():
+        g.db = get_db_session()
+
+    @app.after_request
+    def post_request(resp):
+        try:
+            g.db.close()
+        except Exception:
+            pass
+        return resp
+
+    # Use a random UUID for session key, this will change each time the app
+    # starts, so with reboot / update etc... users will need to reauthenticate.
+    app.secret_key = str(uuid.uuid4())
+
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
+    app.register_blueprint(AUTH)
 
     return app
