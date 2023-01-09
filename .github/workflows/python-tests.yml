@@ -38,4 +38,4 @@ jobs:
     - name: Unit tests
       run: |
         pip install pytest
-        pytest .
+        pytest . --cov=hw_diag --cov=bigquery --cov-fail-under=80
