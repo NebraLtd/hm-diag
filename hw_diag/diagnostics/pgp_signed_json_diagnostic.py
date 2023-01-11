@@ -35,4 +35,4 @@ class PgpSignedJsonDiagnostic(Diagnostic):
         called as a result of successful invocation or self.record_failure
         in the case of failure.
         """
-        raise Exception("use_verified_json must be implemented by extending class.")
+        raise NotImplementedError("use_verified_json must be implemented by extending class.")

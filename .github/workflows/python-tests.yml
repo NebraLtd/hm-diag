@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python 3.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
     - name: Install apt dependencies
@@ -27,8 +27,15 @@ jobs:
     - name: Lint with flake8
       run: |
         pip install flake8
-        flake8 . --count --max-complexity=10 --statistics
+        flake8 hw_diag/. --count --max-complexity=10 --statistics
+    - name: Move migrations to expected location
+      run: |
+        mkdir /opt/migrations
+        cp -r migrations /opt/migrations/.
+        cp -r alembic.ini /opt/migrations/.
+        sudo mkdir /var/data
+        sudo chmod 777 /var/data
     - name: Unit tests
       run: |
         pip install pytest
-        pytest .
+        pytest . --cov=hw_diag --cov=bigquery --cov-fail-under=80

@@ -4,15 +4,18 @@ import os
 import logging
 
 from flask import Blueprint, request
-from flask import render_template
+from flask import render_template, Response
 from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
+
 from hw_diag.diagnostics.add_gateway_txn_diagnostic import AddGatewayTxnDiagnostic
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import ShutdownGatewayDiagnostic
+from hw_diag.diagnostics.provision_key_diagnostic import ProvisionKeyDiagnostic
+
 from hw_diag.diagnostics.ecc_diagnostic import EccDiagnostic
 from hw_diag.diagnostics.env_var_diagnostics import EnvVarDiagnostics
 from hw_diag.diagnostics.mac_diagnostics import MacDiagnostics
@@ -25,31 +28,16 @@ from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
 from hw_diag.diagnostics.device_status_diagnostic import DeviceStatusDiagnostic
 from hw_diag.utilities.diagnostics import compose_diagnostics_report_from_err_msg
 from hw_diag.utilities.hardware import should_display_lte
-from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
+from hw_diag.utilities.auth import authenticate
+from hw_diag.utilities.diagnostics import read_diagnostics_file
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
-
-
-def read_diagnostics_file():
-    diagnostics = {}
-
-    try:
-        perform_hw_diagnostics()
-        with open('diagnostic_data.json', 'r') as f:
-            diagnostics = json.load(f)
-    except FileNotFoundError:
-        msg = 'Diagnostics have not yet run, please try again in a few minutes'
-        diagnostics = {'error': msg}
-    except Exception as e:
-        msg = 'Diagnostics has encountered an error: %s'
-        diagnostics = {'error': msg % str(e)}
-
-    return diagnostics
 
 
 @DIAGNOSTICS.route('/json')
@@ -60,26 +48,27 @@ def get_diagnostics_json():
     response.headers.set('Content-Disposition',
                          'attachment;filename=nebra-diag.json'
                          )
+    response.headers.set('X-Robots-Tag', 'none')
+
     return response
 
 
 @DIAGNOSTICS.route('/')
-@cache.cached(timeout=60)
+@authenticate
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
-    display_miner = os.getenv("DISPLAY_MINER_INFO", "false").lower() == "true"
     template_filename = 'diagnostics_page_light_miner.html'
-    if display_miner:
-        template_filename = 'diagnostics_page.html'
 
-    return render_template(
+    response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now
     )
+
+    return response
 
 
 @DIAGNOSTICS.route('/initFile.txt')
@@ -110,6 +99,14 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route('/robots.txt')
+@cache.cached(timeout=60)
+def noindex():
+    robots = Response(response="User-Agent: *\nDisallow: /\n", status=200, mimetype="text/plain")
+    robots.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return robots
 
 
 @DIAGNOSTICS.route('/version')
@@ -206,3 +203,57 @@ def shutdown_gateway():
     LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.route('/v1/mfr-init', methods=['POST'])
+def provision_key_view():
+    """
+    Tries key provisioning.
+    Requires a signed PGP payload to be supplied in the format:
+
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA256
+
+    {
+        "slot": int,
+        "force": boolean
+    }
+    -----BEGIN PGP SIGNATURE-----
+    [REDACTED]
+    -----END PGP SIGNATURE-----
+
+    :param slot: The slot number to use for key provisioning.
+    :param force: If set to True then if "provision" operation fails, "key --generate" operation
+                  is tried.
+    :return: In case of success returns the provisioned json that include the onboarding key
+             and animal name. In case of failure, returns the error message.
+    """
+
+    provision_request_with_signature = request.get_data()
+    if not provision_request_with_signature:
+        err_msg = 'Can not find PGP payload.'
+        LOGGER.error(err_msg)
+        diagnostics_report = compose_diagnostics_report_from_err_msg(
+            SHUTDOWN_GATEWAY_KEY, err_msg)
+        return diagnostics_report, 406
+
+    diagnostics = [
+        ProvisionKeyDiagnostic(GnuPG(), provision_request_with_signature),
+    ]
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+    if diagnostics_report.has_errors({SHUTDOWN_GATEWAY_KEY}):
+        http_code = 500
+    else:
+        http_code = 200
+
+    LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
+
+    return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.after_app_request
+def add_security_headers(response):
+    response.headers['X-Robots-Tag'] = 'none'
+
+    return response

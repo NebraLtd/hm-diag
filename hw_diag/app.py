@@ -1,25 +1,38 @@
-from datetime import datetime
 import logging
 import os
+import uuid
 import traceback
+from datetime import datetime
+from functools import partial
 from datetime import timedelta
+
 from flask import Flask
+from flask import g
 from flask_apscheduler import APScheduler
-from retry import retry
+
+from hm_pyhelper.logger import get_logger
+
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
+from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
-from hm_pyhelper.miner_param import provision_key
+from hw_diag.database.config import DB_URL
+from hw_diag.database import get_db_session
+from hw_diag.database.migrations import run_migrations
 
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
 BALENA_ID = os.getenv('BALENA_DEVICE_UUID')
 BALENA_APP = os.getenv('BALENA_APP_NAME')
+HEARTBEAT_INTERVAL_HOURS = float(os.getenv('HEARTBEAT_INTERVAL_HOURS', 24))
+SHIP_DIAG_INTERVAL_HOURS = float(os.getenv('SHIP_DIAG_INTERVAL_HOURS', 1))
+NETWORK_WATCHDOG_INTERVAL_HOURS = float(os.getenv('NETWORK_WATCHDOG_INTERVAL_HOURS', 1))
+
 
 init_sentry(
     sentry_dsn=SENTRY_DSN,
@@ -30,16 +43,41 @@ init_sentry(
 
 DEBUG = bool(os.getenv('DEBUG', '0'))
 
-log = logging.getLogger()
+log = get_logger('DIAG-APP')
 if DEBUG:
     # Defaults to INFO if not explicitly set.
     log.setLevel(logging.DEBUG)
 
 
-@retry(ValueError, tries=10, delay=1, backoff=2, logger=log)
-def perform_key_provisioning():
-    if not provision_key():
-        raise ValueError
+def run_ship_diagnostics_task():
+    perform_hw_diagnostics(ship=True)
+
+
+def run_quectel_health_task():
+    try:
+        ensure_quectel_health()
+    except Exception as e:
+        logging.error(f'Unknown error encountered while trying to update Quectel modem '
+                      f'for network compatibility: {e}')
+        logging.error(traceback.format_exc())
+
+
+def run_network_watchdog_task(watchdog, scheduler):
+    try:
+        network_state_event = watchdog.ensure_network_connection()
+        if network_state_event == DiagEvent.NETWORK_DISCONNECTED:
+            # accelerate the check for network connectivity
+            watchdog_job = scheduler.get_job('network_watchdog')
+            watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=15))
+    except Exception as e:
+        logging.warning(f'Unknown error while checking the network connectivity : {e}')
+
+
+def run_heartbeat_task(watchdog):
+    try:
+        watchdog.emit_heartbeat()
+    except Exception as e:
+        logging.warning(f'Unknown error while emitting heartbeat : {e}')
 
 
 def init_scheduled_tasks(app) -> None:
@@ -48,35 +86,17 @@ def init_scheduled_tasks(app) -> None:
     scheduler.api_enabled = False
     scheduler.init_app(app)
     scheduler.start()
-
-    @scheduler.task('cron', id='ship_diagnostics', minute='0')
-    def run_ship_diagnostics_task():
-        perform_hw_diagnostics(ship=True)
-
     watchdog = NetworkWatchdog()
 
-    def modify_network_watchdog_next_run(minutes=60):
-        watchdog_job = scheduler.get_job('network_watchdog')
-        watchdog_job.modify(next_run_time=datetime.now() + timedelta(minutes=minutes))
-
-    @scheduler.task('interval', id='network_watchdog', minutes=60, jitter=300)
-    def run_network_watchdog_task():
-        try:
-            network_state_event = watchdog.ensure_network_connection()
-            if network_state_event == DiagEvent.NETWORK_DISCONNECTED:
-                # accelerate the check for network connectivity
-                modify_network_watchdog_next_run(minutes=15)
-        except Exception as e:
-            logging.warning(f'Unknown error while checking the network connectivity : {e}')
-
-    @scheduler.task('interval', id='quectel_repeating', hours=1)
-    def run_quectel_health_task():
-        try:
-            ensure_quectel_health()
-        except Exception as e:
-            logging.error(f'Unknown error encountered while trying to update Quectel modem '
-                          f'for network compatibility: {e}')
-            logging.error(traceback.format_exc())
+    scheduler.add_job(id='ship_diagnostics', func=run_ship_diagnostics_task,
+                      trigger='interval', hours=SHIP_DIAG_INTERVAL_HOURS, jitter=300)
+    scheduler.add_job(id='quectel_repeating', func=run_quectel_health_task,
+                      trigger='interval', hours=1)
+    scheduler.add_job(id='network_watchdog',
+                      func=partial(run_network_watchdog_task, watchdog, scheduler),
+                      trigger='interval', hours=NETWORK_WATCHDOG_INTERVAL_HOURS, jitter=300)
+    scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
+                      trigger='interval', hours=HEARTBEAT_INTERVAL_HOURS, jitter=300)
 
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
@@ -84,20 +104,32 @@ def init_scheduled_tasks(app) -> None:
 
 
 def get_app(name):
-    try:
-        if os.getenv('BALENA_DEVICE_TYPE', False):
-            perform_key_provisioning()
-    except Exception as e:
-        log.error('Failed to provision key: {}'
-                  .format(e))
+    # Run database migrations on start...
+    run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)
-
     cache.init_app(app)
-
     init_scheduled_tasks(app)
+
+    # Setup DB Session
+    @app.before_request
+    def pre_request():
+        g.db = get_db_session()
+
+    @app.after_request
+    def post_request(resp):
+        try:
+            g.db.close()
+        except Exception:
+            pass
+        return resp
+
+    # Use a random UUID for session key, this will change each time the app
+    # starts, so with reboot / update etc... users will need to reauthenticate.
+    app.secret_key = str(uuid.uuid4())
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
+    app.register_blueprint(AUTH)
 
     return app

@@ -1,0 +1,32 @@
+{% extends 'unauthenticated_template.html' %}
+{% block title %}Login{% endblock %}
+
+{% block body %}
+        <div class="row mb-4">
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
+            <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+                <div class="card mb-0 h-100">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-10">
+                            <br />
+                            {% if msg %}
+                                <span style="color: red; text-align: center;">{{ msg }}</span><br/><br/>
+                            {% endif %}
+                            <form method="POST" action="/login">
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </form>
+                            <br/>
+                            <p style="color: blue;">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</p>
+                            <p style="text-align: center;"><a href="/reset_password">Forgotten Password?</a></p>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
+        </div>
+{% endblock %}
