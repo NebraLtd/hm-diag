@@ -80,7 +80,11 @@ class BalenaSupervisor:
         """Attempt to purge data using balena supervisor API."""
         LOGGER.info("Attempting data purge using Balena supervisor.")
 
-        response = self._make_request('POST', '/v1/purge')
+        payload = {
+            'appId': self.app_id
+        }
+
+        response = self._make_request('POST', '/v1/purge', json=payload)
         if response is None or response.ok is False:
             LOGGER.error("Purge attempt failed.")
             raise RuntimeError('supervisor API not accessible')

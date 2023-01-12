@@ -1,6 +1,5 @@
 include hw_diag/templates/template.html
 include hw_diag/templates/unauthenticated_template.html
-include hw_diag/templates/reconfigure_countdown.html
 include hw_diag/templates/password_reset.html
 include hw_diag/templates/password_change_form.html
 include hw_diag/templates/login_form.html

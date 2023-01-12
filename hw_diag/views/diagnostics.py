@@ -281,64 +281,49 @@ def get_device_config_page():
 @DIAGNOSTICS.route('/reboot')
 @authenticate
 def reboot():
-    diagnostics = read_diagnostics_file()
-    display_lte = should_display_lte(diagnostics)
-    now = datetime.utcnow()
-    template_filename = 'reconfigure_countdown.html'
-
-    balena_supervisor = BalenaSupervisor.new_from_env()
-    if request.args.get('type') == 'hard':
-        balena_supervisor.reboot()
-    else:
-        balena_supervisor.restart()
-
-    return render_template(
-        template_filename,
-        diagnostics=diagnostics,
-        display_lte=display_lte,
-        now=now,
-        seconds=120,
-        next_url='/'
-    )
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        if request.args.get('type') == 'hard':
+            balena_supervisor.reboot()
+        else:
+            balena_supervisor.restart()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
 
 
 @DIAGNOSTICS.route('/purge')
 @authenticate
 def purge():
-    diagnostics = read_diagnostics_file()
-    display_lte = should_display_lte(diagnostics)
-    now = datetime.utcnow()
-    template_filename = 'reconfigure_countdown.html'
-
-    balena_supervisor = BalenaSupervisor.new_from_env()
-    balena_supervisor.purge()
-
-    return render_template(
-        template_filename,
-        diagnostics=diagnostics,
-        display_lte=display_lte,
-        now=now,
-        seconds=240,
-        next_url='/'
-    )
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.purge()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
 
 
 @DIAGNOSTICS.route('/shutdown')
 @authenticate
 def shutdown():
-    diagnostics = read_diagnostics_file()
-    display_lte = should_display_lte(diagnostics)
-    now = datetime.utcnow()
-    template_filename = 'reconfigure_countdown.html'
-
-    balena_supervisor = BalenaSupervisor.new_from_env()
-    balena_supervisor.shutdown()
-
-    return render_template(
-        template_filename,
-        diagnostics=diagnostics,
-        display_lte=display_lte,
-        now=now,
-        seconds=120,
-        next_url='/'
-    )
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.shutdown()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
