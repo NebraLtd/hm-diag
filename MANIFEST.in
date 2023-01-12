@@ -1,9 +1,11 @@
 include hw_diag/templates/template.html
 include hw_diag/templates/unauthenticated_template.html
+include hw_diag/templates/reconfigure_countdown.html
 include hw_diag/templates/password_reset.html
 include hw_diag/templates/password_change_form.html
 include hw_diag/templates/login_form.html
 include hw_diag/templates/diagnostics_page_light_miner.html
+include hw_diag/templates/device_configuration.html
 include hw_diag/static/css/bootstrap.min.css
 include hw_diag/static/fonts/*.ttf
 include hw_diag/static/images/nebra-logo.svg

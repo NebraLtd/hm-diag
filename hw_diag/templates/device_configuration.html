@@ -1,0 +1,18 @@
+{% extends 'template.html' %}
+
+{% block title %}Device Settings{% endblock %}
+
+{% block body %}
+    <div class="text-center">
+        <h3 class="text-center mb-4">Device Configuration</h3>
+        <p class="text-center mb-4">
+           <h4>Quick Tasks</h4>
+           <a href="/reboot?type=soft" class="btn btn-primary">Soft Reboot</a>
+           <a href="/reboot?type=hard" class="btn btn-primary">Hard Reboot</a>
+           <a href="/shutdown" class="btn btn-warning">Shutdown</a>
+           <a href="/purge" class="btn btn-danger">Reset Factory Defaults</a>
+           <br/>
+           <br/>
+        </p>
+    </div>
+{% endblock %}

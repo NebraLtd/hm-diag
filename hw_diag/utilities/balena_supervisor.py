@@ -51,6 +51,34 @@ class BalenaSupervisor:
         except Exception:
             raise RuntimeError('shutdown failed due to supervisor API issue')
 
+    def restart(self):
+        """Attempt to restart containers using balena supervisor API."""
+        LOGGER.info("Attempting container restart using Balena supervisor.")
+
+        response = self._make_request('POST', '/v1/restart')
+        if response is None or response.ok is False:
+            LOGGER.error("Container restart attempt failed.")
+            raise RuntimeError('supervisor API not accessible')
+
+        try:
+            return response.json()
+        except Exception:
+            raise RuntimeError('Restart failed due to supervisor API issue')
+
+    def purge(self):
+        """Attempt to purge data using balena supervisor API."""
+        LOGGER.info("Attempting data purge using Balena supervisor.")
+
+        response = self._make_request('POST', '/v1/purge')
+        if response is None or response.ok is False:
+            LOGGER.error("Purge attempt failed.")
+            raise RuntimeError('supervisor API not accessible')
+
+        try:
+            return response.json()
+        except Exception:
+            raise RuntimeError('Purge failed due to supervisor API issue')
+
     def reboot(self, force: bool = False):
         """Attempt device reboot using balena supervisor API."""
         LOGGER.info("Attempting device reboot using Balena supervisor.")
