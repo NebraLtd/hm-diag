@@ -3,14 +3,145 @@
 {% block title %}Device Settings{% endblock %}
 
 {% block body %}
+    <div class="modal fade" id="modalReboot" tabindex="-1" aria-labelledby="modalRebootLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalRebootLabel">Reboot Hotspot</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  If your hotspot is not responding properly you can use this page to reboot it. A
+                  soft reboot only restarts the hotspot software and a hard reboot will reboot the
+                  entire device. Soft reboots take around 1 minute, and hard reboots around 3 minutes.
+                  Once complete you'll be automatically redirected back to the login form.
+              </p>
+              <p>
+                <div id="counterReboot" style="text-align: center;"></div>
+                <script>
+                    var rebootCount = 180;
+                    var rebootTimer = '';
+
+                    function doSoftReboot() {
+                        rebootCount = 60;
+                        fetch("/reboot?type=soft", {"method": "GET"});
+                        document.getElementById("btnRebootClose").disabled = true;
+                        document.getElementById("btnRebootSoft").disabled = true;
+                        document.getElementById("btnRebootHard").disabled = true;
+                        rebootTimer = setInterval(tickRebootCounter, 1000);
+                    }
+
+                    function doHardReboot() {
+                        fetch("/reboot?type=hard", {"method": "GET"});
+                        document.getElementById("btnRebootClose").disabled = true;
+                        document.getElementById("btnRebootSoft").disabled = true;
+                        document.getElementById("btnRebootHard").disabled = true;
+                        rebootTimer = setInterval(tickRebootCounter, 1000);
+                    }
+
+                    function tickRebootCounter() {
+                        rebootCount--;
+                        document.getElementById("counterReboot").innerHTML = rebootCount;
+                        console.log(rebootCount);
+                        if (rebootCount == 0) {
+                            clearInterval(rebootTimer);
+                            window.location.href = "/";
+                        }
+                    }
+                </script>
+              </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="btnRebootClose" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="btnRebootSoft" class="btn btn-primary" onclick="doSoftReboot()">Soft Reboot</button>
+            <button type="button" id="btnRebootHard" class="btn btn-primary" onclick="doHardReboot()">Hard Reboot</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalShutdown" tabindex="-1" aria-labelledby="modalShutdownLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalShutdownLabel">Shutdown Hotspot</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  <strong><span class="text-danger">Warning: </span></strong> Shutting down your hotspot requires physical
+                  access to power it back on. Are you sure you want to shutdown your hotspot?
+              </p>
+              <p>
+                <div id="counterShutdown"></div>
+                <script>
+                    function doShutdown() {
+                        fetch("/shutdown", {"method": "GET"});
+                        document.getElementById("btnShutdownClose").disabled = true;
+                        document.getElementById("btnShutdown").disabled = true;
+                    }
+                </script>
+              </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnShutdownClose">Close</button>
+            <button type="button" class="btn btn-danger" onclick="doShutdown()" id="btnShutdown">Shutdown</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalPurge" tabindex="-1" aria-labelledby="modalPurgeLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalPurgeLabel">Reset to Factory Defaults</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  <strong><span class="text-danger">Warning: </span></strong> This will reset your hotspot to factory
+                  defaults. Once complete you'll need to use the default password to login and all configurations will
+                  be lost. This process may take up to 5 minutes to complete. Are you sure you wish to proceed?
+              </p>
+              <p>
+                <div id="counterPurge" style="text-align: center;"></div>
+                <script>
+                    var purgeCounter = 300;
+                    var purgeTimer = '';
+
+                    function doPurge() {
+                        fetch("/purge", {"method": "GET"});
+                        document.getElementById("btnPurgeClose").disabled = true;
+                        document.getElementById("btnPurge").disabled = true;
+                        purgeTimer = setInterval(tickPurgeCounter, 1000);
+                    }
+
+                    function tickPurgeCounter() {
+                        purgeCounter--;
+                        document.getElementById("counterPurge").innerHTML = purgeCounter;
+                        console.log(purgeCounter);
+                        if (purgeCounter == 0) {
+                            clearInterval(purgeTimer);
+                            window.location.href = "/";
+                        }
+                    }
+                </script>
+              </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnPurgeClose">Close</button>
+            <button type="button" class="btn btn-danger" id="btnPurge" onclick="doPurge()">Reset to Factory Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="text-center">
         <h3 class="text-center mb-4">Device Configuration</h3>
         <p class="text-center mb-4">
            <h4>Quick Tasks</h4>
-           <a href="/reboot?type=soft" class="btn btn-primary">Soft Reboot</a>
-           <a href="/reboot?type=hard" class="btn btn-primary">Hard Reboot</a>
-           <a href="/shutdown" class="btn btn-warning">Shutdown</a>
-           <a href="/purge" class="btn btn-danger">Reset Factory Defaults</a>
+           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalReboot">Reboot</button>
+           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalShutdown">Shutdown</button>
+           <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPurge">Reset to Factory Defaults</button>
            <br/>
            <br/>
         </p>
