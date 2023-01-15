@@ -14,7 +14,8 @@ class TestSystemMetrics(unittest.TestCase):
         os.environ,
         {
             'BALENA_SUPERVISOR_ADDRESS': TEST_SUPERVISOR_ADDRESS,
-            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY
+            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY,
+            'BALENA_APP_ID': '12345'
         },
         clear=True
     )
@@ -34,7 +35,8 @@ class TestSystemMetrics(unittest.TestCase):
         os.environ,
         {
             'BALENA_SUPERVISOR_ADDRESS': TEST_SUPERVISOR_ADDRESS,
-            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY
+            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY,
+            'BALENA_APP_ID': '12345'
         },
         clear=True
     )

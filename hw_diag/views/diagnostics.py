@@ -32,6 +32,7 @@ from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -42,6 +43,7 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 @DIAGNOSTICS.route('/json')
 @cache.cached(timeout=60)
+@authenticate
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
     response = jsonify(diagnostics)
@@ -257,3 +259,72 @@ def add_security_headers(response):
     response.headers['X-Robots-Tag'] = 'none'
 
     return response
+
+
+@DIAGNOSTICS.route('/device_configuration')
+@authenticate
+def get_device_config_page():
+    diagnostics = read_diagnostics_file()
+    display_lte = should_display_lte(diagnostics)
+    now = datetime.utcnow()
+    template_filename = 'device_configuration.html'
+
+    response = render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        display_lte=display_lte,
+        now=now
+    )
+
+    return response
+
+
+@DIAGNOSTICS.route('/reboot')
+@authenticate
+def reboot():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        if request.args.get('type') == 'hard':
+            balena_supervisor.reboot()
+        else:
+            balena_supervisor.restart()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/purge')
+@authenticate
+def purge():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.purge()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/shutdown')
+@authenticate
+def shutdown():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.shutdown()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
