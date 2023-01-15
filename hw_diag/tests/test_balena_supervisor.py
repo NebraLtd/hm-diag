@@ -16,6 +16,8 @@ TEST_SUPERVISOR_API_KEY = 'secret'
 TEST_SUPERVISOR_DEVICE_STATUS_URL = 'http://127.0.0.1/v2/state/status?apikey=secret'
 TEST_SUPERVISOR_SHUTDOWN_URL = 'http://127.0.0.1/v1/shutdown?apikey=secret'
 TEST_SUPERVISOR_REBOOT_URL = 'http://127.0.0.1/v1/reboot?apikey=secret'
+TEST_SUPERVISOR_PURGE_URL = 'http://127.0.0.1/v1/purge?apikey=secret'
+TEST_SUPERVISOR_APP_ID = '12345'
 
 
 @lru_cache(maxsize=None)
@@ -27,17 +29,23 @@ def valid_status_json():
 class TestBalenaSupervisor(unittest.TestCase):
 
     def test_creation(self):
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         assert bs.supervisor_address == TEST_SUPERVISOR_ADDRESS
         assert bs.supervisor_api_key == TEST_SUPERVISOR_API_KEY
+        assert bs.app_id == TEST_SUPERVISOR_APP_ID
         assert bs.headers == {'Content-type': 'application/json'}
 
     @patch.dict(
         balena_supervisor.os.environ,
         {
             'BALENA_SUPERVISOR_ADDRESS': TEST_SUPERVISOR_ADDRESS,
-            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY
+            'BALENA_SUPERVISOR_API_KEY': TEST_SUPERVISOR_API_KEY,
+            'BALENA_APP_ID': TEST_SUPERVISOR_APP_ID
         },
         clear=True
     )
@@ -46,6 +54,7 @@ class TestBalenaSupervisor(unittest.TestCase):
 
         assert bs.supervisor_address == TEST_SUPERVISOR_ADDRESS
         assert bs.supervisor_api_key == TEST_SUPERVISOR_API_KEY
+        assert bs.app_id == TEST_SUPERVISOR_APP_ID
         assert bs.headers == {'Content-type': 'application/json'}
 
     @responses.activate
@@ -57,7 +66,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             json=valid_status_json()
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
         assert bs.get_device_status() == valid_status_json()
 
     @responses.activate
@@ -69,7 +82,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             json={'appState': 'applied'}
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
         assert bs.get_device_status('appState') == 'applied'
 
     @responses.activate
@@ -80,7 +97,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectionError('Unable to connect')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
@@ -95,7 +116,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectTimeout('Timout trying to make connection')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
@@ -111,7 +136,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             status=200
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(RuntimeError) as exp:
             bs.get_device_status('appState')
@@ -127,7 +156,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             json={"Data": "OK", "Error": ""}
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
         resp = bs.shutdown()
 
         assert resp['Data'] == 'OK'
@@ -140,7 +173,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectionError('Unable to connect.')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.shutdown()
@@ -155,7 +192,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectTimeout('Timout trying to make connection')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.shutdown()
@@ -171,7 +212,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             status=200
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.shutdown()
@@ -187,7 +232,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             json={"Data": "OK", "Error": ""}
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
         resp = bs.reboot()
 
         assert resp['Data'] == 'OK'
@@ -200,7 +249,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectionError('Unable to connect')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.reboot()
@@ -215,7 +268,11 @@ class TestBalenaSupervisor(unittest.TestCase):
             body=ConnectTimeout('Timout trying to make connection.')
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.reboot()
@@ -231,9 +288,70 @@ class TestBalenaSupervisor(unittest.TestCase):
             status=200
         )
 
-        bs = BalenaSupervisor(TEST_SUPERVISOR_ADDRESS, TEST_SUPERVISOR_API_KEY)
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
 
         with self.assertRaises(Exception) as exp:
             bs.reboot()
 
         assert str(exp.exception) == 'reboot failed due to supervisor API issue'
+
+    @responses.activate
+    def test_purge_gateway_success_response(self):
+        responses.add(
+            responses.POST,
+            TEST_SUPERVISOR_PURGE_URL,
+            status=200,
+            json={"Data": "OK", "Error": ""}
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+        resp = bs.purge()
+
+        assert resp['Data'] == 'OK'
+
+    @responses.activate
+    def test_purge_gateway_empty_response(self):
+        responses.add(
+            responses.POST,
+            TEST_SUPERVISOR_PURGE_URL,
+            body='',
+            status=200
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+
+        with self.assertRaises(Exception) as exp:
+            bs.purge()
+
+        assert str(exp.exception) == 'Purge failed due to supervisor API issue'
+
+    @responses.activate
+    def test_purge_gateway_error_on_connection_timeout(self):
+        responses.add(
+            responses.POST,
+            TEST_SUPERVISOR_PURGE_URL,
+            body=ConnectTimeout('Timout trying to make connection.')
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+
+        with self.assertRaises(Exception) as exp:
+            bs.purge()
+
+        assert str(exp.exception) == 'supervisor API not accessible'
