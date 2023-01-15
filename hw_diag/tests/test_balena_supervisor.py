@@ -18,6 +18,7 @@ TEST_SUPERVISOR_SHUTDOWN_URL = 'http://127.0.0.1/v1/shutdown?apikey=secret'
 TEST_SUPERVISOR_REBOOT_URL = 'http://127.0.0.1/v1/reboot?apikey=secret'
 TEST_SUPERVISOR_PURGE_URL = 'http://127.0.0.1/v1/purge?apikey=secret'
 TEST_SUPERVISOR_APP_ID = '12345'
+TIMEOUT_EXCEPTION_MSG = 'supervisor API not accessible'
 
 
 @lru_cache(maxsize=None)
@@ -182,7 +183,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             bs.shutdown()
 
-        assert str(exp.exception) == "supervisor API not accessible"
+        assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
 
     @responses.activate
     def test_shutdown_gateway_error_on_connection_timeout(self):
@@ -201,7 +202,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             bs.shutdown()
 
-        assert str(exp.exception) == 'supervisor API not accessible'
+        assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
 
     @responses.activate
     def test_shutdown_gateway_empty_response(self):
@@ -258,7 +259,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             bs.reboot()
 
-        assert str(exp.exception) == "supervisor API not accessible"
+        assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
 
     @responses.activate
     def test_reboot_gateway_error_on_connection_timeout(self):
@@ -277,7 +278,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             bs.reboot()
 
-        assert str(exp.exception) == 'supervisor API not accessible'
+        assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
 
     @responses.activate
     def test_reboot_gateway_empty_response(self):
@@ -354,4 +355,4 @@ class TestBalenaSupervisor(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             bs.purge()
 
-        assert str(exp.exception) == 'supervisor API not accessible'
+        assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
