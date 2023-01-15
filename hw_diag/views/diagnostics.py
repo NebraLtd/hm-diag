@@ -42,6 +42,7 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
 @DIAGNOSTICS.route('/json')
+@authenticate
 @cache.cached(timeout=60)
 @authenticate
 def get_diagnostics_json():
