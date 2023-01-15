@@ -6,6 +6,7 @@ from requests.exceptions import ConnectionError, ConnectTimeout
 from hm_pyhelper.logger import get_logger
 
 LOGGER = get_logger(__name__)
+SUPERVISOR_CONNECTIVITY_ERROR = 'supervisor API not accessible'
 
 
 class BalenaSupervisor:
@@ -51,7 +52,7 @@ class BalenaSupervisor:
         response = self._make_request('POST', '/v1/shutdown')
         if response is None or response.ok is False:
             LOGGER.error("Device shutdown attempt failed.")
-            raise RuntimeError('supervisor API not accessible')
+            raise RuntimeError(SUPERVISOR_CONNECTIVITY_ERROR)
 
         try:
             return response.json()
@@ -69,7 +70,7 @@ class BalenaSupervisor:
         response = self._make_request('POST', '/v1/restart', json=payload)
         if response is None or response.ok is False:
             LOGGER.error("Container restart attempt failed.")
-            raise RuntimeError('supervisor API not accessible')
+            raise RuntimeError(SUPERVISOR_CONNECTIVITY_ERROR)
 
         try:
             return response.json()
@@ -87,7 +88,7 @@ class BalenaSupervisor:
         response = self._make_request('POST', '/v1/purge', json=payload)
         if response is None or response.ok is False:
             LOGGER.error("Purge attempt failed.")
-            raise RuntimeError('supervisor API not accessible')
+            raise RuntimeError(SUPERVISOR_CONNECTIVITY_ERROR)
 
         try:
             return response.json()
@@ -108,7 +109,7 @@ class BalenaSupervisor:
 
         if response is None or response.ok is False:
             LOGGER.error("Device restart attempt failed.")
-            raise RuntimeError('supervisor API not accessible')
+            raise RuntimeError(SUPERVISOR_CONNECTIVITY_ERROR)
 
         try:
             return response.json()
