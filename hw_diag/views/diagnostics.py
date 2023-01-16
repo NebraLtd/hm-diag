@@ -42,7 +42,6 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
 @DIAGNOSTICS.route('/json')
-@cache.cached(timeout=60)
 @authenticate
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
@@ -50,8 +49,6 @@ def get_diagnostics_json():
     response.headers.set('Content-Disposition',
                          'attachment;filename=nebra-diag.json'
                          )
-    response.headers.set('X-Robots-Tag', 'none')
-
     return response
 
 
