@@ -94,7 +94,7 @@ def update_password(current_password, new_password, confirm_password):
         error = True
         msg = (
             'Password is not complex enough, please ensure password is greater than 8 '
-            'characters, has atleast 1 number, 1 uppercase character and 1 special character.'
+            'characters, has at least 1 number, 1 uppercase character and 1 special character.'
         )
 
     if not error:
