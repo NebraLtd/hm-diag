@@ -76,6 +76,7 @@ def handle_password_change():
     )
 
     msg = result.get('msg')
+    color = result.get('color')
     diagnostics = read_diagnostics_file()
     now = datetime.datetime.utcnow()
     template_filename = 'password_change_form.html'
@@ -85,7 +86,8 @@ def handle_password_change():
         diagnostics=diagnostics,
         display_lte=False,
         now=now,
-        msg=msg
+        msg=msg,
+        color=color
     )
 
 

@@ -73,14 +73,17 @@ def check_password(password):
 def update_password(current_password, new_password, confirm_password):
     error = False
     msg = ''
+    color = 'red'
 
     if not check_password(current_password):
         error = True
         msg = 'Current password is not valid.'
+        color = 'red'
 
     if new_password != confirm_password:
         error = True
         msg = 'New password and password confirmation do not match.'
+        color = 'red'
 
     policy = PasswordPolicy.from_names(
         length=8,  # min length: 8
@@ -96,14 +99,17 @@ def update_password(current_password, new_password, confirm_password):
             'Password is not complex enough, please ensure password is greater than 8 '
             'characters, has at least 1 number, 1 uppercase character and 1 special character.'
         )
+        color = 'red'
 
     if not error:
         write_password(new_password)
         msg = 'Password updated successfully.'
+        color = 'green'
 
     return {
         'error': error,
-        'msg': msg
+        'msg': msg,
+        'color': color
     }
 
 
