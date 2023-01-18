@@ -20,7 +20,14 @@
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </form>
                             <br/>
-                            <p style="color: blue;">Hint: The default password is the ethernet MAC address of your device without any colons which may be found on your device's identification sticker.</p>
+                            <p style="color: blue;">
+                                Hint: The default password is the
+                                {% if diagnostics.E0 %}
+                                    Ethernet
+                                {% else %}
+                                    WiFi
+                                {% endif %}
+                                MAC address of your device without any colons which may be found on your device's identification sticker.</p>
                             <p style="text-align: center;"><a href="/reset_password">Forgotten Password?</a></p>
                         </div>
                         <div class="col-1"></div>

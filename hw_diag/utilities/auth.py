@@ -25,6 +25,18 @@ def authenticate(f):
     return wrapper
 
 
+def generate_default_password():
+    diagnostics = read_diagnostics_file()
+    mac_address = diagnostics.get('E0')
+
+    if not mac_address:
+        # No ethernet mac on this device, use wifi instead...
+        mac_address = diagnostics.get('W0')
+
+    default_password = mac_address.replace(':', '')
+    return default_password
+
+
 def write_password(password):
     password = password.encode('utf-8')
     salt = bcrypt.gensalt()
@@ -53,9 +65,7 @@ def read_password():
             filter(AuthKeyValue.key == 'password_hash'). \
             one()
     except NoResultFound:
-        diagnostics = read_diagnostics_file()
-        eth_mac = diagnostics.get('E0')
-        default_password = eth_mac.replace(':', '')
+        default_password = generate_default_password()
         password_row = write_password(default_password)
     return password_row
 
@@ -197,9 +207,7 @@ def perform_password_reset():
         expiry = datetime.datetime.fromisoformat(reset_expiry_row.value)
 
         if expiry > now:
-            diagnostics = read_diagnostics_file()
-            eth_mac = diagnostics.get('E0')
-            default_password = eth_mac.replace(':', '')
+            default_password = generate_default_password()
             write_password(default_password)
             set_last_password_reset()
             valid = True
