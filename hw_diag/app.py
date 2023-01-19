@@ -23,6 +23,7 @@ from hw_diag.utilities.quectel import ensure_quectel_health
 from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
 from hw_diag.database.migrations import run_migrations
+from hw_diag.utilities.network import setup_hostname
 
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
@@ -110,6 +111,7 @@ def get_app(name):
     app = Flask(name)
     cache.init_app(app)
     init_scheduled_tasks(app)
+    setup_hostname()
 
     # Setup DB Session
     @app.before_request
