@@ -58,13 +58,21 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        device_status = balena_supervisor.get_device_status()
+    except Exception:
+        device_status = None
+
     template_filename = 'diagnostics_page_light_miner.html'
 
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        device_status=device_status
     )
 
     return response
