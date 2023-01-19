@@ -63,6 +63,14 @@
                   {% endif %}
                 </tr>
                 <tr>
+                  <td>Hostname</td>
+                  {% if hostname %}
+                    <td class="text-right">{{ hostname }}</td>
+                  {% else %}
+                    <td class="text-danger text-right">Unknown</td>
+                  {% endif %}
+                </tr>
+                <tr>
                   <td>Ethernet MAC Address</td>
                   {% if diagnostics.E0 %}
                   <td class="text-right">{{ diagnostics.E0 }}</td>
@@ -104,8 +112,5 @@
             </div>
           </div>
         </div>
-        <p>
-          {{ device_status }}
-        </p>
       {% endif %}
 {% endblock %}

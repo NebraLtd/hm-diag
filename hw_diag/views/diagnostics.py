@@ -33,6 +33,7 @@ from hw_diag.utilities.security import GnuPG
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.network import get_device_hostname
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -58,13 +59,7 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
-
-    try:
-        balena_supervisor = BalenaSupervisor.new_from_env()
-        device_status = balena_supervisor.get_device_status()
-    except Exception:
-        device_status = None
-
+    hostname = get_device_hostname()
     template_filename = 'diagnostics_page_light_miner.html'
 
     response = render_template(
@@ -72,7 +67,7 @@ def get_diagnostics():
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now,
-        device_status=device_status
+        hostname=hostname
     )
 
     return response
