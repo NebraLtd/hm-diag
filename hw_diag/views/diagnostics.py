@@ -335,25 +335,26 @@ def shutdown():
 @DIAGNOSTICS.route('/change_hostname', methods=['POST'])
 @authenticate
 def handle_hostname_update():
-    new_hostname = request.form.get('txtHostname')
+    req_body = request.get_json()
+    new_hostname = req_body.get('hostname')
 
     try:
         balena_supervisor = BalenaSupervisor.new_from_env()
         balena_supervisor.set_hostname(new_hostname)
-        msg = 'Hostname Updated'
-    except Exception:
-        msg = 'Failed to update hostname.'
-
-    diagnostics = read_diagnostics_file()
-    display_lte = should_display_lte(diagnostics)
-    now = datetime.utcnow()
-    hostname = get_device_hostname()
-
-    return render_template(
-        'device_configuration.html',
-        diagnostics=diagnostics,
-        display_lte=display_lte,
-        now=now,
-        hostname=hostname,
-        msg=msg
-    )
+        return jsonify(
+            {
+                'action_invoked': True
+            }
+        )
+    except Exception as err:
+        logging.error("Error updating hostname: %s" % str(err))
+        msg = (
+            'Failed to update hostname. Hostnames should be in the format of '
+            'host.domain, e.g. nebra.local'
+        )
+        return jsonify(
+            {
+                'action_invoked': False,
+                'error': msg
+            }
+        )

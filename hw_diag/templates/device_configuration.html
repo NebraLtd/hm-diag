@@ -135,6 +135,38 @@
       </div>
     </div>
 
+    <div class="modal fade" id="modalReconfigure" tabindex="-1" aria-labelledby="modalReconfigureLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalReconfigureLabel">Reconfiguring Hotspot</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  Your hotspot is currently being reconfigured. You will be redirected automatically once complete.
+              </p>
+              <p>
+                <div id="counterReconfigure" style="text-align: center;"></div>
+                <script>
+                    var reconfigureCount = 30;
+                    var reconfigureTimer = '';
+
+                    function tickReconfigureCounter() {
+                        reconfigureCount--;
+                        document.getElementById("counterReconfigure").innerHTML = reconfigureCount;
+                        console.log(reconfigureCount);
+                        if (reconfigureCount == 0) {
+                            clearInterval(reconfigureTimer);
+                            window.location.href = "/";
+                        }
+                    }
+                </script>
+              </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="text-center">
         <h3 class="text-center mb-4">Device Configuration</h3>
         <p class="text-center mb-4">
@@ -162,13 +194,30 @@
                             <span>{{ msg }}</span>
                             <br/><br/>
                           {% endif %}
-                          <form method="POST" action="/change_hostname">
                             <div class="form-group">
                               <input type="text" class="form-control" id="txtHostname" name="txtHostname" value="{{ hostname }}" />
                               <br/>
-                              <span style="text-align: center;"><button type="submit" class="btn btn-primary">Update Hostname</button></span>
+                              <script>
+                                function updateHostname() {
+                                    var hostname = document.getElementById("txtHostname").value;
+                                    var payload = {hostname: hostname};
+
+                                    fetch('/change_hostname', {
+                                        method: 'POST',
+                                        headers: {
+                                          'Accept': 'application/json',
+                                          'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(payload)
+                                    });
+
+                                    reconfigureTimer = setInterval(tickReconfigureCounter, 1000);
+                                    var reconfigureModal = new bootstrap.Modal(document.getElementById("modalReconfigure"), {});
+                                    reconfigureModal.show();
+                                }
+                              </script>
+                              <button class="btn btn-primary" onClick="updateHostname()">Update Hostname</button>
                             </div>
-                          </form>
                         </div>
                     <div class="col-1"></div>
                 </div>
