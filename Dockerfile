@@ -72,6 +72,10 @@ COPY --from=builder /tmp/build/quectel /quectel
 COPY --from=builder /tmp/build/migrations /opt/migrations/migrations
 COPY --from=builder /tmp/build/alembic.ini /opt/migrations/alembic.ini
 
+# copy start admin session script
+COPY --from=builder /tmp/build/start_admin_session /usr/sbin/start_admin_session
+RUN chmod 700 /usr/sbin/start_admin_session
+
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"

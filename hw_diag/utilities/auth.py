@@ -5,6 +5,7 @@ from functools import wraps
 from flask import redirect
 from flask import session
 from flask import g
+from flask import request
 from sqlalchemy.exc import NoResultFound
 from password_strength import PasswordPolicy
 
@@ -218,3 +219,18 @@ def perform_password_reset():
         valid = False
 
     return valid
+
+
+def can_spawn_admin_session():
+    try:
+        admin_session_expires_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'admin_session_expires'). \
+            one()
+        now = datetime.datetime.utcnow()
+        expiry = datetime.datetime.fromisoformat(admin_session_expires_row.value)
+        if now < expiry:
+            return True
+        else:
+            return False
+    except NoResultFound:
+        return False
