@@ -181,3 +181,15 @@ class BalenaSupervisor:
                         f"Response content: {response.content}"
             LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
+
+    def set_hostname(self, hostname):
+        LOGGER.info("Setting hostname via Balena supervisor.")
+        url = '/v1/device/host-config'
+        payload = {"network": {"hostname": hostname}}
+        response = self._make_request('PATCH', url, json=payload)
+
+        if response is None or response.ok is False:
+            LOGGER.error("Set hostname attempt failed.")
+            raise RuntimeError(SUPERVISOR_CONNECTIVITY_ERROR)
+
+        return response

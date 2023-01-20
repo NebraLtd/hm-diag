@@ -5,6 +5,7 @@ from sqlalchemy.exc import NoResultFound
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.database import get_db_session
 from hw_diag.database.models.auth import AuthKeyValue
+from hw_diag.utilities.auth import generate_default_password
 
 
 def get_device_hostname():
@@ -40,7 +41,20 @@ def setup_hostname():
         # some general key value pair table with string values. Sorry bros :-(
         if hostname_set_row.value == 'false':
             logging.info("Hostname not set yet...")
+            # Set hostname via Balena supervisor...
+            default_password = generate_default_password()
+            hostname_suffix = default_password[6:]
+            hostname = "nebra-%s.local" % hostname_suffix
+            balena_supervisor = BalenaSupervisor.new_from_env()
+            balena_supervisor.set_hostname(hostname)
+            hostname_set_row.value = 'true'
+            db.commit()
         else:
             logging.info("Hostname already set!")
+
+        db.close_all()
+    except Exception as err:
+        logging.error("Error setting hostname: %s" % str(err))
+        db.close_all()
     finally:
         db.close_all()
