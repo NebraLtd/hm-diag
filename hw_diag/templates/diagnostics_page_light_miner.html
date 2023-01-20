@@ -63,9 +63,9 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>Hostname</td>
+                  <td>Hostname (IP Address)</td>
                   {% if hostname %}
-                    <td class="text-right">{{ hostname }}</td>
+                    <td class="text-right">{{ hostname }} ({{ device_info.ip_address }})</td>
                   {% else %}
                     <td class="text-danger text-right">Unknown</td>
                   {% endif %}

@@ -34,6 +34,7 @@ from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.network import get_device_hostname
+from hw_diag.utilities.diagnostics import get_device_info
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -60,6 +61,7 @@ def get_diagnostics():
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
     hostname = get_device_hostname()
+    device_info = get_device_info()
     template_filename = 'diagnostics_page_light_miner.html'
 
     response = render_template(
@@ -67,7 +69,8 @@ def get_diagnostics():
         diagnostics=diagnostics,
         display_lte=display_lte,
         now=now,
-        hostname=hostname
+        hostname=hostname,
+        device_info=device_info
     )
 
     return response

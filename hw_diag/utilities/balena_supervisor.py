@@ -181,6 +181,37 @@ class BalenaSupervisor:
             LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
 
+    def get_device(self, key_to_return=None) -> str:
+        LOGGER.info("Retrieving device data using Balena supervisor.")
+
+        response = self._make_request('GET', '/v1/device')
+
+        error_msg = ""
+        if response is None:
+            error_msg = "Device config request failed. No response received."
+
+        elif response.ok is False:
+            error_msg = "Device config request failed. Got non-OK response: " + \
+                f"{response.status_code} {response.content}"
+
+        if error_msg:
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+
+        try:
+            if key_to_return:
+                return response.json()[key_to_return]
+            return response.json()
+        except ValueError:
+            error_msg = "Supervisor API did not return valid json response."
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+        except Exception:
+            error_msg = f"Couldn't find {key_to_return} key in response.\n" + \
+                        f"Response content: {response.content}"
+            LOGGER.warning(error_msg)
+            raise RuntimeError(error_msg)
+
     def set_hostname(self, hostname):
         LOGGER.info("Setting hostname via Balena supervisor.")
         url = '/v1/device/host-config'
