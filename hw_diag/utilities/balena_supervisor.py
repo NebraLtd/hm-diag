@@ -172,8 +172,7 @@ class BalenaSupervisor:
                 return response.json()[key_to_return]
             return response.json()
         except ValueError:
-            error_msg = "Supervisor API did not return valid json response.\n" + \
-                        f"Response content: {response.content}"
+            error_msg = "Supervisor API did not return valid json response."
             LOGGER.warning(error_msg)
             raise RuntimeError(error_msg)
         except Exception:
