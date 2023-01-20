@@ -5,7 +5,6 @@ from functools import wraps
 from flask import redirect
 from flask import session
 from flask import g
-from flask import request
 from sqlalchemy.exc import NoResultFound
 from password_strength import PasswordPolicy
 
