@@ -188,10 +188,10 @@ class BalenaSupervisor:
 
         error_msg = ""
         if response is None:
-            error_msg = "Device config request failed. No response received."
+            error_msg = "Device info request failed. No response received."
 
         elif response.ok is False:
-            error_msg = "Device config request failed. Got non-OK response: " + \
+            error_msg = "Device info request failed. Got non-OK response: " + \
                 f"{response.status_code} {response.content}"
 
         if error_msg:
