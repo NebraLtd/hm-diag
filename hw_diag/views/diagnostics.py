@@ -33,6 +33,8 @@ from hw_diag.utilities.security import GnuPG
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.network import get_device_hostname
+from hw_diag.utilities.diagnostics import get_device_info
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -58,13 +60,17 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+    hostname = get_device_hostname()
+    device_info = get_device_info()
     template_filename = 'diagnostics_page_light_miner.html'
 
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        hostname=hostname,
+        device_info=device_info
     )
 
     return response
@@ -264,13 +270,15 @@ def get_device_config_page():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+    hostname = get_device_hostname()
     template_filename = 'device_configuration.html'
 
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        hostname=hostname
     )
 
     return response
@@ -323,5 +331,33 @@ def shutdown():
             {
                 "action_invoked": False,
                 "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/change_hostname', methods=['POST'])
+@authenticate
+def handle_hostname_update():
+    req_body = request.get_json()
+    new_hostname = req_body.get('hostname')
+
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.set_hostname(new_hostname)
+        return jsonify(
+            {
+                'action_invoked': True
+            }
+        )
+    except Exception as err:
+        logging.error("Error updating hostname: %s" % str(err))
+        msg = (
+            'Failed to update hostname. Hostnames should be in the format of '
+            'host.domain, e.g. nebra.local'
+        )
+        return jsonify(
+            {
+                'action_invoked': False,
+                'error': msg
             }
         )

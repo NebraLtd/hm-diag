@@ -17,8 +17,10 @@ TEST_SUPERVISOR_DEVICE_STATUS_URL = 'http://127.0.0.1/v2/state/status?apikey=sec
 TEST_SUPERVISOR_SHUTDOWN_URL = 'http://127.0.0.1/v1/shutdown?apikey=secret'
 TEST_SUPERVISOR_REBOOT_URL = 'http://127.0.0.1/v1/reboot?apikey=secret'
 TEST_SUPERVISOR_PURGE_URL = 'http://127.0.0.1/v1/purge?apikey=secret'
+TEST_SUPERVISOR_CONFIG_URL = 'http://127.0.0.1/v1/device/host-config?apikey=secret'
 TEST_SUPERVISOR_APP_ID = '12345'
 TIMEOUT_EXCEPTION_MSG = 'supervisor API not accessible'
+CONNECTION_EXCEPTION_MSG = 'Timout trying to make connection.'
 
 
 @lru_cache(maxsize=None)
@@ -114,7 +116,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.GET,
             TEST_SUPERVISOR_DEVICE_STATUS_URL,
-            body=ConnectTimeout('Timout trying to make connection')
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
         )
 
         bs = BalenaSupervisor(
@@ -190,7 +192,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.POST,
             TEST_SUPERVISOR_SHUTDOWN_URL,
-            body=ConnectTimeout('Timout trying to make connection')
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
         )
 
         bs = BalenaSupervisor(
@@ -266,7 +268,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.POST,
             TEST_SUPERVISOR_REBOOT_URL,
-            body=ConnectTimeout('Timout trying to make connection.')
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
         )
 
         bs = BalenaSupervisor(
@@ -343,7 +345,7 @@ class TestBalenaSupervisor(unittest.TestCase):
         responses.add(
             responses.POST,
             TEST_SUPERVISOR_PURGE_URL,
-            body=ConnectTimeout('Timout trying to make connection.')
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
         )
 
         bs = BalenaSupervisor(
@@ -356,3 +358,80 @@ class TestBalenaSupervisor(unittest.TestCase):
             bs.purge()
 
         assert str(exp.exception) == TIMEOUT_EXCEPTION_MSG
+
+    @responses.activate
+    def test_get_device_config_success_response(self):
+        responses.add(
+            responses.GET,
+            TEST_SUPERVISOR_CONFIG_URL,
+            status=200,
+            json={"Data": "OK", "Error": ""}
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+        resp = bs.get_device_config()
+
+        assert resp['Data'] == 'OK'
+
+    @responses.activate
+    def test_get_device_config_empty_response(self):
+        responses.add(
+            responses.GET,
+            TEST_SUPERVISOR_CONFIG_URL,
+            body='',
+            status=200
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+
+        with self.assertRaises(Exception) as exp:
+            bs.get_device_config()
+
+        exception_str = 'Supervisor API did not return valid json response.'
+        assert str(exp.exception) == exception_str
+
+    @responses.activate
+    def test_get_device_config_error_on_connection_timeout(self):
+        responses.add(
+            responses.GET,
+            TEST_SUPERVISOR_CONFIG_URL,
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+
+        with self.assertRaises(Exception) as exp:
+            bs.get_device_config()
+
+        assert str(exp.exception) == 'Device config request failed. No response received.'
+
+    @responses.activate
+    def test_set_hostname_error_on_connection_timeout(self):
+        responses.add(
+            responses.PATCH,
+            TEST_SUPERVISOR_CONFIG_URL,
+            body=ConnectTimeout(CONNECTION_EXCEPTION_MSG)
+        )
+
+        bs = BalenaSupervisor(
+            TEST_SUPERVISOR_ADDRESS,
+            TEST_SUPERVISOR_API_KEY,
+            TEST_SUPERVISOR_APP_ID
+        )
+
+        with self.assertRaises(Exception) as exp:
+            bs.set_hostname('nebra-123456.local')
+
+        assert str(exp.exception) == 'supervisor API not accessible'
