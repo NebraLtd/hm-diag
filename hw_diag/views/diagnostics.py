@@ -267,13 +267,15 @@ def get_device_config_page():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
+    hostname = get_device_hostname()
     template_filename = 'device_configuration.html'
 
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        hostname=hostname
     )
 
     return response

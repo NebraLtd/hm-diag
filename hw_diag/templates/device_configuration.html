@@ -146,4 +146,32 @@
            <br/>
         </p>
     </div>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+            <div class="card mb-0 h-100">
+              <p>
+                <div class="row">
+                    <div class="col-1"></div>
+                        <div class="col-10">
+                          {% if msg %}
+                            {{ msg }}<br/><br/>
+                          {% endif %}
+                          <form method="POST" action="/change_hostname">
+                            <div class="form-group">
+                              <input type="text" class="form-control" id="txtHostname" name="txtHostname" placeholder="{{ hostname }}" />
+                              <span style="text-align: center;"><button type="submit" class="btn btn-primary">Update Hostname</button></span>
+                            </div>
+                          </form>
+                        </div>
+                    <div class="col-1"></div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+        </div>
 {% endblock %}
