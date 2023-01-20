@@ -330,3 +330,30 @@ def shutdown():
                 "error": str(err)
             }
         )
+
+
+@DIAGNOSTICS.route('/change_hostname', methods=['POST'])
+@authenticate
+def handle_hostname_update():
+    new_hostname = request.form.get('txtHostname')
+
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.set_hostname(new_hostname)
+        msg = 'Hostname Updated'
+    except Exception:
+        msg = 'Failed to update hostname.'
+
+    diagnostics = read_diagnostics_file()
+    display_lte = should_display_lte(diagnostics)
+    now = datetime.utcnow()
+    hostname = get_device_hostname()
+
+    return render_template(
+        'device_configuration.html',
+        diagnostics=diagnostics,
+        display_lte=display_lte,
+        now=now,
+        hostname=hostname,
+        msg=msg
+    )

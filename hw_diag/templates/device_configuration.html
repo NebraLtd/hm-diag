@@ -156,12 +156,16 @@
                 <div class="row">
                     <div class="col-1"></div>
                         <div class="col-10">
+                          <h4>Update Device Hostname</h4>
+                          <br/>
                           {% if msg %}
-                            {{ msg }}<br/><br/>
+                            <span>{{ msg }}</span>
+                            <br/><br/>
                           {% endif %}
                           <form method="POST" action="/change_hostname">
                             <div class="form-group">
-                              <input type="text" class="form-control" id="txtHostname" name="txtHostname" placeholder="{{ hostname }}" />
+                              <input type="text" class="form-control" id="txtHostname" name="txtHostname" value="{{ hostname }}" />
+                              <br/>
                               <span style="text-align: center;"><button type="submit" class="btn btn-primary">Update Hostname</button></span>
                             </div>
                           </form>
