@@ -1,3 +1,12 @@
+include hw_diag/static/css/app-saas.min.css
+include hw_diag/static/css/icons.min.css
+include hw_diag/static/js/app.js
+include hw_diag/static/js/app.min.js
+include hw_diag/static/js/hyper-config.js
+include hw_diag/static/js/hyper-syntax.js
+include hw_diag/static/js/vendor.min.js
+include hw_diag/templates/js/
+include hw_diag/templates/template_hyper.html
 include hw_diag/templates/template.html
 include hw_diag/templates/unauthenticated_template.html
 include hw_diag/templates/password_reset.html

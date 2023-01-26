@@ -361,3 +361,8 @@ def handle_hostname_update():
                 'error': msg
             }
         )
+
+
+@DIAGNOSTICS.route('/hyper')
+def get_hyper():
+    return render_template('template_hyper.html')
