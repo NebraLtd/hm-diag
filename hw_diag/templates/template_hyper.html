@@ -98,12 +98,63 @@
 
                     <!--- Sidemenu -->
                     <ul class="side-nav">
+                        {% if session.logged_in %}
                         <li class="side-nav-item">
-                            <a href="apps-calendar.html" class="side-nav-link">
-                                <i class="uil-calender"></i>
-                                <span> Calendar </span>
+                            <a href="/" class="side-nav-link">
+                                <i class="uil-dashboard"></i>
+                                <span> Device Info </span>
                             </a>
                         </li>
+                        <li class="side-nav-item">
+                            <a href="/hnt" class="side-nav-link">
+                                <i class="uil-wifi"></i>
+                                <span> Helium </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/thingsix" class="side-nav-link">
+                                <i class="uil-wifi"></i>
+                                <span> ThingsIX </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/ttn" class="side-nav-link">
+                                <i class="uil-cloud-shield"></i>
+                                <span> Mysterium dVPN </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/tix" class="side-nav-link">
+                                <i class="uil-cog"></i>
+                                <span> Device Configuration </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/tix" class="side-nav-link">
+                                <i class="uil-padlock"></i>
+                                <span> Change Password </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="https://support.nebra.com/support/home" class="side-nav-link">
+                                <i class="uil-comment-question"></i>
+                                <span> Support </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/logout" class="side-nav-link">
+                                <i class="uil-sign-in-alt"></i>
+                                <span> Logout </span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="side-nav-item">
+                            <a href="/login" class="side-nav-link">
+                                <i class="uil-sign-out-alt"></i>
+                                <span> Login </span>
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                     <!--- End Sidemenu -->
 
@@ -128,11 +179,10 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                <script>document.write(new Date().getFullYear())</script> © Nebra LTD.
                             </div>
                             <div class="col-md-6">
                                 <div class="text-md-end footer-links d-none d-md-block">
-                                    <a href="https://support.nebra.com/support/home">Support</a>
+                                    <script>document.write(new Date().getFullYear())</script> © Nebra LTD.
                                 </div>
                             </div>
                         </div>
