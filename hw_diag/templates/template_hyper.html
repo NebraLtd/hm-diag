@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Nebra Hotspot</title>
+        <title>Nebra Hotspot &middot; {% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="shortcut icon" href="/static/images/favicon.ico">
@@ -170,7 +170,7 @@
 
             <div class="content-page">
                 <div class="content">
-                    <p>Content goes here :-)</p>
+                    {% block body %}{% endblock %}
                 </div>
                 <!-- content -->
 
