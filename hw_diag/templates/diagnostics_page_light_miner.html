@@ -4,7 +4,7 @@
 
  {% block body %}
     {% if not diagnostics.error %}
-        <h3 class="text-center mb-4">Diagnostics Breakdown</h3>
+        <h3 class="text-center mb-4">Diagnostics Information</h3>
         <div class="row mb-4">
           <div class="col-12 col-lg-6 mb-4 mb-lg-0">
             <div class="card mb-0 h-100">
@@ -112,5 +112,14 @@
             </div>
           </div>
         </div>
-      {% endif %}
+       <div class="text-center">
+          {% if diagnostics.last_updated %}
+            <p>Last Updated: {{ diagnostics.last_updated }}</p>
+          {% else %}
+            <p>Last Updated: Never</p>
+          {% endif %}
+          <p>To get support please visit <a href="https://nebra.io/helium-support">https://nebra.io/helium-support</a></p>
+          <p><a href="/json">Download Diagnostics Info for Support</a></p>
+      </div>
+    {% endif %}
 {% endblock %}
