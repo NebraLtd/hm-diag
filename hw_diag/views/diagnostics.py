@@ -34,6 +34,7 @@ from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.network import get_device_hostname
+from hw_diag.utilities.network import get_wan_ip_address
 from hw_diag.utilities.diagnostics import get_device_info
 
 
@@ -63,6 +64,7 @@ def get_diagnostics():
     hostname = get_device_hostname()
     device_info = get_device_info()
     template_filename = 'diagnostics_page_light_miner.html'
+    wan_ip = get_wan_ip_address()
 
     response = render_template(
         template_filename,
@@ -70,7 +72,8 @@ def get_diagnostics():
         display_lte=display_lte,
         now=now,
         hostname=hostname,
-        device_info=device_info
+        device_info=device_info,
+        wan_ip_address=wan_ip
     )
 
     return response

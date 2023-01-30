@@ -4,71 +4,38 @@
 
  {% block body %}
     {% if not diagnostics.error %}
-        <h3 class="text-center mb-4">Diagnostics Information</h3>
+        <h3 class="text-center mb-4">Device Information</h3>
         <div class="row mb-4">
           <div class="col-12 col-lg-6 mb-4 mb-lg-0">
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                  {% if not diagnostics.PK %}
-                    <td class="border-0">Helium Address</td>
-                    <td class="border-0 text-right">Animal Name Unavailable</td>
-                  {% else %}
-                    <td class="border-0">Helium Address</td>
-                    <td class="border-0 text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
-                  {% endif %}
-                </tr>
-                <tr>
                   <td>Firmware Version</td>
                   <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
-                </tr>
-                <tr>
-                  <td>Frequency</td>
-                  <td class="text-right">{{ diagnostics.FR }}</td>
-                </tr>
-                <tr>
-                  <td>Region Plan</td>
-                  {% if diagnostics.RE == 'UN123' %}
-                    <td class="text-right">Awaiting Location Assertion</td>
-                  {% else %}
-                    <td class="text-right">{{ diagnostics.RE }}</td>
-                  {% endif %}
                 </tr>
                 <tr>
                   <td>Variant</td>
                   <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
                 </tr>
                 <tr>
-                    <td>Radio Operational</td>
-                    {% if diagnostics.LOR %}
-                      <td class="text-success text-right">True</td>
-                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
-                      <td class="text-right">Awaiting Location Assertion</td>
-                    {% else %}
-                      <td class="text-danger text-right">False</td>
-                    {% endif %}
-                </tr>
-              </table>
-            </div>
-          </div>
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-            <div class="card mb-0 h-100">
-              <table class="table dt-responsive nowrap m-2 w-auto">
-                <tr>
-                  <td class="border-0">ECC Detected</td>
-                  {% if diagnostics.ECC %}
-                    <td class="border-0 text-success text-right">True</td>
-                  {% else %}
-                    <td class="border-0 text-danger text-right">False</td>
-                  {% endif %}
+                  <td>Hardware Serial Number</td>
+                  <td class="text-right">{{ diagnostics.serial_number }}</td>
                 </tr>
                 <tr>
-                  <td>Hostname (IP Address)</td>
+                  <td>Hostname</td>
                   {% if hostname %}
-                    <td class="text-right">{{ hostname }} ({{ device_info.ip_address }})</td>
+                    <td class="text-right">{{ hostname }}</td>
                   {% else %}
                     <td class="text-danger text-right">Unknown</td>
                   {% endif %}
+                </tr>
+                <tr>
+                  <td>Local IP Address</td>
+                  <td class="text-right">{{ device_info.ip_address }}</td>
+                </tr>
+                <tr>
+                  <td>WAN IP Address</td>
+                  <td class="text-right">{{ wan_ip_address }}</td>
                 </tr>
                 <tr>
                   <td>Ethernet MAC Address</td>
@@ -79,20 +46,32 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>WiFi MAC Address</td>
+                  <td class="border-0">WiFi MAC Address</td>
                   {% if diagnostics.W0 %}
-                  <td class="text-right">{{ diagnostics.W0 }}</td>
+                  <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
                   {% else %}
-                    <td class="text-danger text-right">N/A</td>
+                    <td class="border-0 text-danger text-right">N/A</td>
                   {% endif %}
                 </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                  <td>Hardware Serial Number</td>
-                  <td class="text-right">{{ diagnostics.serial_number }}</td>
+                    <td>Radio Operational</td>
+                    {% if diagnostics.LOR %}
+                      <td class="text-success text-right">True</td>
+                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
+                      <td class="text-right">Awaiting Location Assertion</td>
+                    {% else %}
+                      <td class="text-danger text-right">False</td>
+                    {% endif %}
                 </tr>
                 <tr>
-                  <td>Bluetooth Detected</td>
-                  {% if diagnostics.BT %}
+                  <td>ECC Detected</td>
+                  {% if diagnostics.ECC %}
                     <td class="text-success text-right">True</td>
                   {% else %}
                     <td class="text-danger text-right">False</td>
@@ -108,6 +87,14 @@
                     {% endif %}
                   </tr>
                 {% endif %}
+                <tr>
+                  <td class="border-0">Bluetooth Detected</td>
+                  {% if diagnostics.BT %}
+                    <td class="border-0 text-success text-right">True</td>
+                  {% else %}
+                    <td class="border-0 text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
               </table>
             </div>
           </div>
