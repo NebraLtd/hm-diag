@@ -96,19 +96,61 @@
                   </tr>
                 {% endif %}
                 <tr>
-                  <td class="border-0">Bluetooth Detected</td>
+                  <td>Bluetooth Detected</td>
                   {% if diagnostics.BT %}
-                    <td class="border-0 text-success text-right">True</td>
+                    <td class="text-success text-right">True</td>
                   {% else %}
-                    <td class="border-0 text-danger text-right">False</td>
+                    <td class="text-danger text-right">False</td>
                   {% endif %}
+                </tr>
+                <tr>
+                  <td>CPU Usage</td>
+                  <td class="text-right">
+                      <div class="progress progress-xl">
+                          {% if device_metrics.cpu > 79 %}
+                            <div class="progress-bar bg-danger text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
+                          {% elif device_metrics.cpu > 59 %}
+                            <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
+                          {% else %}
+                            <div class="progress-bar text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
+                          {% endif %}
+                      </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CPU Temperature</td>
+                  <td class="text-right">
+                      <div class="progress progress-xl">
+                        {% if device_metrics.temperature > 84 %}
+                          <div class="progress-bar bg-danger text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
+                        {% elif device_metrics.temperature > 74 %}
+                          <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
+                        {% else %}
+                          <div class="progress-bar text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
+                        {% endif %}
+                      </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>RAM Usage</td>
+                  <td class="text-right">
+                      <div class="progress progress-xl">
+                        <div class="progress-bar text-black" role="progressbar" style="width: {{ ((device_metrics.memory_used/device_metrics.memory_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.memory_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.memory_total|round|int }}">{{ (device_metrics.memory_used / 1048576)|round|int }} MB / {{ (device_metrics.memory_total / 1048576)|round|int }} MB</div>
+                      </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border-0">Disk Usage</td>
+                  <td class="border-0 text-right">
+                      <div class="progress progress-xl">
+                        <div class="progress-bar text-black" role="progressbar" style="width: {{ ((device_metrics.disk_used/device_metrics.disk_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.disk_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.disk_total|round|int }}">{{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB / {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB</div>
+                      </div>
+                  </td>
                 </tr>
               </table>
             </div>
           </div>
         </div>
-
-        <p>{{ device_metrics }}</p>
 
        <div class="text-center">
           {% if diagnostics.last_updated %}
