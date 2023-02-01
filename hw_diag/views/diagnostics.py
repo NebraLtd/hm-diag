@@ -36,6 +36,7 @@ from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.network import get_device_hostname
 from hw_diag.utilities.network import get_wan_ip_address
 from hw_diag.utilities.diagnostics import get_device_info
+from hw_diag.utilities.hardware import get_device_metrics
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -65,6 +66,7 @@ def get_diagnostics():
     device_info = get_device_info()
     template_filename = 'device_info.html'
     wan_ip = get_wan_ip_address()
+    device_metrics = get_device_metrics()
 
     response = render_template(
         template_filename,
@@ -73,7 +75,8 @@ def get_diagnostics():
         now=now,
         hostname=hostname,
         device_info=device_info,
-        wan_ip_address=wan_ip
+        wan_ip_address=wan_ip,
+        device_metrics=device_metrics
     )
 
     return response
