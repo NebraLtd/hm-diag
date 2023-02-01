@@ -112,7 +112,7 @@
                           {% elif device_metrics.cpu > 59 %}
                             <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
                           {% else %}
-                            <div class="progress-bar text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
+                            <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
                           {% endif %}
                       </div>
                   </td>
@@ -126,7 +126,7 @@
                         {% elif device_metrics.temperature > 74 %}
                           <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
                         {% else %}
-                          <div class="progress-bar text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
+                          <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
                         {% endif %}
                       </div>
                   </td>
@@ -135,7 +135,7 @@
                   <td>RAM Usage</td>
                   <td class="text-right">
                       <div class="progress progress-xl">
-                        <div class="progress-bar text-black" role="progressbar" style="width: {{ ((device_metrics.memory_used/device_metrics.memory_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.memory_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.memory_total|round|int }}">{{ (device_metrics.memory_used / 1048576)|round|int }} MB / {{ (device_metrics.memory_total / 1048576)|round|int }} MB</div>
+                        <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ ((device_metrics.memory_used/device_metrics.memory_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.memory_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.memory_total|round|int }}">{{ (device_metrics.memory_used / 1048576)|round|int }} MB / {{ (device_metrics.memory_total / 1048576)|round|int }} MB</div>
                       </div>
                   </td>
                 </tr>
@@ -143,7 +143,7 @@
                   <td class="border-0">Disk Usage</td>
                   <td class="border-0 text-right">
                       <div class="progress progress-xl">
-                        <div class="progress-bar text-black" role="progressbar" style="width: {{ ((device_metrics.disk_used/device_metrics.disk_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.disk_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.disk_total|round|int }}">{{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB / {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB</div>
+                        <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ ((device_metrics.disk_used/device_metrics.disk_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.disk_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.disk_total|round|int }}">{{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB / {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB</div>
                       </div>
                   </td>
                 </tr>
