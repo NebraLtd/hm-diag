@@ -56,4 +56,6 @@ include hw_diag/static/fonts/*.ttf
 include hw_diag/static/images/nebra-logo.svg
 include hw_diag/static/images/nebra-logo-white.png
 include hw_diag/static/images/favicon.ico
+include hw_diag/static/images/thingsix.svg
+include hw_diag/static/images/myst.svg
 include hw_diag/static/js/bootstrap.min.js
