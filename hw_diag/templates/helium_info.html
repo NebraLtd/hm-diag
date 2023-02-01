@@ -4,17 +4,26 @@
 
  {% block body %}
         <h3 class="text-center mb-4">Helium Information</h3>
+
+         <h4 class="text-center mb-4">Helium Status:
+        {% if diagnostics.PF %}
+                    <span class="text-success">All Ok</span>
+            {% else %}
+                    <span class="text-danger">Errors Found</span>
+            {% endif %}
+        </h4>
+
         <div class="row mb-4">
           <div class="col-12 col-lg-6 mb-4 mb-lg-0">
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
                   {% if not diagnostics.PK %}
-                    <td class="border-0">Hotspot Name</td>
-                    <td class="border-0 text-right">Not Available</td>
+                    <td>Hotspot Name</td>
+                    <td class="text-right">Not Available</td>
                   {% else %}
-                    <td class="border-0">Hotspot Name</td>
-                    <td class="border-0 text-right">{{ diagnostics.AN }}</td>
+                    <td>Hotspot Name</td>
+                    <td class="text-right">{{ diagnostics.AN }}</td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -37,7 +46,7 @@
                 </tr>
                 <tr>
                   <td>Frequency</td>
-                  <td class="text-right">{{ diagnostics.FR }}</td>
+                  <td class="text-right">{{ diagnostics.FR }}MHz</td>
                 </tr>
                 <tr>
                   <td class="border-0">Region Plan</td>
