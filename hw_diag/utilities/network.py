@@ -1,4 +1,5 @@
 import logging
+import requests
 
 from sqlalchemy.exc import NoResultFound
 
@@ -6,6 +7,14 @@ from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.database import get_db_session
 from hw_diag.database.models.auth import AuthKeyValue
 from hw_diag.utilities.auth import generate_default_password
+
+
+def get_wan_ip_address():
+    try:
+        resp = requests.get('https://icanhazip.com')
+        return resp.text
+    except Exception:
+        return None
 
 
 def get_device_hostname():

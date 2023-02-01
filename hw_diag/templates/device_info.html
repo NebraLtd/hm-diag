@@ -1,0 +1,119 @@
+ {% extends 'template_hyper.html' %}
+
+ {% block title %}Device Information{% endblock %}
+
+ {% block body %}
+        <h3 class="text-center mb-4">Device Information</h3>
+
+        <h4 class="text-center mb-4">Overall Status:
+        {% if diagnostics.PF %}
+                    <span class="text-success">All Ok</span>
+            {% else %}
+                    <span class="text-danger">Errors Found</span>
+            {% endif %}
+        </h4>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                  <td>Firmware Version</td>
+                  <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+                </tr>
+                <tr>
+                  <td>Variant</td>
+                  <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
+                </tr>
+                <tr>
+                  <td>Hardware Serial Number</td>
+                  <td class="text-right">{{ diagnostics.serial_number }}</td>
+                </tr>
+                <tr>
+                  <td>Hostname</td>
+                  {% if hostname %}
+                    <td class="text-right">{{ hostname }}</td>
+                  {% else %}
+                    <td class="text-danger text-right">Unknown</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>Local IP Address</td>
+                  <td class="text-right">{{ device_info.ip_address }}</td>
+                </tr>
+                <tr>
+                  <td>WAN IP Address</td>
+                  <td class="text-right">{{ wan_ip_address }}</td>
+                </tr>
+                <tr>
+                  <td>Ethernet MAC Address</td>
+                  {% if diagnostics.E0 %}
+                  <td class="text-right">{{ diagnostics.E0 }}</td>
+                  {% else %}
+                    <td class="text-danger text-right">N/A</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td class="border-0">WiFi MAC Address</td>
+                  {% if diagnostics.W0 %}
+                  <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
+                  {% else %}
+                    <td class="border-0 text-danger text-right">N/A</td>
+                  {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td>Radio Operational</td>
+                    {% if diagnostics.LOR %}
+                      <td class="text-success text-right">True</td>
+                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
+                      <td class="text-right">Awaiting Location Assertion</td>
+                    {% else %}
+                      <td class="text-danger text-right">False</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                  <td>ECC Detected</td>
+                  {% if diagnostics.ECC %}
+                    <td class="text-success text-right">True</td>
+                  {% else %}
+                    <td class="text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
+                {% if display_lte  %}
+                  <tr>
+                    <td>Modem Detected</td>
+                    {% if diagnostics.LTE %}
+                      <td class="text-success text-right">True</td>
+                    {% else %}
+                      <td class="text-warning text-right">False</td>
+                    {% endif %}
+                  </tr>
+                {% endif %}
+                <tr>
+                  <td class="border-0">Bluetooth Detected</td>
+                  {% if diagnostics.BT %}
+                    <td class="border-0 text-success text-right">True</td>
+                  {% else %}
+                    <td class="border-0 text-danger text-right">False</td>
+                  {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+       <div class="text-center">
+          {% if diagnostics.last_updated %}
+            <p>Last Updated: {{ diagnostics.last_updated }}</p>
+          {% else %}
+            <p>Last Updated: Never</p>
+          {% endif %}
+          <p>To get support please visit <a href="https://nebra.io/helium-support">https://nebra.io/helium-support</a></p>
+          <p><a href="/json">Download Diagnostics Info for Support</a></p>
+      </div>
+{% endblock %}

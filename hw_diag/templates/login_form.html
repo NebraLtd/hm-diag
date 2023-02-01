@@ -1,7 +1,9 @@
-{% extends 'unauthenticated_template.html' %}
+{% extends 'template_hyper.html' %}
 {% block title %}Login{% endblock %}
 
 {% block body %}
+        <h3 class="text-center mb-4">Login</h3>
+
         <div class="row mb-4">
             <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
             <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
@@ -17,7 +19,8 @@
                                 <div class="form-group">
                                     <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" />
                                 </div>
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                <br/>
+                                <div class="text-center"><button type="submit" class="btn btn-primary">Login</button></div>
                             </form>
                             <br/>
                             <p style="color: blue;">
@@ -28,7 +31,7 @@
                                     WiFi
                                 {% endif %}
                                 MAC address of your device without any colons which may be found on your device's identification sticker.</p>
-                            <p style="text-align: center;"><a href="/reset_password">Forgotten Password?</a></p>
+                            <p class="text-center"><a href="/reset_password">Forgotten Password?</a></p>
                         </div>
                         <div class="col-1"></div>
                     </div>
