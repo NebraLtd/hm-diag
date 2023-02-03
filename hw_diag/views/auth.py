@@ -22,6 +22,7 @@ from hw_diag.utilities.auth import add_login_failure
 from hw_diag.utilities.auth import update_password_reset_expiry
 from hw_diag.utilities.auth import perform_password_reset
 from hw_diag.utilities.auth import password_updated_in_last_minute
+from hw_diag.utilities.auth import can_spawn_admin_session
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -76,6 +77,7 @@ def handle_password_change():
     )
 
     msg = result.get('msg')
+    color = result.get('color')
     diagnostics = read_diagnostics_file()
     now = datetime.datetime.utcnow()
     template_filename = 'password_change_form.html'
@@ -85,7 +87,8 @@ def handle_password_change():
         diagnostics=diagnostics,
         display_lte=False,
         now=now,
-        msg=msg
+        msg=msg,
+        color=color
     )
 
 
@@ -178,3 +181,21 @@ def handle_reset_password():
 def validate_password_reset():
     result = password_updated_in_last_minute()
     return jsonify({'password_updated': result})
+
+
+@AUTH.route('/admin_session')
+def spawn_admin_session():
+    # This is used to allow Nebra support to log in remotely.
+    # To log in the support must run the "start_admin_session"
+    # command in the shell of the diagnostics container via
+    # balena and then login via the balena public url feature
+    # within 2 minutes of running the command.
+    if not can_spawn_admin_session():
+        return 'Unauthorized', 401
+
+    referrer = request.headers.get('Host')
+    if referrer.endswith(".balena-devices.com"):
+        session['logged_in'] = True
+        return redirect('/')
+    else:
+        return 'Unauthorized', 401

@@ -32,6 +32,11 @@ from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.network import get_device_hostname
+from hw_diag.utilities.network import get_wan_ip_address
+from hw_diag.utilities.diagnostics import get_device_info
+from hw_diag.utilities.hardware import get_device_metrics
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -41,15 +46,13 @@ DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
 @DIAGNOSTICS.route('/json')
-@cache.cached(timeout=60)
+@authenticate
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
     response = jsonify(diagnostics)
     response.headers.set('Content-Disposition',
                          'attachment;filename=nebra-diag.json'
                          )
-    response.headers.set('X-Robots-Tag', 'none')
-
     return response
 
 
@@ -59,15 +62,37 @@ def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
-    template_filename = 'diagnostics_page_light_miner.html'
+    hostname = get_device_hostname()
+    device_info = get_device_info()
+    template_filename = 'device_info.html'
+    wan_ip = get_wan_ip_address()
+    device_metrics = get_device_metrics()
 
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        now=now
+        now=now,
+        hostname=hostname,
+        device_info=device_info,
+        wan_ip_address=wan_ip,
+        device_metrics=device_metrics
     )
 
+    return response
+
+
+@DIAGNOSTICS.route('/hnt')
+@authenticate
+def get_helium_info():
+    diagnostics = read_diagnostics_file()
+    now = datetime.utcnow()
+    template_filename = 'helium_info.html'
+    response = render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        now=now
+    )
     return response
 
 
@@ -257,3 +282,107 @@ def add_security_headers(response):
     response.headers['X-Robots-Tag'] = 'none'
 
     return response
+
+
+@DIAGNOSTICS.route('/device_configuration')
+@authenticate
+def get_device_config_page():
+    diagnostics = read_diagnostics_file()
+    display_lte = should_display_lte(diagnostics)
+    now = datetime.utcnow()
+    hostname = get_device_hostname()
+    template_filename = 'device_configuration.html'
+
+    response = render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        display_lte=display_lte,
+        now=now,
+        hostname=hostname
+    )
+
+    return response
+
+
+@DIAGNOSTICS.route('/reboot')
+@authenticate
+def reboot():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        if request.args.get('type') == 'hard':
+            balena_supervisor.reboot()
+        else:
+            balena_supervisor.restart()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/purge')
+@authenticate
+def purge():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.purge()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/shutdown')
+@authenticate
+def shutdown():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.shutdown()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/change_hostname', methods=['POST'])
+@authenticate
+def handle_hostname_update():
+    req_body = request.get_json()
+    new_hostname = req_body.get('hostname')
+
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.set_hostname(new_hostname)
+        return jsonify(
+            {
+                'action_invoked': True
+            }
+        )
+    except Exception as err:
+        logging.error("Error updating hostname: %s" % str(err))
+        msg = (
+            'Failed to update hostname. Hostnames should be in the format of '
+            'host.domain, e.g. nebra.local'
+        )
+        return jsonify(
+            {
+                'action_invoked': False,
+                'error': msg
+            }
+        )
+
+
+@DIAGNOSTICS.route('/hyper')
+def get_hyper():
+    return render_template('template_hyper.html')

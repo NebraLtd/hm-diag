@@ -32,7 +32,8 @@ class TestDatabaseMigrations(unittest.TestCase):
         )
         expected_result = {
             'error': False,
-            'msg': 'Password updated successfully.'
+            'msg': 'Password updated successfully.',
+            'color': 'green'
         }
         self.assertEqual(
             result,
@@ -57,7 +58,8 @@ class TestDatabaseMigrations(unittest.TestCase):
         )
         expected_result = {
             'error': True,
-            'msg': 'Current password is not valid.'
+            'msg': 'Current password is not valid.',
+            'color': 'red'
         }
         self.assertEqual(
             result,
@@ -82,11 +84,12 @@ class TestDatabaseMigrations(unittest.TestCase):
         )
         expected_msg = (
             'Password is not complex enough, please ensure password is greater than 8 '
-            'characters, has atleast 1 number, 1 uppercase character and 1 special character.'
+            'characters, has at least 1 number, 1 uppercase character and 1 special character.'
         )
         expected_result = {
             'error': True,
-            'msg': expected_msg
+            'msg': expected_msg,
+            'color': 'red'
         }
         self.assertEqual(
             result,
@@ -111,7 +114,8 @@ class TestDatabaseMigrations(unittest.TestCase):
         )
         expected_result = {
             'error': True,
-            'msg': 'New password and password confirmation do not match.'
+            'msg': 'New password and password confirmation do not match.',
+            'color': 'red'
         }
         self.assertEqual(
             result,

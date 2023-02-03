@@ -25,6 +25,18 @@ def authenticate(f):
     return wrapper
 
 
+def generate_default_password():
+    diagnostics = read_diagnostics_file()
+    mac_address = diagnostics.get('E0')
+
+    if not mac_address:
+        # No ethernet mac on this device, use wifi instead...
+        mac_address = diagnostics.get('W0')
+
+    default_password = mac_address.replace(':', '')
+    return default_password
+
+
 def write_password(password):
     password = password.encode('utf-8')
     salt = bcrypt.gensalt()
@@ -53,9 +65,7 @@ def read_password():
             filter(AuthKeyValue.key == 'password_hash'). \
             one()
     except NoResultFound:
-        diagnostics = read_diagnostics_file()
-        eth_mac = diagnostics.get('E0')
-        default_password = eth_mac.replace(':', '')
+        default_password = generate_default_password()
         password_row = write_password(default_password)
     return password_row
 
@@ -73,14 +83,17 @@ def check_password(password):
 def update_password(current_password, new_password, confirm_password):
     error = False
     msg = ''
+    color = 'red'
 
     if not check_password(current_password):
         error = True
         msg = 'Current password is not valid.'
+        color = 'red'
 
     if new_password != confirm_password:
         error = True
         msg = 'New password and password confirmation do not match.'
+        color = 'red'
 
     policy = PasswordPolicy.from_names(
         length=8,  # min length: 8
@@ -94,16 +107,19 @@ def update_password(current_password, new_password, confirm_password):
         error = True
         msg = (
             'Password is not complex enough, please ensure password is greater than 8 '
-            'characters, has atleast 1 number, 1 uppercase character and 1 special character.'
+            'characters, has at least 1 number, 1 uppercase character and 1 special character.'
         )
+        color = 'red'
 
     if not error:
         write_password(new_password)
         msg = 'Password updated successfully.'
+        color = 'green'
 
     return {
         'error': error,
-        'msg': msg
+        'msg': msg,
+        'color': color
     }
 
 
@@ -191,9 +207,7 @@ def perform_password_reset():
         expiry = datetime.datetime.fromisoformat(reset_expiry_row.value)
 
         if expiry > now:
-            diagnostics = read_diagnostics_file()
-            eth_mac = diagnostics.get('E0')
-            default_password = eth_mac.replace(':', '')
+            default_password = generate_default_password()
             write_password(default_password)
             set_last_password_reset()
             valid = True
@@ -204,3 +218,18 @@ def perform_password_reset():
         valid = False
 
     return valid
+
+
+def can_spawn_admin_session():
+    try:
+        admin_session_expires_row = g.db.query(AuthKeyValue). \
+            filter(AuthKeyValue.key == 'admin_session_expires'). \
+            one()
+        now = datetime.datetime.utcnow()
+        expiry = datetime.datetime.fromisoformat(admin_session_expires_row.value)
+        if now < expiry:
+            return True
+        else:
+            return False
+    except NoResultFound:
+        return False

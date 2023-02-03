@@ -52,7 +52,8 @@ class TestDeviceStatusDiagnostic(unittest.TestCase):
         balena_supervisor.os.environ,
         {
           'BALENA_SUPERVISOR_ADDRESS': 'http://127.0.0.1',
-          'BALENA_SUPERVISOR_API_KEY': 'secret'
+          'BALENA_SUPERVISOR_API_KEY': 'secret',
+          'BALENA_APP_ID': '12345'
         },
         clear=True
     )

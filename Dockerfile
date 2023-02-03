@@ -2,21 +2,24 @@
 
 ####################################################################################################
 ################################## Stage: builder ##################################################
-
-FROM balenalib/raspberry-pi-debian-python:bullseye-build-20221215 as builder
+FROM balenalib/raspberry-pi-debian-python:bullseye-build-20221215 AS builder
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN mkdir /tmp/build
-COPY ./ /tmp/build
+COPY quectel/ /tmp/build/quectel
+COPY hw_diag/ /tmp/build/hw_diag
+COPY bigquery/ /tmp/build/bigquery
+COPY requirements.txt /tmp/build/requirements.txt
+COPY setup.py /tmp/build/setup.py
+COPY MANIFEST.in /tmp/build/MANIFEST.in
 WORKDIR /tmp/build
 
 RUN \
     install_packages \
             build-essential \
-            libdbus-glib-1-dev
-
-RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
+            libdbus-glib-1-dev && \
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # firehose build, the tar is obtained from  quectel.
 # there is no install target in Makefile, doing manual copy
@@ -31,8 +34,7 @@ RUN make && \
 
 ####################################################################################################
 ################################### Stage: runner ##################################################
-
-FROM balenalib/raspberry-pi-debian-python:bullseye-run-20221215 as runner
+FROM balenalib/raspberry-pi-debian-python:bullseye-run-20221215 AS runner
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
@@ -48,16 +50,6 @@ WORKDIR /opt/
 
 # Import gpg key
 COPY keys/manufacturing-key.gpg ./
-RUN gpg --import manufacturing-key.gpg
-RUN rm manufacturing-key.gpg
-
-# @TODO: Re-enable health-check once Balena supports it fully.
-# HEALTHCHECK \
-#    --interval=120s \
-#    --timeout=5s \
-#    --start-period=15s \
-#    --retries=10 \
-#  CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
 # Copy packages from builder
 COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
@@ -69,11 +61,26 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 COPY --from=builder /tmp/build/quectel /quectel
 
 # copy db migration files
-COPY --from=builder /tmp/build/migrations /opt/migrations/migrations
-COPY --from=builder /tmp/build/alembic.ini /opt/migrations/alembic.ini
+COPY migrations/ /opt/migrations/migrations
+COPY alembic.ini /opt/migrations/alembic.ini
+
+# copy start admin session script
+COPY start_admin_session /usr/sbin/start_admin_session
+
+# Getting RUN layers together
+RUN gpg --import manufacturing-key.gpg && \
+    rm manufacturing-key.gpg && \
+    chmod 700 /usr/sbin/start_admin_session && \
+    mkdir -p /opt/nebra
 
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "hw_diag.wsgi:wsgi_app"]
+# Copy environment variables startup script
+COPY setenv.sh /opt/nebra/setenv.sh
+
+# Copy container startup script
+COPY start_diagnostics.sh /opt/start_diagnostics.sh
+
+ENTRYPOINT ["/opt/start_diagnostics.sh"]

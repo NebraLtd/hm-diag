@@ -1,6 +1,7 @@
 import re
-from time import sleep
 import dbus
+import psutil
+from time import sleep
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
@@ -306,6 +307,22 @@ def is_button_present(diagnostics):
     variant = diagnostics.get('VA')
     button = get_variant_attribute(variant, 'BUTTON')
     return bool(button)
+
+
+def get_device_metrics():
+    try:
+        temperature = psutil.sensors_temperatures()['cpu_thermal'][0].current
+    except Exception:
+        temperature = 0
+
+    return {
+        'cpu': psutil.cpu_percent(),
+        'memory_total': psutil.virtual_memory().total,
+        'memory_used': psutil.virtual_memory().used,
+        'disk_total': psutil.disk_usage('/').total,
+        'disk_used': psutil.disk_usage('/').used,
+        'temperature': temperature
+    }
 
 
 if __name__ == '__main__':
