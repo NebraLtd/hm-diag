@@ -8,12 +8,9 @@ from flask import g
 from sqlalchemy.exc import NoResultFound
 from password_strength import PasswordPolicy
 
-from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hm_pyhelper.miner_param import get_ethernet_addresses
 from hw_diag.database.models.auth import AuthKeyValue
 from hw_diag.database.models.auth import AuthFailure
-
-
-AUTH_FILE = '/var/data/auth.json'
 
 
 def authenticate(f):
@@ -26,12 +23,13 @@ def authenticate(f):
 
 
 def generate_default_password():
-    diagnostics = read_diagnostics_file()
-    mac_address = diagnostics.get('E0')
+    mac_addrs = {'E0': '', 'W0': ''}
+    get_ethernet_addresses(mac_addrs)
+    mac_address = mac_addrs.get('E0')
 
     if not mac_address:
         # No ethernet mac on this device, use wifi instead...
-        mac_address = diagnostics.get('W0')
+        mac_address = mac_addrs.get('W0')
 
     default_password = mac_address.replace(':', '')
     return default_password
