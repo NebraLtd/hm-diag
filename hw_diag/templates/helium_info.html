@@ -45,8 +45,16 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  <td>Frequency</td>
-                  <td class="text-right">{{ diagnostics.FR }}MHz</td>
+                  {% if "N/A" in diagnostics.FR %}
+                    <td>Frequency</td>
+                    <td class="text-right">{{ diagnostics.FR }}</td>
+                  {% elif not diagnostics.FR %}
+                    <td>Frequency</td>
+                    <td class="text-right">None</td>
+                  {% else %}
+                    <td>Frequency</td>
+                    <td class="text-right">{{ diagnostics.FR }} MHz</td>
+                  {% endif %}
                 </tr>
                 <tr>
                   <td class="border-0">Region Plan</td>
