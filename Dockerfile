@@ -1,8 +1,10 @@
 # Docker Container that runs the Nebra Diagnostics Tool
 
+ARG BUILD_BOARD
+
 ####################################################################################################
 ################################## Stage: builder ##################################################
-FROM balenalib/raspberry-pi-debian-python:bullseye-build-20221215 AS builder
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20221215 AS builder
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
@@ -34,7 +36,7 @@ RUN make && \
 
 ####################################################################################################
 ################################### Stage: runner ##################################################
-FROM balenalib/raspberry-pi-debian-python:bullseye-run-20221215 AS runner
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-run-20221215 AS runner
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
