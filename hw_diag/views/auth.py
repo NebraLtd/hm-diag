@@ -199,3 +199,9 @@ def spawn_admin_session():
         return redirect('/')
     else:
         return 'Unauthorized', 401
+
+
+@AUTH.route('/upgrade')
+@authenticate
+def display_upgrade_page():
+    return 'You need to upgrade!'
