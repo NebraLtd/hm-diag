@@ -1,5 +1,6 @@
 import datetime
 import bcrypt
+import os
 
 from functools import wraps
 from flask import redirect
@@ -18,6 +19,16 @@ def authenticate(f):
     def wrapper(*args, **kwargs):
         if not session.get('logged_in'):
             return redirect('/login')
+        return f(*args, **kwargs)
+    return wrapper
+
+
+def commercial_fleet_only(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        fleet_name = os.environ.get('BALENA_APP_NAME')
+        if not fleet_name.endswith('-c'):
+            return redirect('/upgrade')
         return f(*args, **kwargs)
     return wrapper
 
