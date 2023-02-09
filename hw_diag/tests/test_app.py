@@ -37,7 +37,7 @@ class TestGetApp(unittest.TestCase):
         mock_register_blueprint.assert_called()
         # and that each blueprint is loaded (DIAGNOSTICS & AUTH).
         calls = [call(DIAGNOSTICS), call(AUTH)]
-        calls = [call(DIAGNOSTICS)]
+        # calls = [call(DIAGNOSTICS)]
         mock_register_blueprint.assert_has_calls(calls, any_order=False)
 
     @patch('flask_apscheduler.APScheduler')

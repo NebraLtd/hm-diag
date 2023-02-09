@@ -1,12 +1,12 @@
 import re
 import dbus
 import psutil
-from time import sleep
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
 from hw_diag.utilities.shell import config_search_param
+from retry import retry
 
 
 logging = get_logger(__name__)
@@ -227,7 +227,7 @@ def detect_ecc(diagnostics):
         i2c_bus = '1'
 
     commands = [
-            f'i2cdetect -y {i2c_bus}'
+        f'i2cdetect -y {i2c_bus}'
     ]
 
     parameters = ["60 --"]
@@ -252,7 +252,7 @@ def get_serial_number(diagnostics):
     """
     try:
         serial_number = open("/proc/device-tree/serial-number").readline() \
-                            .rstrip('\x00')
+            .rstrip('\x00')
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:
@@ -261,25 +261,29 @@ def get_serial_number(diagnostics):
     diagnostics["serial_number"] = serial_number
 
 
+@retry(Exception, tries=5, delay=5, max_delay=15, backoff=2, logger=logging)
 def lora_module_test():
     """
     Checks the status of the lore module.
     Returns true or false.
     """
     result = None
+    pkt_fwd_diag_file = "/var/pktfwd/diagnostics"
     while result is None:
         try:
             # The Pktfwder container creates this file
             # to pass over the status.
-            with open("/var/pktfwd/diagnostics") as data:
+            with open(pkt_fwd_diag_file) as data:
                 lora_status = data.read()
                 if lora_status == "true":
                     result = True
                 else:
                     result = False
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             # Packet forwarder container hasn't started
-            sleep(10)
+            logging.error(f"File {pkt_fwd_diag_file} doesn't exit yet. "
+                          f"Most likely pktfwd container hasn't started yet")
+            raise e
 
     return result
 
