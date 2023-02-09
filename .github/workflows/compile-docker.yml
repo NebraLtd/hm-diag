@@ -4,6 +4,18 @@ on: [push]
 
 jobs:
   main:
+    strategy:
+      matrix:
+        include:
+          - board: "raspberry-pi"
+            arch: "arm"
+            version: "v6"
+          - board: "raspberrypi3-64"
+            arch: "arm64"
+            version: "v8"
+          - board: "generic-amd64"
+            arch: "amd64"
+
     runs-on: ubuntu-20.04
     permissions:
       packages: write
@@ -35,21 +47,73 @@ jobs:
           images: |
             nebraltd/hm-diag
             ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=${{ matrix.arch }}-
+            type=sha,format=long,prefix=${{ matrix.arch }}-
+            type=raw,value=${{ matrix.arch }}-latest
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          build-args: BUILD_BOARD=${{ matrix.board }}
+          push: true
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=nebraltd/hm-diag:buildcache-${{ matrix.arch }}
+          cache-to: type=registry,ref=nebraltd/hm-diag:buildcache-${{ matrix.arch }},mode=max
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+  multiarch:
+    needs: main
+    runs-on: ubuntu-20.04
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            nebraltd/hm-diag
+            ghcr.io/${{ github.repository }}
           flavor: |
             latest=true
           tags: |
             type=sha,prefix=
             type=sha,format=long,prefix=
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=nebraltd/hm-diag:buildcache
-          cache-to: type=registry,ref=nebraltd/hm-diag:buildcache,mode=max
+      - name: Create multi-arch images
+        run: |
+          tags=(${{ steps.meta.outputs.tags }})
+          docker buildx imagetools create -t ${tags[0]} -t ${tags[1]} -t ${tags[2]} nebraltd/hm-diag:arm64-${{ github.sha }} nebraltd/hm-diag:arm-${{ github.sha }} nebraltd/hm-diag:amd64-${{ github.sha }}
+          docker buildx imagetools create -t ${tags[3]} -t ${tags[4]} -t ${tags[5]} ghcr.io/nebraltd/hm-diag:arm64-${{ github.sha }} ghcr.io/nebraltd/hm-diag:arm-${{ github.sha }} ghcr.io/nebraltd/hm-diag:amd64-${{ github.sha }}
 
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          short-description: ${{ github.event.repository.description }}

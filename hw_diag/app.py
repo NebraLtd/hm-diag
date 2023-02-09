@@ -18,12 +18,12 @@ from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
-from hw_diag.views.auth import AUTH
+# from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
-from hw_diag.database.config import DB_URL
+# from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
-from hw_diag.database.migrations import run_migrations
-from hw_diag.utilities.network import setup_hostname
+# from hw_diag.database.migrations import run_migrations
+# from hw_diag.utilities.network import setup_hostname
 
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
@@ -106,12 +106,12 @@ def init_scheduled_tasks(app) -> None:
 
 def get_app(name):
     # Run database migrations on start...
-    run_migrations('/opt/migrations/migrations', DB_URL)
+    # run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)
     cache.init_app(app)
     init_scheduled_tasks(app)
-    setup_hostname()
+    # setup_hostname()
 
     # Setup DB Session
     @app.before_request
@@ -132,6 +132,6 @@ def get_app(name):
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
-    app.register_blueprint(AUTH)
+    # app.register_blueprint(AUTH)
 
     return app
