@@ -24,7 +24,7 @@ from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
 from hw_diag.database.migrations import run_migrations
 from hw_diag.utilities.network import setup_hostname
-
+from hw_diag.utilities.network import device_in_manufacturing_network
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -33,11 +33,6 @@ BALENA_APP = os.getenv('BALENA_APP_NAME')
 HEARTBEAT_INTERVAL_HOURS = float(os.getenv('HEARTBEAT_INTERVAL_HOURS', 24))
 SHIP_DIAG_INTERVAL_HOURS = float(os.getenv('SHIP_DIAG_INTERVAL_HOURS', 1))
 NETWORK_WATCHDOG_INTERVAL_HOURS = float(os.getenv('NETWORK_WATCHDOG_INTERVAL_HOURS', 1))
-
-# All fleets should have this variable defined to true. This should only be undefined during
-# manufacturing. Absense of this variable assumes manufacturing run
-NEBRA_IN_WILD = os.getenv('NEBRA_IN_WILD', 'false').lower() in ('true', '1', 't')
-
 
 init_sentry(
     sentry_dsn=SENTRY_DSN,
@@ -111,21 +106,21 @@ def init_scheduled_tasks(app) -> None:
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
 
 
-def get_app(name):
+def get_app(name, lean_initializations=device_in_manufacturing_network()):
+
+    if lean_initializations:
+        logging.warning("Manufacturing Run: Lot of production initializations will be skipped")
 
     app = Flask(name)
     cache.init_app(app)
 
-    if not NEBRA_IN_WILD:
-        logging.warning("Manufacturing Run: Lot of production initializations will be skipped")
+    if not lean_initializations:
+        # Run database migrations on start...
+        run_migrations('/opt/migrations/migrations', DB_URL)
 
-    if NEBRA_IN_WILD:
         # not in manufacturing, all initialization will be performed.
         init_scheduled_tasks(app)
         setup_hostname()
-
-        # Run database migrations on start...
-        run_migrations('/opt/migrations/migrations', DB_URL)
 
         # Setup DB Session
         @app.before_request

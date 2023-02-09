@@ -32,12 +32,11 @@ class TestGetApp(unittest.TestCase):
             mock_register_blueprint
     ):
         # Check the blueprint is registered during app creation.
-        get_app(__name__)
+        get_app(__name__, lean_initializations=False)
         # Check we call register_blueprint...
         mock_register_blueprint.assert_called()
         # and that each blueprint is loaded (DIAGNOSTICS & AUTH).
-        calls = [call(DIAGNOSTICS), call(AUTH)]
-        # calls = [call(DIAGNOSTICS)]
+        calls = [call(AUTH), call(DIAGNOSTICS)]
         mock_register_blueprint.assert_has_calls(calls, any_order=False)
 
     @patch('flask_apscheduler.APScheduler')

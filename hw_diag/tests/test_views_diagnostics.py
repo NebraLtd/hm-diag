@@ -36,7 +36,7 @@ class TestGetDiagnostics(unittest.TestCase):
         cls.gnupg.cleanup()
 
     def setUp(self):
-        self.app = get_app('test_app')
+        self.app = get_app('test_app', lean_initializations=False)
         self.client = self.app.test_client()
 
     def test_get_diagnostics(self):

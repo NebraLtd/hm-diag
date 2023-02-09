@@ -7,7 +7,7 @@ from hw_diag.app import get_app
 class TestAuthView(unittest.TestCase):
 
     def setUp(self):
-        self.app = get_app('test_app')
+        self.app = get_app('test_app', lean_initializations=False)
         self.client = self.app.test_client()
 
     def test_get_login_form(self):
