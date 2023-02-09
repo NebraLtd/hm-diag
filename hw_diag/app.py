@@ -106,12 +106,12 @@ def init_scheduled_tasks(app) -> None:
 
 def get_app(name):
     # Run database migrations on start...
-    run_migrations('/opt/migrations/migrations', DB_URL)
+    # run_migrations('/opt/migrations/migrations', DB_URL)
 
     app = Flask(name)
     cache.init_app(app)
     init_scheduled_tasks(app)
-    setup_hostname()
+    # setup_hostname()
 
     # Setup DB Session
     @app.before_request
@@ -132,6 +132,6 @@ def get_app(name):
 
     # Register Blueprints
     app.register_blueprint(DIAGNOSTICS)
-    app.register_blueprint(AUTH)
+    # app.register_blueprint(AUTH)
 
     return app
