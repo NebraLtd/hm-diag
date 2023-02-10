@@ -18,13 +18,13 @@ from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
-# from hw_diag.views.auth import AUTH
+from hw_diag.views.auth import AUTH
 from hw_diag.utilities.quectel import ensure_quectel_health
-# from hw_diag.database.config import DB_URL
+from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
-# from hw_diag.database.migrations import run_migrations
-# from hw_diag.utilities.network import setup_hostname
-
+from hw_diag.database.migrations import run_migrations
+from hw_diag.utilities.network import setup_hostname
+from hw_diag.utilities.network import device_in_manufacturing_network
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -33,7 +33,6 @@ BALENA_APP = os.getenv('BALENA_APP_NAME')
 HEARTBEAT_INTERVAL_HOURS = float(os.getenv('HEARTBEAT_INTERVAL_HOURS', 24))
 SHIP_DIAG_INTERVAL_HOURS = float(os.getenv('SHIP_DIAG_INTERVAL_HOURS', 1))
 NETWORK_WATCHDOG_INTERVAL_HOURS = float(os.getenv('NETWORK_WATCHDOG_INTERVAL_HOURS', 1))
-
 
 init_sentry(
     sentry_dsn=SENTRY_DSN,
@@ -87,15 +86,18 @@ def init_scheduled_tasks(app) -> None:
     scheduler.api_enabled = False
     scheduler.init_app(app)
     scheduler.start()
-    watchdog = NetworkWatchdog()
 
     scheduler.add_job(id='ship_diagnostics', func=run_ship_diagnostics_task,
                       trigger='interval', hours=SHIP_DIAG_INTERVAL_HOURS, jitter=300)
+
     scheduler.add_job(id='quectel_repeating', func=run_quectel_health_task,
                       trigger='interval', hours=1)
+
+    watchdog = NetworkWatchdog()
     scheduler.add_job(id='network_watchdog',
                       func=partial(run_network_watchdog_task, watchdog, scheduler),
                       trigger='interval', hours=NETWORK_WATCHDOG_INTERVAL_HOURS, jitter=300)
+
     scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
                       trigger='interval', hours=HEARTBEAT_INTERVAL_HOURS, jitter=300)
 
@@ -104,34 +106,42 @@ def init_scheduled_tasks(app) -> None:
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
 
 
-def get_app(name):
-    # Run database migrations on start...
-    # run_migrations('/opt/migrations/migrations', DB_URL)
+def get_app(name, lean_initializations=device_in_manufacturing_network()):
+
+    if lean_initializations:
+        logging.warning("Manufacturing Run: Lot of production initializations will be skipped")
 
     app = Flask(name)
     cache.init_app(app)
-    init_scheduled_tasks(app)
-    # setup_hostname()
 
-    # Setup DB Session
-    @app.before_request
-    def pre_request():
-        g.db = get_db_session()
+    if not lean_initializations:
+        # Run database migrations on start...
+        run_migrations('/opt/migrations/migrations', DB_URL)
 
-    @app.after_request
-    def post_request(resp):
-        try:
-            g.db.close()
-        except Exception:
-            pass
-        return resp
+        # not in manufacturing, all initialization will be performed.
+        init_scheduled_tasks(app)
+        setup_hostname()
 
-    # Use a random UUID for session key, this will change each time the app
-    # starts, so with reboot / update etc... users will need to reauthenticate.
-    app.secret_key = str(uuid.uuid4())
+        # Setup DB Session
+        @app.before_request
+        def pre_request():
+            g.db = get_db_session()
 
-    # Register Blueprints
+        @app.after_request
+        def post_request(resp):
+            try:
+                g.db.close()
+            except Exception:
+                pass
+            return resp
+
+        # Use a random UUID for session key, this will change each time the app
+        # starts, so with reboot / update etc... users will need to reauthenticate.
+        app.secret_key = str(uuid.uuid4())
+
+        # Register Blueprints
+        app.register_blueprint(AUTH)
+
     app.register_blueprint(DIAGNOSTICS)
-    # app.register_blueprint(AUTH)
 
     return app

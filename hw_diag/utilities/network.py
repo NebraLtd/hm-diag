@@ -1,5 +1,7 @@
 import logging
 import requests
+import netifaces as ni
+import os
 
 from sqlalchemy.exc import NoResultFound
 
@@ -15,6 +17,23 @@ def get_wan_ip_address():
         return resp.text
     except Exception:
         return None
+
+
+def device_in_manufacturing_network() -> bool:
+    # one can set the device in manufacturing though env var
+    in_manufacturing_env = os.getenv('IN_MANUFACTURING', 'false')
+    in_manufacturing = in_manufacturing_env.lower() in ('true', '1', 't')
+    if in_manufacturing:
+        return in_manufacturing
+
+    # fall back to network address method
+    for iface in ni.interfaces():
+        addresses = ni.ifaddresses(iface)
+        if ni.AF_INET in addresses:
+            ip4_address = addresses[ni.AF_INET][0]['addr']
+            if '192.168.220' in ip4_address:
+                in_manufacturing = True
+    return in_manufacturing
 
 
 def get_device_hostname():
