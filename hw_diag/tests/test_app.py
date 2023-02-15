@@ -8,6 +8,9 @@ from unittest.mock import call
 from hw_diag.app import get_app
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.views.auth import AUTH
+from hw_diag.views.myst import MYST
+from hw_diag.views.thingsix import THINGSIX
+from hw_diag.views.ttn import TTN
 
 
 class TestGetApp(unittest.TestCase):
@@ -36,7 +39,7 @@ class TestGetApp(unittest.TestCase):
         # Check we call register_blueprint...
         mock_register_blueprint.assert_called()
         # and that each blueprint is loaded (DIAGNOSTICS & AUTH).
-        calls = [call(AUTH), call(DIAGNOSTICS)]
+        calls = [call(AUTH), call(MYST), call(TTN), call(THINGSIX), call(DIAGNOSTICS)]
         mock_register_blueprint.assert_has_calls(calls, any_order=False)
 
     @patch('flask_apscheduler.APScheduler')
