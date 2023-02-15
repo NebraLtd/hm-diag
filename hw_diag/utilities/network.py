@@ -1,5 +1,7 @@
 import logging
 import requests
+import os
+import subprocess
 
 from sqlalchemy.exc import NoResultFound
 
@@ -8,6 +10,8 @@ from hw_diag.database import get_db_session
 from hw_diag.database.models.auth import AuthKeyValue
 from hw_diag.utilities.auth import generate_default_password
 
+HPT_IP = '192.168.220.1'  # NOSONAR
+
 
 def get_wan_ip_address():
     try:
@@ -15,6 +19,26 @@ def get_wan_ip_address():
         return resp.text
     except Exception:
         return None
+
+
+def device_in_manufacturing_network() -> bool:
+    # one can set the device in manufacturing though env var
+    in_manufacturing_env = os.getenv('IN_MANUFACTURING', 'false')
+    in_manufacturing = in_manufacturing_env.lower() in ('true', '1', 't')
+    if in_manufacturing:
+        return in_manufacturing
+
+    # in manufacturing if hpt is reachable
+    logging.info(f"lets ping hpt to detect network. HPT: {HPT_IP}")
+    try:
+        # ping without count 2s, interval  0.5s and timeout of 1s
+        cmd = ['ping', '-c', '2', '-i', '0.5', '-W', '1', HPT_IP]
+        subprocess.check_call(cmd)
+        in_manufacturing = True
+    except Exception as e:
+        logging.error(f"failed to ping hpt : {HPT_IP}")
+        logging.error(e)
+    return in_manufacturing
 
 
 def get_device_hostname():
