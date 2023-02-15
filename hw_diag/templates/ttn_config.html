@@ -78,7 +78,7 @@
                                         ttnEnabled = true;
                                     }
 
-                                    payload = {
+                                    var payload = {
                                         ttn_enabled: ttnEnabled,
                                         ttn_cluster: ttnCluster
                                     };
@@ -96,7 +96,7 @@
                                     fetch("/reboot?type=soft", {"method": "GET"});
 
                                     // Display dialogue with countdown whilst changes apply.
-                                    reconfigureTimer = setInterval(tickReconfigureCounter, 1000);
+                                    var reconfigureTimer = setInterval(tickReconfigureCounter, 1000);
                                     var reconfigureModal = new bootstrap.Modal(document.getElementById("modalReconfigure"), {});
                                     reconfigureModal.show();
                                 }
