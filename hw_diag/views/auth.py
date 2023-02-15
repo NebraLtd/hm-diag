@@ -204,4 +204,4 @@ def spawn_admin_session():
 @AUTH.route('/upgrade')
 @authenticate
 def display_upgrade_page():
-    return 'You need to upgrade!'
+    return render_template('upgrade.html')
