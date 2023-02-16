@@ -1,0 +1,115 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}The Things Network Configuration{% endblock %}
+
+{% block body %}
+    <div class="modal fade" id="modalReconfigure" tabindex="-1" aria-labelledby="modalReconfigureLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalReconfigureLabel">Reconfiguring Hotspot</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  Your hotspot is currently being reconfigured. You will be redirected automatically once complete.
+              </p>
+              <p>
+                <div id="counterReconfigure" style="text-align: center;"></div>
+                <script>
+                    var reconfigureCount = 120;
+                    var reconfigureTimer = '';
+
+                    function tickReconfigureCounter() {
+                        reconfigureCount--;
+                        document.getElementById("counterReconfigure").innerHTML = reconfigureCount;
+                        console.log(reconfigureCount);
+                        if (reconfigureCount == 0) {
+                            clearInterval(reconfigureTimer);
+                            window.location.href = "/";
+                        }
+                    }
+                </script>
+              </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+        <h3 class="text-center mb-4">The Things Network Configuration</h3>
+    </div>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+            <div class="card mb-0 h-100">
+              <p>
+                <div class="row">
+                    <div class="col-1"></div>
+                        <div class="col-10">
+                          <br/>
+                            <div class="form-group">
+                              <strong>Enable / Disable The Things Network</strong><br/>
+                              <div class="form-check">
+                                  <input class="form-check-input form-check-input-lg" type="checkbox" value="" id="chkTTNEnabled" {% if ttn_config.ttn_enabled %} checked="checked" {% endif %}>
+                                  <label class="form-check-label" for="chkEnabled">
+                                    TTN Enabled
+                                  </label>
+                              </div>
+                              <br/>
+                              <strong>Network Cluster</strong><br/>
+                              <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg" id="selTTNCluster">
+                                  <option value="eu" {% if (ttn_config.ttn_cluster == 'eu') %} selected {% endif %}>eu1.cloud.thethings.network</option>
+                                  <option value="us" {% if (ttn_config.ttn_cluster == 'us') %} selected {% endif %}>nam1.cloud.thethings.network</option>
+                                  <option value="au" {% if (ttn_config.ttn_cluster == 'au') %} selected {% endif %}>au1.cloud.thethings.network</option>
+                              </select>
+                              <strong>Gateway EUI</strong><br/>
+                              <div class="mb-3">
+                                  <input type="text" class="form-control form-control-lg" id="txtGatewayEUI" value="{{ gateway_eui }}" disabled readonly>
+                              </div>
+                              <script>
+                                function updateTTNConfig() {
+                                    // Update the TTN conf file...
+                                    var ttnCluster = document.getElementById("selTTNCluster").value;
+                                    var ttnEnabled = false;
+
+                                    if (document.getElementById("chkTTNEnabled").checked) {
+                                        ttnEnabled = true;
+                                    }
+
+                                    var payload = {
+                                        ttn_enabled: ttnEnabled,
+                                        ttn_cluster: ttnCluster
+                                    };
+
+                                    fetch('/ttn/update', {
+                                        method: 'POST',
+                                        headers: {
+                                          'Accept': 'application/json',
+                                          'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(payload)
+                                    });
+
+                                    // Then soft reboot the services to apply changes to the MUX.
+                                    fetch("/reboot?type=soft", {"method": "GET"});
+
+                                    // Display dialogue with countdown whilst changes apply.
+                                    var reconfigureTimer = setInterval(tickReconfigureCounter, 1000);
+                                    var reconfigureModal = new bootstrap.Modal(document.getElementById("modalReconfigure"), {});
+                                    reconfigureModal.show();
+                                }
+                              </script>
+                              <div class="text-center"><button class="btn btn-primary" onClick="updateTTNConfig()">Update TTN Configuration</button></div>
+                            </div>
+                        </div>
+                    <div class="col-1"></div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+        </div>
+{% endblock %}
