@@ -45,12 +45,12 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  {% if "N/A" in diagnostics.FR %}
-                    <td>Frequency</td>
-                    <td class="text-right">{{ diagnostics.FR }}</td>
-                  {% elif not diagnostics.FR %}
+                  {% if not diagnostics.FR %}
                     <td>Frequency</td>
                     <td class="text-right">None</td>
+                  {% elif "N/A" in diagnostics.FR %}
+                    <td>Frequency</td>
+                    <td class="text-right">{{ diagnostics.FR }}</td>
                   {% else %}
                     <td>Frequency</td>
                     <td class="text-right">{{ diagnostics.FR }} MHz</td>
