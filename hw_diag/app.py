@@ -27,7 +27,7 @@ from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
 from hw_diag.database.migrations import run_migrations
 from hw_diag.utilities.network import setup_hostname
-from hw_diag.utilities.network import device_in_manufacturing_network
+from hw_diag.utilities.network import device_in_manufacturing
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')
@@ -109,7 +109,7 @@ def init_scheduled_tasks(app) -> None:
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
 
 
-def get_app(name, lean_initializations=device_in_manufacturing_network()):
+def get_app(name, lean_initializations=device_in_manufacturing()):
 
     if lean_initializations:
         logging.warning("Manufacturing Run: Lot of production initializations will be skipped")
