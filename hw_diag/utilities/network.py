@@ -41,6 +41,16 @@ def device_in_manufacturing_network() -> bool:
     return in_manufacturing
 
 
+def device_in_manufacturing():
+    path_exists = False
+    filename = '/var/nebra/in_manufacturing'
+    if os.path.exists(filename):
+        path_exists = True
+        # remove the file as we want this to happen only once.
+        os.remove(filename)
+    return path_exists or device_in_manufacturing_network()
+
+
 def get_device_hostname():
     try:
         balena_supervisor = BalenaSupervisor.new_from_env()
