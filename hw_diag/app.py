@@ -16,6 +16,8 @@ from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
 from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
+from hw_diag.utilities.balena_migration \
+    import attempt_device_migration, unmount_boot_partition
 from hw_diag.utilities.sentry import init_sentry
 from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.views.auth import AUTH
@@ -36,6 +38,8 @@ BALENA_APP = os.getenv('BALENA_APP_NAME')
 HEARTBEAT_INTERVAL_HOURS = float(os.getenv('HEARTBEAT_INTERVAL_HOURS', 24))
 SHIP_DIAG_INTERVAL_HOURS = float(os.getenv('SHIP_DIAG_INTERVAL_HOURS', 1))
 NETWORK_WATCHDOG_INTERVAL_HOURS = float(os.getenv('NETWORK_WATCHDOG_INTERVAL_HOURS', 1))
+MIGRATION_TASK_DISABLED = os.getenv('NEBRA_CLOUD_MIGRATION_DISABLED', 'false').lower() == 'true'
+
 
 init_sentry(
     sentry_dsn=SENTRY_DSN,
@@ -54,6 +58,22 @@ if DEBUG:
 
 def run_ship_diagnostics_task():
     perform_hw_diagnostics(ship=True)
+
+
+def run_balena_migration_task():
+    try:
+        if MIGRATION_TASK_DISABLED:
+            log.warning("nebra cloud migration task is disabled")
+            return
+        log.warning("running nebra cloud migration task")
+        attempt_device_migration()
+    except Exception as e:
+        logging.error(f'Unknown error encountered while running nebra cloud migration'
+                      f'task: {e}')
+        logging.error(traceback.format_exc())
+    # just to be safe umount the partition
+    finally:
+        unmount_boot_partition()
 
 
 def run_quectel_health_task():
@@ -104,9 +124,16 @@ def init_scheduled_tasks(app) -> None:
     scheduler.add_job(id='emit_heartbeat', func=partial(run_heartbeat_task, watchdog),
                       trigger='interval', hours=HEARTBEAT_INTERVAL_HOURS, jitter=300)
 
+    scheduler.add_job(id='check_nebra_cloud_migration', func=run_balena_migration_task,
+                      trigger='interval', days=1, jitter=3600)
+
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
+
+    # bring first run of migration to nebra cloud in next 1 hour
+    migration_job = scheduler.get_job('check_nebra_cloud_migration')
+    migration_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
 
 
 def get_app(name, lean_initializations=device_in_manufacturing()):
