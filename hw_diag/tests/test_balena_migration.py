@@ -6,7 +6,7 @@ import responses
 import tempfile
 
 from hw_diag.utilities.balena_migration import attempt_device_migration, \
-    DASHBOARD_ENDPOINT
+    DASHBOARD_ENDPOINT, is_cloud_migration
 from hw_diag.tests.fixtures.balena_migration_data import TEST_DATA
 
 
@@ -63,7 +63,8 @@ class TestBalenaMigration(unittest.TestCase):
                         # read back new config and verify
                         written_content = open(self.config_json, 'r').read()
                         data = json.loads(written_content)
-                        self.assertEqual(data, configs[3])
+                        expected = configs[3]
+                        self.assertEqual(data, expected)
 
                         if configs[1] == 200:
                             supervisor_call_count += 1
@@ -75,3 +76,15 @@ class TestBalenaMigration(unittest.TestCase):
         # mount process will result in type error because of None type passed as mount point
         with self.assertRaises(TypeError):
             attempt_device_migration()
+
+    def test_is_cloud_migration(self):
+        balena_cloud_api_endpoint = "https://api.balena-cloud.com"
+        nebra_cloud_api_endpoint = "https://api.cloud.nebra.com"
+
+        old_config = {"apiEndpoint": balena_cloud_api_endpoint}
+        new_config = {"apiEndpoint": nebra_cloud_api_endpoint}
+        self.assertTrue(is_cloud_migration(old_config, new_config))
+
+        old_config['apiEndpoint'] = nebra_cloud_api_endpoint
+        new_config['apiEndpoint'] = nebra_cloud_api_endpoint
+        self.assertFalse(is_cloud_migration(old_config, new_config))
