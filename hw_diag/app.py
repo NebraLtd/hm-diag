@@ -131,9 +131,9 @@ def init_scheduled_tasks(app) -> None:
     quectel_job = scheduler.get_job('quectel_repeating')
     quectel_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
 
-    # bring first run of migration to nebra cloud in next 1 hour
+    # bring first run of migration to nebra cloud in next 10 minutes
     migration_job = scheduler.get_job('check_nebra_cloud_migration')
-    migration_job.modify(next_run_time=datetime.now() + timedelta(minutes=2))
+    migration_job.modify(next_run_time=datetime.now() + timedelta(minutes=5))
 
 
 def get_app(name, lean_initializations=device_in_manufacturing()):
