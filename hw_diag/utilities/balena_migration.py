@@ -29,14 +29,43 @@ def attempt_device_migration():
         LOGGER.warning("NEBRAOS_MIGRATION_TOKEN should be provided by environment")
         return
 
-    config = read_config()
-    new_config = update_config(config)
-    if config == new_config:
+    # read config.json
+    old_config = read_config()
+
+    # update appid from env as config.json always contains appid of fleet
+    # where it was created
+    creation_app_id = old_config['applicationId']
+    old_config['applicationId'] = os.getenv("BALENA_APP_ID", creation_app_id)
+
+    # update config with values from dashboard
+    new_config = update_config(old_config)
+
+    # no updates from dashboard.
+    if not new_config:
+        LOGGER.info("no updates to config")
+        return
+
+    LOGGER.info(f"used appid: {old_config['applicationId']} for config.json updates")
+    # migration fixups
+    if is_cloud_migration(old_config, new_config):
+        if 'initialDeviceName' not in new_config:
+            # balena instance migration and initial device name is not set.
+            # set a sensible default
+            new_config['initialDeviceName'] = migrated_dev_name()
+
+    if old_config == new_config:
         LOGGER.warning("new configuration is same as old. not writing")
         return
 
-    if new_config:
-        write_config(new_config)
+    write_config(new_config)
+
+
+def migrated_dev_name() -> str:
+    return f'{fetch_serial_number()}-automigrated'
+
+
+def is_cloud_migration(old_config, new_config) -> bool:
+    return old_config['apiEndpoint'] != new_config['apiEndpoint']
 
 
 def update_config(old_config) -> Union[Dict, None]:
@@ -90,6 +119,7 @@ def read_config() -> Dict:
 def write_config(config_data: Dict):
     try:
         mount_boot_partition()
+        LOGGER.warning("writing config.json, potentially dangerous")
         with open(CONFIG_TEMP_FILENAME, 'w') as f:
             f.write(json.dumps(config_data))
         os.replace(CONFIG_TEMP_FILENAME, CONFIG_FILENAME)
@@ -122,7 +152,6 @@ def mount_device(device: str, path: str, mount_rw: bool = True):
         mount_option = 'rw' if mount_rw else 'ro'
 
     cmd = ["mount", "-o", mount_option, device, path]
-    print(cmd)
     subprocess.check_call(cmd)
 
 
