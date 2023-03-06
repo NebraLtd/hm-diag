@@ -277,14 +277,17 @@ def load_cpu_info() -> dict:
     '''
     returns /proc/cpuinfo as dict, keys are case-insensitive
     '''
-    with open("/proc/cpuinfo", "r") as f:
-        cpuinfo = {}
-        lines = f.readlines()
-        for line in lines:
-            pair = line.split(":")
-            if len(pair) == 2:
-                cpuinfo[pair[0].strip().lower()] = pair[1].strip()
-        return cpuinfo
+    cpuinfo = {}
+    try:
+        with open("/proc/cpuinfo", "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                pair = line.split(":")
+                if len(pair) == 2:
+                    cpuinfo[pair[0].strip().lower()] = pair[1].strip()
+    except Exception as e:
+        logging.warning(f"failed to load /proc/cpuinfo: {e}")
+    return cpuinfo
 
 
 @retry(Exception, tries=5, delay=5, max_delay=15, backoff=2, logger=logging)
