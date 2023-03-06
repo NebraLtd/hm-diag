@@ -1,6 +1,7 @@
 from typing import Dict, Any
 import logging
 import os
+from hw_diag.utilities.hardware import fetch_serial_number
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 
 
@@ -48,11 +49,17 @@ def read_proc_file(file_path: str, default_value: str) -> Any:
 
 
 def get_serial_number() -> str:
+    '''
+    returns a valid serial number or empty string if none can
+    be determined. No exceptions.
+    '''
     try:
-        with open("/proc/device-tree/serial-number", 'r') as f:
-            return f.readline().rstrip('\x00')
+        serial_number = fetch_serial_number()
+        if not serial_number:
+            serial_number = ""
+        return serial_number
     except Exception as e:
-        log.warning(f"can't read serial number {e}")
+        log.error(f"failed to get serial number {e}")
         return ""
 
 
@@ -74,10 +81,10 @@ def get_network_statistics(interface_list=['wlan0', 'eth0']) -> Dict:
         stats[iface_name] = {
             "rx_errors": int(
                 read_proc_file(f"/sys/class/net/{iface_name}/statistics/rx_errors", "0")
-                ),
+            ),
             "tx_errors": int(
                 read_proc_file(f"/sys/class/net/{iface_name}/statistics/tx_errors", "0")
-                )
+            )
         }
     return stats
 

@@ -3,7 +3,7 @@ import json
 import subprocess
 import requests
 from hw_diag.utilities.osutils import balena_boot_partition
-from hw_diag.utilities.hardware import get_serial_number
+from hw_diag.utilities.hardware import fetch_serial_number
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hm_pyhelper.logger import get_logger
 from typing import Dict, Union
@@ -99,12 +99,6 @@ def update_config(old_config) -> Union[Dict, None]:
             new_config.pop(k)
 
     return new_config
-
-
-def fetch_serial_number() -> Union[str, None]:
-    diag = {}
-    get_serial_number(diag)
-    return diag.get("serial_number")
 
 
 def read_config() -> Dict:
