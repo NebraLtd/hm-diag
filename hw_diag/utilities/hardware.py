@@ -1,6 +1,7 @@
 import re
 import dbus
 import psutil
+from typing import Union
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust
@@ -240,6 +241,12 @@ def detect_ecc(diagnostics):
             logging.error(e)
 
 
+def fetch_serial_number() -> Union[str, None]:
+    diag = {}
+    get_serial_number(diag)
+    return diag.get("serial_number")
+
+
 def get_serial_number(diagnostics):
     """
     input:
@@ -251,14 +258,33 @@ def get_serial_number(diagnostics):
     Writes the received value to the dictionary
     """
     try:
-        serial_number = open("/proc/device-tree/serial-number").readline() \
-            .rstrip('\x00')
+        cpuinfo = load_cpu_info()
+        serial_number = ""
+        if "serial" in cpuinfo:
+            serial_number = cpuinfo["serial"]
+        else:
+            serial_number = open("/proc/device-tree/serial-number").readline() \
+                .rstrip('\x00')
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:
         raise e
 
     diagnostics["serial_number"] = serial_number
+
+
+def load_cpu_info() -> dict:
+    '''
+    returns /proc/cpuinfo as dict, keys are case-insensitive
+    '''
+    with open("/proc/cpuinfo", "r") as f:
+        cpuinfo = {}
+        lines = f.readlines()
+        for line in lines:
+            pair = line.split(":")
+            if len(pair) == 2:
+                cpuinfo[pair[0].strip().lower()] = pair[1].strip()
+        return cpuinfo
 
 
 @retry(Exception, tries=5, delay=5, max_delay=15, backoff=2, logger=logging)
