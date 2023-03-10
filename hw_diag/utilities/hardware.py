@@ -12,6 +12,7 @@ from retry import retry
 
 logging = get_logger(__name__)
 
+CPUINFO_SERIAL_KEY = "serial"
 DBUS_PROPERTIES = 'org.freedesktop.DBus.Properties'
 DBUS_OBJECTMANAGER = 'org.freedesktop.DBus.ObjectManager'
 
@@ -260,8 +261,8 @@ def get_serial_number(diagnostics):
     try:
         cpuinfo = load_cpu_info()
         serial_number = ""
-        if "serial" in cpuinfo:
-            serial_number = cpuinfo["serial"]
+        if has_valid_serial(cpuinfo):
+            serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
         else:
             serial_number = open("/proc/device-tree/serial-number").readline() \
                 .rstrip('\x00')
@@ -271,6 +272,21 @@ def get_serial_number(diagnostics):
         raise e
 
     diagnostics["serial_number"] = serial_number
+
+
+def has_valid_serial(cpuinfo: dict) -> bool:
+    if CPUINFO_SERIAL_KEY not in cpuinfo:
+        return False
+
+    # most systems that don't use /proc/cpuinfo
+    # end up serving all zeros for serial
+    serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
+    if not int(serial_number):
+        return False
+
+    # probably more checks will go in here later
+    # untill we have a hal.
+    return True
 
 
 def load_cpu_info() -> dict:
