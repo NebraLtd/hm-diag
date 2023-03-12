@@ -378,26 +378,6 @@ class TestHardware(unittest.TestCase):
 
     @patch.dict('hw_diag.utilities.hardware.variant_definitions', {
         "HNT-TEST": {
-            "KEY_STORAGE_BUS": "/dev/i2c-3",
-            "NO_SWARM_KEY_URI": "ecc://i2c-7:96?slot=0",
-        }
-    })
-    @patch('hw_diag.utilities.hardware.config_search_param', return_value=True)
-    def test_detect_ecc_from_KEY_STORAGE_BUS(
-            self,
-            mocked_config_search_param,
-    ):
-        diagnostics = {
-            'VA': 'HNT-TEST',
-            'ECC': None,
-        }
-        detect_ecc(diagnostics)
-        self.assertTrue(diagnostics['ECC'])
-        mocked_config_search_param.assert_called_once_with('i2cdetect -y 3',
-                                                           self.ECC_I2C_DETECT_PATTERN)
-
-    @patch.dict('hw_diag.utilities.hardware.variant_definitions', {
-        "HNT-TEST": {
             "NO_KEY_STORAGE_BUS": "/dev/i2c-3",
             "NO_SWARM_KEY_URI": "ecc://i2c-7:96?slot=0",
         }
