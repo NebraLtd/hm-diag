@@ -282,14 +282,11 @@ def has_valid_serial(cpuinfo: dict) -> bool:
     if CPUINFO_SERIAL_KEY not in cpuinfo:
         return False
 
-    # most systems that don't use /proc/cpuinfo
-    # end up serving all zeros for serial
+    # Check if serial number is all 0s...
     serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
-    if not int(serial_number):
+    if all(c in '0' for c in str(serial_number)):
         return False
 
-    # probably more checks will go in here later
-    # untill we have a hal.
     return True
 
 
