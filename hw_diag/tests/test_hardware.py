@@ -395,3 +395,17 @@ class TestHardware(unittest.TestCase):
         self.assertTrue(diagnostics['ECC'])
         mocked_config_search_param.assert_called_once_with('i2cdetect -y 1',
                                                            self.ECC_I2C_DETECT_PATTERN)
+
+    def test_parse_i2c_address(self):
+        port = 96
+        output = parse_i2c_address(port)
+        hex_i2c_address = '60'
+
+        self.assertEqual(output, hex_i2c_address)
+
+    def test_parse_i2c_bus(self):
+        bus = i2c-1
+        output = parse_i2c_bus(bus)
+        i2c_bus = '1'
+
+        self.assertEqual(output, i2c_bus)
