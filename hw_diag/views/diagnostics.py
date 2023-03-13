@@ -9,6 +9,7 @@ from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
+from hw_diag.diagnostics.provision_key_diagnostic import KEY_PROVISIONING_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
 
@@ -259,7 +260,7 @@ def provision_key_view():
         err_msg = 'Can not find PGP payload.'
         LOGGER.error(err_msg)
         diagnostics_report = compose_diagnostics_report_from_err_msg(
-            SHUTDOWN_GATEWAY_KEY, err_msg)
+            KEY_PROVISIONING_KEY, err_msg)
         return diagnostics_report, 406
 
     diagnostics = [
@@ -267,12 +268,12 @@ def provision_key_view():
     ]
     diagnostics_report = DiagnosticsReport(diagnostics)
     diagnostics_report.perform_diagnostics()
-    if diagnostics_report.has_errors({SHUTDOWN_GATEWAY_KEY}):
+    if diagnostics_report.has_errors({KEY_PROVISIONING_KEY}):
         http_code = 500
     else:
         http_code = 200
 
-    LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
+    LOGGER.debug("provision_key result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
 
