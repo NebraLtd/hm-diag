@@ -1,4 +1,5 @@
 import re
+import os
 import dbus
 import psutil
 from typing import Union
@@ -191,10 +192,17 @@ def set_diagnostics_bt_lte(diagnostics):
 
 def parse_i2c_bus(address):
     """
-    Takes i2c bus as input parameter and extracts the bus number and returns it.
+    Takes i2c bus as input parameter, extracts the bus number and returns it.
     """
     i2c_bus_pattern = r'i2c-(\d+)'
     return re.search(i2c_bus_pattern, address).group(1)
+
+
+def parse_i2c_address(port):
+    """
+    Takes i2c address in decimal as input parameter, extracts the hex version and returns it.
+    """
+    return f'{port:x}'
 
 
 def detect_ecc(diagnostics):
@@ -205,34 +213,30 @@ def detect_ecc(diagnostics):
     i2c_bus = ''
     try:
         # Example SWARM_KEY_URI: "ecc://i2c-1:96?slot=0"
-        swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')
+        if os.getenv('SWARM_KEY_URI_OVERRIDE'):
+            swarm_key_uri = os.getenv('SWARM_KEY_URI_OVERRIDE')
+        else:
+            swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')
+
         parse_result = urlparse(swarm_key_uri)
         i2c_bus = parse_i2c_bus(parse_result.hostname)
+        i2c_address = parse_i2c_address(parse_result.port)
 
     except Exception as e:
         logging.warn("Unable to lookup SWARM_KEY_URI from hardware definitions, "
                      "Exception message: {}".format(e))
 
     if not i2c_bus or not i2c_bus.isnumeric():
-        try:
-            # Example KEY_STORAGE_BUS: "/dev/i2c-1"
-            key_storage_bus = get_variant_attribute(variant, 'KEY_STORAGE_BUS')
-            i2c_bus = parse_i2c_bus(key_storage_bus)
-
-        except Exception as e:
-            logging.warn("Unable to lookup KEY_STORAGE_BUS from hardware definitions, "
-                         "Exception message: {}".format(e))
-
-    if not i2c_bus or not i2c_bus.isnumeric():
         logging.warn("Unable to lookup storage bus from hardware definitions, "
                      "falling back to the default.")
         i2c_bus = '1'
+        i2c_address = '60'
 
     commands = [
         f'i2cdetect -y {i2c_bus}'
     ]
 
-    parameters = ["60 --"]
+    parameters = [f'{i2c_address} --']
     keys = ["ECC"]
 
     for (command, param, key) in zip(commands, parameters, keys):
