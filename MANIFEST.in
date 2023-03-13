@@ -46,6 +46,9 @@ include hw_diag/templates/template.html
 include hw_diag/templates/unauthenticated_template.html
 include hw_diag/templates/password_reset.html
 include hw_diag/templates/ttn_config.html
+include hw_diag/templates/thix_dashboard.html
+include hw_diag/templates/thix_onboard.html
+include hw_diag/templates/thix_setup.html
 include hw_diag/templates/password_change_form.html
 include hw_diag/templates/login_form.html
 include hw_diag/templates/device_info.html
