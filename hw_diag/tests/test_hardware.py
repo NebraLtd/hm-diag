@@ -4,7 +4,8 @@ from unittest.mock import patch, MagicMock
 from dbus import DBusException
 
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors, \
-    get_wifi_devices, get_ble_devices, get_lte_devices, detect_ecc  # noqa
+    get_wifi_devices, get_ble_devices, get_lte_devices, detect_ecc, \
+    parse_i2c_address, parse_i2c_bus # noqa
 
 
 class TestHardware(unittest.TestCase):
