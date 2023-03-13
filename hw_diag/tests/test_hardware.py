@@ -405,7 +405,7 @@ class TestHardware(unittest.TestCase):
         self.assertEqual(output, hex_i2c_address)
 
     def test_parse_i2c_bus(self):
-        bus = i2c-1
+        bus = 'i2c-1'
         output = parse_i2c_bus(bus)
         i2c_bus = '1'
 
