@@ -16,7 +16,27 @@
                 <div class="row">
                     <div class="col-1"></div>
                     <div class="col-10">
-                        ThingsIX Onboard
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                          <div>
+                            ThingsIX is currently in development and your gateway will be onboarded to the ThingsIX test-net. You will need to onboard again once
+                            the ThingsIX main-net launches to earn real THIX tokens.
+                          </div>
+                        </div>
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                          <div>
+                            <p>Please enter the Polygon Wallet ID of the intended owner of the gateway.</p>
+                            {% if msg %}
+                                <p class="text-danger">{{ msg }}</p>
+                            {% endif %}
+                            <form action="/thingsix/onboard" method="POST">
+                            <div class="form-group">
+                              <input type="text" class="form-control" id="txtWalletId" name="txtWalletId" />
+                            </div>
+                            <br/>
+                            <div class="text-center"><input class="btn btn-primary" type="submit" value="Submit Onboard" /></div>
+                            </form>
+                          </div>
+                        </div>
                     </div>
                     <div class="col-1"></div>
                 </div>

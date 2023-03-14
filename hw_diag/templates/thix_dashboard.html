@@ -3,27 +3,22 @@
 {% block title %}ThingsIX Configuration{% endblock %}
 
 {% block body %}
-    <div class="text-center">
         <h3 class="text-center mb-4">ThingsIX Configuration</h3>
-    </div>
 
         <div class="row mb-4">
-          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
-          </div>
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
             <div class="card mb-0 h-100">
-              <p>
-                <div class="row">
-                    <div class="col-1"></div>
-                    <div class="col-10">
-                        ThingsIX Dashboard
-                    </div>
-                    <div class="col-1"></div>
-                </div>
-              </p>
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td>Gateway Address</td>
+                    <td class="text-right"><a target="_blank" href="https://app-testnet.thingsix.com/gateways/{{ gateway.gatewayId }}">{{ gateway.gatewayId }}</a></td>
+                </tr>
+                <tr>
+                    <td class="border-0">Gateway Owner</td>
+                    <td class="border-0" class="text-right"><a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}">{{ gateway.owner }}</a></td>
+                </tr>
+              </table>
             </div>
-          </div>
-          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
           </div>
         </div>
 {% endblock %}
