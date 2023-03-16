@@ -12,4 +12,4 @@ then
     date -s "2 JAN 2023 18:00:00"
 fi
 
-gunicorn --bind 0.0.0.0:5000 --timeout 300 hw_diag.wsgi:wsgi_app
+gunicorn --bind 0.0.0.0:80 --timeout 300 hw_diag.wsgi:wsgi_app
