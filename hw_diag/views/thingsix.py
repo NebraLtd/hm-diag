@@ -78,7 +78,7 @@ def enable_thix():
 @THINGSIX.route('/thingsix/onboard', methods=['POST'])
 @authenticate
 @commercial_fleet_only
-def process_onboard():
+def process_onboard():  # noqa:C901
     # Only allow this if it's currently enabled and not onboarded...
     try:
         if get_value('thix_enabled') != 'true':
