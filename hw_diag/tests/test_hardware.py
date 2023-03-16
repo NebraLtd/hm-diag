@@ -4,8 +4,7 @@ from unittest.mock import patch, MagicMock
 from dbus import DBusException
 
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors, \
-    get_wifi_devices, get_ble_devices, get_lte_devices, detect_ecc, \
-    parse_i2c_address, parse_i2c_bus # noqa
+    get_wifi_devices, get_ble_devices, get_lte_devices, detect_ecc # noqa
 
 
 class TestHardware(unittest.TestCase):
@@ -357,16 +356,17 @@ class TestHardware(unittest.TestCase):
         self.assertIsInstance(wifi_devices, list)
         self.assertEqual(len(wifi_devices), 0)
 
-    @patch.dict('hw_diag.utilities.hardware.variant_definitions', {
+    @patch.dict('os.environ', {"VARIANT": "HNT-TEST"})
+    @patch.dict('hm_pyhelper.hardware_definitions.variant_definitions', {
         "HNT-TEST": {
             "NO_KEY_STORAGE_BUS": "/dev/i2c-3",
-            "SWARM_KEY_URI": "ecc://i2c-7:96?slot=0",
+            "SWARM_KEY_URI": ["ecc://i2c-7:96?slot=0"],
         }
     })
     @patch('hw_diag.utilities.hardware.config_search_param', return_value=True)
     def test_detect_ecc_from_SWARM_KEY_URI(
             self,
-            mocked_config_search_param,
+            mocked_config_search_param
     ):
         diagnostics = {
             'VA': 'HNT-TEST',
@@ -377,16 +377,17 @@ class TestHardware(unittest.TestCase):
         mocked_config_search_param.assert_called_once_with('i2cdetect -y 7',
                                                            self.ECC_I2C_DETECT_PATTERN)
 
-    @patch.dict('hw_diag.utilities.hardware.variant_definitions', {
+    @patch.dict('os.environ', {"VARIANT": "HNT-TEST"})
+    @patch.dict('hm_pyhelper.hardware_definitions.variant_definitions', {
         "HNT-TEST": {
             "NO_KEY_STORAGE_BUS": "/dev/i2c-3",
-            "NO_SWARM_KEY_URI": "ecc://i2c-7:96?slot=0",
+            "NO_SWARM_KEY_URI": ["ecc://i2c-7:96?slot=0"],
         }
     })
     @patch('hw_diag.utilities.hardware.config_search_param', return_value=True)
     def test_detect_ecc_fall_back_to_default(
             self,
-            mocked_config_search_param,
+            mocked_config_search_param
     ):
         diagnostics = {
             'VA': 'HNT-TEST',
@@ -396,17 +397,3 @@ class TestHardware(unittest.TestCase):
         self.assertTrue(diagnostics['ECC'])
         mocked_config_search_param.assert_called_once_with('i2cdetect -y 1',
                                                            self.ECC_I2C_DETECT_PATTERN)
-
-    def test_parse_i2c_address(self):
-        port = 96
-        output = parse_i2c_address(port)
-        hex_i2c_address = '60'
-
-        self.assertEqual(output, hex_i2c_address)
-
-    def test_parse_i2c_bus(self):
-        bus = 'i2c-1'
-        output = parse_i2c_bus(bus)
-        i2c_bus = '1'
-
-        self.assertEqual(output, i2c_bus)
