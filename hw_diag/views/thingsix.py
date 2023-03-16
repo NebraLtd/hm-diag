@@ -15,6 +15,7 @@ from hw_diag.utilities.db import set_value
 from hw_diag.utilities.thix import get_unknown_gateways
 from hw_diag.utilities.thix import get_gateways
 from hw_diag.utilities.thix import submit_onboard
+from hw_diag.utilities.diagnostics import read_diagnostics_file
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -47,11 +48,13 @@ def get_thix_dashboard():
 
     gateways = get_gateways()
     gateway = gateways.get('onboarded')[0]
+    diagnostics = read_diagnostics_file()
 
     # Else just render the THIX dashboard.
     return render_template(
         'thix_dashboard.html',
-        gateway=gateway
+        gateway=gateway,
+        diagnostics=diagnostics
     )
 
 
