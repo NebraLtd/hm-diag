@@ -1,7 +1,7 @@
 import unittest
 import flask
-from unittest.mock import patch, mock_open
 import os
+from unittest.mock import patch, mock_open
 from os.path import abspath, dirname, join
 
 import hm_pyhelper
@@ -36,7 +36,7 @@ class TestGetDiagnostics(unittest.TestCase):
         cls.gnupg.cleanup()
 
     def setUp(self):
-        self.app = get_app('test_app')
+        self.app = get_app('test_app', lean_initializations=False)
         self.client = self.app.test_client()
 
     def test_get_diagnostics(self):
@@ -70,10 +70,11 @@ class TestGetDiagnostics(unittest.TestCase):
                 with patch('builtins.open', s):
                     s.side_effect = FileNotFoundError
                     with self.app.test_client() as c:
+                        with c.session_transaction() as session:
+                            session['logged_in'] = True
                         cresp = c.get(url)
                         error_str = ('Diagnostics have not yet run, '
-                                     'please try again in a few minutes'
-                                     )
+                                     'please try again in a few minutes')
                         expected = {'error': error_str}
                         self.assertEqual(cresp.json, expected)
                         self.assertEqual(

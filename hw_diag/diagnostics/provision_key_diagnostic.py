@@ -9,9 +9,9 @@ KEY_PROVISIONING_KEY = 'provision_key'
 
 class ProvisionKeyDiagnostic(PgpSignedJsonDiagnostic):
     """
-    Uses Balena supervisor API to invoke a shutdown on the device if
-    SHUTDOWN_GATEWAY_KEY is present in the JSON object embedded in
-    the signed PGP.
+    Uses a signed JSON delivered to /v1/mfr-init endpoint from HPT tool to invoke a
+    forced key provisioning on the target slot on the ECC if KEY_PROVISIONING_KEY
+    is present in the JSON object embedded in the signed PGP.
     """
 
     def __init__(self, gnupg: GnuPG, provision_request_with_signature: bytes):

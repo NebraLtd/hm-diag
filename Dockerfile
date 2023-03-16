@@ -1,29 +1,27 @@
 # Docker Container that runs the Nebra Diagnostics Tool
 
+ARG BUILD_BOARD
+
 ####################################################################################################
 ################################## Stage: builder ##################################################
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20221215 AS builder
 
-FROM balenalib/raspberry-pi-debian:buster-build-20211014 as builder
+ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
-# Nebra uses /opt by convention
-WORKDIR /opt/
+RUN mkdir /tmp/build
+COPY quectel/ /tmp/build/quectel
+COPY hw_diag/ /tmp/build/hw_diag
+COPY bigquery/ /tmp/build/bigquery
+COPY requirements.txt /tmp/build/requirements.txt
+COPY setup.py /tmp/build/setup.py
+COPY MANIFEST.in /tmp/build/MANIFEST.in
+WORKDIR /tmp/build
 
-# this installs python 3.7.3 which is buster default and supported by grpcio wheel
 RUN \
     install_packages \
-        python3-venv \
-        python3-pip \
-        build-essential \
-        libdbus-glib-1-dev
-
-# This will be the path that venv uses for installation below
-ENV PATH="/opt/venv/bin:$PATH"
-
-# without pinning the pip version, we get linter warning
-COPY requirements.txt requirements.txt
-RUN python3 -m venv /opt/venv && \
-    pip install --no-cache-dir --upgrade pip==22.0.1 && \
-    pip install --no-cache-dir -r requirements.txt
+            build-essential \
+            libdbus-glib-1-dev && \
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # firehose build, the tar is obtained from  quectel.
 # there is no install target in Makefile, doing manual copy
@@ -43,8 +41,9 @@ RUN pip --no-cache-dir install .
 
 ####################################################################################################
 ################################### Stage: runner ##################################################
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-run-20221215 AS runner
 
-FROM balenalib/raspberry-pi-debian-python:buster-build-20211014 as runner
+ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN \
     install_packages \
@@ -59,16 +58,6 @@ WORKDIR /opt/
 
 # Import gpg key
 COPY keys/manufacturing-key.gpg ./
-RUN gpg --import manufacturing-key.gpg
-RUN rm manufacturing-key.gpg
-
-# @TODO: Re-enable health-check once Balena supports it fully.
-# HEALTHCHECK \
-#    --interval=120s \
-#    --timeout=5s \
-#    --start-period=15s \
-#    --retries=10 \
-#  CMD wget -q -O - http://0.0.0.0:5000/initFile.txt || exit 1
 
 
 # copy python env
@@ -80,7 +69,27 @@ COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
 # copy firmware files
 COPY --from=builder /opt/quectel /quectel
 
-# Add python venv path
-ENV PATH="/opt/venv/bin:$PATH"
+# copy db migration files
+COPY migrations/ /opt/migrations/migrations
+COPY alembic.ini /opt/migrations/alembic.ini
 
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "300", "hw_diag:wsgi_app"]
+# copy start admin session script
+COPY start_admin_session /usr/sbin/start_admin_session
+
+# Getting RUN layers together
+RUN gpg --import manufacturing-key.gpg && \
+    rm manufacturing-key.gpg && \
+    chmod 700 /usr/sbin/start_admin_session && \
+    mkdir -p /opt/nebra
+
+# Add python dependencies to PYTHONPATH
+ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
+ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
+
+# Copy environment variables startup script
+COPY setenv.sh /opt/nebra/setenv.sh
+
+# Copy container startup script
+COPY start_diagnostics.sh /opt/start_diagnostics.sh
+
+ENTRYPOINT ["/opt/start_diagnostics.sh"]

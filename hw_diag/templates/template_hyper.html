@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Nebra Hotspot &middot; {% block title %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="shortcut icon" href="/static/images/favicon.ico">
+        <script src="/static/js/hyper-config.js"></script>
+        <link href="/static/css/app-saas.min.css" rel="stylesheet" type="text/css" id="app-style" />
+        <link href="/static/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://kit.fontawesome.com/ec9cfb2281.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <!-- Begin page -->
+        <div class="wrapper">
+
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="leftside-menu">
+
+                <!-- Brand Logo Light -->
+                <a href="/" class="logo logo-light">
+                    <span class="logo-lg">
+                        <img src="/static/images/nebra-logo-white.png" alt="Nebra Logo">
+                    </span>
+                    <span class="logo-sm">
+                        <img src="/static/images/nebra-logo-white.png" alt="Nebra Logo">
+                    </span>
+                </a>
+
+                <!-- Brand Logo Dark -->
+                <a href="index.html" class="logo logo-dark">
+                    <span class="logo-lg">
+                        <img src="/static/images/nebra-logo-white.png" alt="Nebra Logo">
+                    </span>
+                    <span class="logo-sm">
+                        <img src="/static/images/nebra-logo-white.png" alt="Nebra Logo">
+                    </span>
+                </a>
+
+                <!-- Sidebar Hover Menu Toggle Button -->
+                <div class="button-sm-hover" data-bs-toggle="tooltip" data-bs-placement="right" title="Show Full Sidebar">
+                    <i class="ri-checkbox-blank-circle-line align-middle"></i>
+                </div>
+
+                <!-- Full Sidebar Menu Close Button -->
+                <div class="button-close-fullsidebar">
+                    <i class="ri-close-fill align-middle"></i>
+                </div>
+
+                <!-- Sidebar -left -->
+                <div class="h-100" id="leftside-menu-container" data-simplebar>
+                    <!-- Leftbar User -->
+                    <div class="leftbar-user">
+                        <a href="pages-profile.html">
+                            <img src="assets/images/users/avatar-1.jpg" alt="user-image" height="42" class="rounded-circle shadow-sm">
+                            <span class="leftbar-user-name mt-2">Dominic Keller</span>
+                        </a>
+                    </div>
+
+                    <!--- Sidemenu -->
+                    <ul class="side-nav">
+                        {% if session.logged_in %}
+                        <li class="side-nav-item">
+                            <a href="/" class="side-nav-link">
+                                <i class="uil-dashboard"></i>
+                                <span> Device Info </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/hnt" class="side-nav-link">
+                                <i class="fak fa-helium"></i>
+                                <span> Helium </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/ttn" class="side-nav-link">
+                                <i class="fak fa-ttn"></i>
+                                <span> The Things Network </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/" class="side-nav-link">
+                                <i class="fak fa-thingsix"></i>
+                                <span class="badge bg-warning text-black float-end">Coming Soon!</span>
+                                <span> ThingsIX </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/" class="side-nav-link">
+                                <i class="fak fa-myst"></i>
+                                <span class="badge bg-warning text-black float-end">Coming Soon!</span>
+                                <span> Myst dVPN </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/device_configuration" class="side-nav-link">
+                                <i class="uil-cog"></i>
+                                <span> Device Configuration </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/change_password" class="side-nav-link">
+                                <i class="uil-padlock"></i>
+                                <span> Change Password </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="https://support.nebra.com/support/home" target="_blank" class="side-nav-link">
+                                <i class="uil-comment-question"></i>
+                                <span> Support </span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="/logout" class="side-nav-link">
+                                <i class="uil-sign-in-alt"></i>
+                                <span> Logout </span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="side-nav-item">
+                            <a href="/login" class="side-nav-link">
+                                <i class="uil-sign-out-alt"></i>
+                                <span> Login </span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <!--- End Sidemenu -->
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <!-- ========== Left Sidebar End ========== -->
+            
+
+            <!-- ============================================================== -->
+            <!-- Start Page Content here -->
+            <!-- ============================================================== -->
+
+            <div class="content-page">
+                <div class="content">
+                    <br/>
+                    {% block body %}{% endblock %}
+                </div>
+                <!-- content -->
+
+                <!-- Footer Start -->
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-md-end footer-links d-none d-md-block">
+                                    <script>document.write(new Date().getFullYear())</script> © Nebra LTD.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+                <!-- end Footer -->
+
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- End Page content -->
+            <!-- ============================================================== -->
+
+        </div>
+        <!-- END wrapper -->
+        
+        <!-- Vendor js -->
+        <script src="/static/js/vendor.min.js"></script>
+
+        <!-- App js -->
+        <script src="/static/js/app.min.js"></script>
+
+    </body>
+</html> 

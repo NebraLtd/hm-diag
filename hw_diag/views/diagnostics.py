@@ -5,11 +5,12 @@ import logging
 import traceback
 
 from flask import Blueprint, request
-from flask import render_template
+from flask import render_template, Response
 from flask import jsonify
 from datetime import datetime
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
+from hw_diag.diagnostics.provision_key_diagnostic import KEY_PROVISIONING_KEY
 from hw_diag.cache import cache
 from hm_pyhelper.diagnostics.diagnostics_report import DiagnosticsReport
 
@@ -29,36 +30,25 @@ from hw_diag.diagnostics.key_diagnostics import KeyDiagnostics
 from hw_diag.diagnostics.device_status_diagnostic import DeviceStatusDiagnostic
 from hw_diag.utilities.diagnostics import compose_diagnostics_report_from_err_msg
 from hw_diag.utilities.hardware import should_display_lte
-from hw_diag.tasks import perform_hw_diagnostics
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.security import GnuPG
-from hm_pyhelper.constants import diagnostics as DIAG_CONSTS
+from hw_diag.utilities.auth import authenticate
+from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.network import get_device_hostname
+from hw_diag.utilities.network import get_wan_ip_address
+from hw_diag.utilities.diagnostics import get_device_info
+from hw_diag.utilities.hardware import get_device_metrics
+
+
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 
 LOGGER = get_logger(__name__)
 DIAGNOSTICS = Blueprint('DIAGNOSTICS', __name__)
 
 
-def read_diagnostics_file():
-    diagnostics = {}
-
-    try:
-        perform_hw_diagnostics()
-        with open('diagnostic_data.json', 'r') as f:
-            diagnostics = json.load(f)
-    except FileNotFoundError:
-        msg = 'Diagnostics have not yet run, please try again in a few minutes'
-        diagnostics = {'error': msg}
-    except Exception as e:
-        msg = 'Diagnostics has encountered an error: %s'
-        traceback.format_exc()
-        diagnostics = {'error': msg % str(e)}
-
-    return diagnostics
-
-
 @DIAGNOSTICS.route('/json')
-@cache.cached(timeout=60)
+@authenticate
 def get_diagnostics_json():
     diagnostics = read_diagnostics_file()
     response = jsonify(diagnostics)
@@ -69,20 +59,43 @@ def get_diagnostics_json():
 
 
 @DIAGNOSTICS.route('/')
-@cache.cached(timeout=60)
+@authenticate
 def get_diagnostics():
     diagnostics = read_diagnostics_file()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
-    template_filename = 'diagnostics_page_light_miner.html'
+    hostname = get_device_hostname()
+    device_info = get_device_info()
+    template_filename = 'device_info.html'
+    wan_ip = get_wan_ip_address()
+    device_metrics = get_device_metrics()
 
-    return render_template(
+    response = render_template(
         template_filename,
         diagnostics=diagnostics,
         display_lte=display_lte,
-        DIAG_CONSTS=DIAG_CONSTS,
+        now=now,
+        hostname=hostname,
+        device_info=device_info,
+        wan_ip_address=wan_ip,
+        device_metrics=device_metrics
+    )
+
+    return response
+
+
+@DIAGNOSTICS.route('/hnt')
+@authenticate
+def get_helium_info():
+    diagnostics = read_diagnostics_file()
+    now = datetime.utcnow()
+    template_filename = 'helium_info.html'
+    response = render_template(
+        template_filename,
+        diagnostics=diagnostics,
         now=now
     )
+    return response
 
 
 @DIAGNOSTICS.route('/initFile.txt')
@@ -113,6 +126,14 @@ def get_initialisation_file():
     diagnostics_str = str(json.dumps(diagnostics_report))
     response_b64 = base64.b64encode(diagnostics_str.encode('ascii'))
     return response_b64
+
+
+@DIAGNOSTICS.route('/robots.txt')
+@cache.cached(timeout=60)
+def noindex():
+    robots = Response(response="User-Agent: *\nDisallow: /\n", status=200, mimetype="text/plain")
+    robots.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return robots
 
 
 @DIAGNOSTICS.route('/version')
@@ -240,7 +261,7 @@ def provision_key_view():
         err_msg = 'Can not find PGP payload.'
         LOGGER.error(err_msg)
         diagnostics_report = compose_diagnostics_report_from_err_msg(
-            SHUTDOWN_GATEWAY_KEY, err_msg)
+            KEY_PROVISIONING_KEY, err_msg)
         return diagnostics_report, 406
 
     diagnostics = [
@@ -248,11 +269,117 @@ def provision_key_view():
     ]
     diagnostics_report = DiagnosticsReport(diagnostics)
     diagnostics_report.perform_diagnostics()
-    if diagnostics_report.has_errors({SHUTDOWN_GATEWAY_KEY}):
+    if diagnostics_report.has_errors({KEY_PROVISIONING_KEY}):
         http_code = 500
     else:
         http_code = 200
 
-    LOGGER.debug("shutdown_gateway result: %s" % diagnostics_report)
+    LOGGER.debug("provision_key result: %s" % diagnostics_report)
 
     return diagnostics_report, http_code
+
+
+@DIAGNOSTICS.after_app_request
+def add_security_headers(response):
+    response.headers['X-Robots-Tag'] = 'none'
+
+    return response
+
+
+@DIAGNOSTICS.route('/device_configuration')
+@authenticate
+def get_device_config_page():
+    diagnostics = read_diagnostics_file()
+    display_lte = should_display_lte(diagnostics)
+    now = datetime.utcnow()
+    hostname = get_device_hostname()
+    template_filename = 'device_configuration.html'
+
+    response = render_template(
+        template_filename,
+        diagnostics=diagnostics,
+        display_lte=display_lte,
+        now=now,
+        hostname=hostname
+    )
+
+    return response
+
+
+@DIAGNOSTICS.route('/reboot')
+@authenticate
+def reboot():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        if request.args.get('type') == 'hard':
+            balena_supervisor.reboot()
+        else:
+            balena_supervisor.restart()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/purge')
+@authenticate
+def purge():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.purge()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/shutdown')
+@authenticate
+def shutdown():
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.shutdown()
+        return jsonify({"action_invoked": True})
+    except Exception as err:
+        return jsonify(
+            {
+                "action_invoked": False,
+                "error": str(err)
+            }
+        )
+
+
+@DIAGNOSTICS.route('/change_hostname', methods=['POST'])
+@authenticate
+def handle_hostname_update():
+    req_body = request.get_json()
+    new_hostname = req_body.get('hostname')
+
+    try:
+        balena_supervisor = BalenaSupervisor.new_from_env()
+        balena_supervisor.set_hostname(new_hostname)
+        return jsonify(
+            {
+                'action_invoked': True
+            }
+        )
+    except Exception as err:
+        logging.error("Error updating hostname: %s" % str(err))
+        msg = (
+            'Failed to update hostname. Hostnames should be in the format of '
+            'host.domain, e.g. nebra.local'
+        )
+        return jsonify(
+            {
+                'action_invoked': False,
+                'error': msg
+            }
+        )
