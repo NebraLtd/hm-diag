@@ -1,0 +1,40 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}ThingsIX Configuration{% endblock %}
+
+{% block body %}
+        <h3 class="text-center mb-4">ThingsIX Configuration</h3>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td>Gateway Address</td>
+                    <td class="text-right"><a target="_blank" href="https://app-testnet.thingsix.com/gateways/{{ gateway.gatewayId }}">{{ gateway.gatewayId }}</a></td>
+                </tr>
+                <tr>
+                    <td class="border-0">Gateway Owner</td>
+                    <td class="text-right border-0"><a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}">{{ gateway.owner }}</a></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td class="border-0">Radio Operational</td>
+                    {% if diagnostics.LOR %}
+                      <td class="text-success text-right border-0">True</td>
+                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
+                      <td class="text-right border-0">Awaiting Location Assertion</td>
+                    {% else %}
+                      <td class="text-danger text-right border-0">False</td>
+                    {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+{% endblock %}

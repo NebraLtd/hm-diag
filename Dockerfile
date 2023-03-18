@@ -75,6 +75,9 @@ RUN gpg --import manufacturing-key.gpg && \
     chmod 700 /usr/sbin/start_admin_session && \
     mkdir -p /opt/nebra
 
+# Copy ThingsIX Config
+COPY thingsix_config.yaml /opt/thingsix/thingsix_config.yaml
+
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"
 ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"

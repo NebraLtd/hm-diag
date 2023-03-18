@@ -1,0 +1,104 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}ThingsIX Setup{% endblock %}
+
+{% block body %}
+
+    <div class="modal fade" id="modalReconfigure" tabindex="-1" aria-labelledby="modalReconfigureLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalReconfigureLabel">Reconfiguring Hotspot</h5>
+          </div>
+          <div class="modal-body">
+              <p>
+                  Your hotspot is currently being reconfigured. You will be redirected automatically once complete.
+              </p>
+              <p>
+                <div id="counterReconfigure" style="text-align: center;"></div>
+                <script>
+                    var reconfigureCount = 120;
+                    var reconfigureTimer = '';
+
+                    function tickReconfigureCounter() {
+                        reconfigureCount--;
+                        document.getElementById("counterReconfigure").innerHTML = reconfigureCount;
+                        console.log(reconfigureCount);
+                        if (reconfigureCount == 0) {
+                            clearInterval(reconfigureTimer);
+                            window.location.href = "/";
+                        }
+                    }
+                </script>
+              </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+        <h3 class="text-center mb-4">ThingsIX Setup</h3>
+    </div>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+            <div class="card mb-0 h-100">
+              <p>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                          <div>
+                              You may enable ThingsIX support below. Once enabled your hotspot will need to reboot and to complete onboarding you must return to this page.
+                          </div>
+                        </div>
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                          <div>
+                            Your ThingsIX gateway's private key will be stored on the eMMC / SD card of your hotspot. You should back this up using the backup & restore feature and the resulting backup file should be kept secure.
+                            Failure to do so will result in loss of your ThingsIX gateway's onboard if your hotspots suffers a hardware failure, or if you perform a factory reset. Nebra cannot be held responsible for loss of private keys.
+                          </div>
+                        </div>
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                          <div>
+                            ThingsIX is currently in development and your gateway will be onboarded to the ThingsIX test-net. You will need to onboard again once
+                            the ThingsIX main-net launches to earn real THIX tokens.
+                          </div>
+                        </div>
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                          <div>
+                            To onboard your gateway to ThingsIX you'll need to acquire a small amount of MATIC & THIX token to pay the onboarding fees. More information can be found
+                            within the <a href="https://docs.thingsix.com/for-gateway-owners/onboard_gateway" target="_blank">ThingsIX Onboarding Guide</a>.
+                          </div>
+                        </div>
+                        <script>
+                                function enableTHIX() {
+                                    fetch('/thingsix/enable', {
+                                        method: 'GET',
+                                        headers: {
+                                          'Accept': 'application/json',
+                                          'Content-Type': 'application/json'
+                                        }
+                                    });
+
+                                    // Then soft reboot the services to apply changes to the MUX.
+                                    fetch("/reboot?type=soft", {"method": "GET"});
+
+                                    // Display dialogue with countdown whilst changes apply.
+                                    var reconfigureTimer = setInterval(tickReconfigureCounter, 1000);
+                                    var reconfigureModal = new bootstrap.Modal(document.getElementById("modalReconfigure"), {});
+                                    reconfigureModal.show();
+                                }
+                        </script>
+                        <div class="text-center"><button class="btn btn-primary" onClick="enableTHIX()">Enable ThingsIX</button></div>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+        </div>
+{% endblock %}
