@@ -194,7 +194,7 @@ def spawn_admin_session():
         return 'Unauthorized', 401
 
     referrer = request.headers.get('Host')
-    if referrer.endswith(".balena-devices.com"):
+    if 'localhost' in referrer:
         session['logged_in'] = True
         return redirect('/')
     else:
