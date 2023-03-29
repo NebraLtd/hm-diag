@@ -18,16 +18,13 @@ COPY requirements.txt ./requirements.txt
 COPY setup.py ./setup.py
 COPY MANIFEST.in ./MANIFEST.in
 
-RUN \
-    install_packages \
-            build-essential \
-            libdbus-glib-1-dev && \
-    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
-
-# firehose build, the tar is obtained from quectel and cleaned from build artifacts,
-# recompressed by us.
-# there is no install target in Makefile, doing manual copy
-RUN tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
+RUN install_packages \
+        build-essential \
+        libdbus-glib-1-dev && \
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" . && \
+    tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
+    # firehose build, the tar is obtained from quectel and cleaned from build artifacts,
+    # recompressed by us.
 
 # docker linter wants WORKDIR for changing directory
 WORKDIR /tmp/build/QFirehose_Linux_Android_V1.4.9
