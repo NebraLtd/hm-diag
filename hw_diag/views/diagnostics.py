@@ -2,7 +2,6 @@ import json
 import base64
 import os
 import logging
-import traceback
 
 from flask import Blueprint, request
 from flask import render_template, Response

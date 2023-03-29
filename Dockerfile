@@ -9,13 +9,14 @@ FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20221215 AS builder
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN mkdir /tmp/build
-COPY quectel/ /tmp/build/quectel
-COPY hw_diag/ /tmp/build/hw_diag
-COPY bigquery/ /tmp/build/bigquery
-COPY requirements.txt /tmp/build/requirements.txt
-COPY setup.py /tmp/build/setup.py
-COPY MANIFEST.in /tmp/build/MANIFEST.in
 WORKDIR /tmp/build
+
+COPY quectel/ ./quectel
+COPY hw_diag/ ./hw_diag
+COPY bigquery/ ./bigquery
+COPY requirements.txt ./requirements.txt
+COPY setup.py ./setup.py
+COPY MANIFEST.in ./MANIFEST.in
 
 RUN \
     install_packages \
@@ -23,19 +24,14 @@ RUN \
             libdbus-glib-1-dev && \
     pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
-# firehose build, the tar is obtained from  quectel.
+# firehose build, the tar is obtained from quectel and cleaned from build artifacts,
+# recompressed by us.
 # there is no install target in Makefile, doing manual copy
-COPY quectel quectel
-RUN tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar
-# docker linter wants WORKDIR for changing directory
-WORKDIR /opt/QFirehose_Linux_Android_V1.4.9
-RUN make && \
-    cp QFirehose /usr/sbin/QFirehose && \
-    rm -rf quectel/qfirehose
+RUN tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
 
-WORKDIR /opt
-COPY ./ /opt
-RUN pip --no-cache-dir install .
+# docker linter wants WORKDIR for changing directory
+WORKDIR /tmp/build/QFirehose_Linux_Android_V1.4.9
+RUN make
 
 # No need to cleanup the builder
 
@@ -59,15 +55,8 @@ WORKDIR /opt/
 # Import gpg key
 COPY keys/manufacturing-key.gpg ./
 
-
-# copy python env
-COPY --from=builder /opt/venv /opt/venv
-
 # copy modem flashing tool
-COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
-
-# copy firmware files
-COPY --from=builder /opt/quectel /quectel
+COPY --from=builder /tmp/build/QFirehose_Linux_Android_V1.4.9/QFirehose /usr/sbin/QFirehose
 
 # copy db migration files
 COPY migrations/ /opt/migrations/migrations
