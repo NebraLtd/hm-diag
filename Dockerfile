@@ -26,6 +26,16 @@ RUN install_packages \
     # firehose build, the tar is obtained from quectel and cleaned from build artifacts,
     # recompressed by us.
 
+# TODO test start
+# Temporary action for generating required binaries
+RUN wget --progress=dot:giga "https://github.com/helium/gateway-mfr-rs/releases/download/v0.4.1/gateway-mfr-0.4.1-arm-unknown-linux-gnueabihf.tar.gz" && \
+    wget --progress=dot:giga "https://github.com/helium/gateway-mfr-rs/releases/download/v0.4.1/gateway-mfr-0.4.1-aarch64-unknown-linux-gnu.tar.gz" && \
+    tar -xvf "gateway-mfr-0.4.1-arm-unknown-linux-gnueabihf.tar.gz" && \
+    mv gateway_mfr $PYTHON_DEPENDENCIES_DIR/hm_pyhelper/gateway_mfr_arm && \
+    tar -xvf "gateway-mfr-0.4.1-aarch64-unknown-linux-gnu.tar.gz" && \
+    mv gateway_mfr $PYTHON_DEPENDENCIES_DIR/hm_pyhelper/gateway_mfr_aarch64
+# TODO testing end
+
 # docker linter wants WORKDIR for changing directory
 WORKDIR /tmp/build/QFirehose_Linux_Android_V1.4.9
 RUN make
@@ -51,6 +61,9 @@ WORKDIR /opt/
 
 # Import gpg key
 COPY keys/manufacturing-key.gpg ./
+
+# Copy packages from builder
+COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
 
 # copy modem flashing tool
 COPY --from=builder /tmp/build/QFirehose_Linux_Android_V1.4.9/QFirehose /usr/sbin/QFirehose

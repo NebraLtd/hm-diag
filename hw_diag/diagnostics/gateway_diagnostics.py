@@ -75,19 +75,6 @@ class GatewayDiagnostic(Diagnostic):
 class GatewayDiagnostics(Diagnostic):
 
     SUPPORTED_GATEWAY_ATTRIBUTES = [
-        DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.VALIDATOR_ADDRESS_KEY,
-                          grpc_method_name='get_validator_info',
-                          composed_attribute_path='gateway.address'),
-        DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.VALIDATOR_URI_KEY,
-                          grpc_method_name='get_validator_info',
-                          composed_attribute_path='gateway.uri'),
-        DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.VALIDATOR_BLOCK_AGE,
-                          grpc_method_name='get_validator_info',
-                          composed_attribute_path='block_age'),
-        DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY,
-                          short_key=DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_SHORT_KEY,
-                          grpc_method_name='get_validator_info',
-                          composed_attribute_path='height'),
         DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.GATEWAY_PUBKEY_KEY,
                           grpc_method_name='get_pubkey'),
         DiagnosticKeyInfo(friendly_name=DIAG_CONSTS.GATEWAY_REGION_KEY,

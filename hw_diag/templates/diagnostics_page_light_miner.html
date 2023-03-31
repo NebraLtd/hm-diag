@@ -123,22 +123,6 @@
                       <td class="text-danger text-right">False</td>
                     {% endif %}
                 </tr>
-                <tr>
-                    <td>Validator Block Height</td>
-                    {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY]) %}
-                        <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY) }}</td>
-                    {% else %}
-                        <td class="text-warning text-right">Disconnected</td>
-                    {% endif %}
-                  </tr>
-                <tr>
-                    <td>Validator Block Age</td>
-                    {% if not diagnostics.has_errors([DIAG_CONSTS.VALIDATOR_BLOCK_AGE]) %}
-                      <td class="text-success text-right">{{ diagnostics.get(DIAG_CONSTS.VALIDATOR_BLOCK_AGE) }} </td>
-                    {% else %}
-                      <td class="text-warning text-right">Disconnected</td>
-                    {% endif %}
-                </tr>
               </table>
             </div>
           </div>
