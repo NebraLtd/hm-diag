@@ -10,6 +10,11 @@ def get_unknown_gateways():
 
 
 def get_gateways():
+    # Run a sync before display...
+    resp = requests.get('%s/gateways' % THIX_FORWARDER_API)
+    gateway = resp.json().get('onboarded')[0]
+    gateway_id = gateway.get('localId')
+    requests.get('%s/gateways/%s/sync' % (THIX_FORWARDER_API, gateway_id))
     resp = requests.get('%s/gateways' % THIX_FORWARDER_API)
     return resp.json()
 
