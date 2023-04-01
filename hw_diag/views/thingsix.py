@@ -15,6 +15,7 @@ from hw_diag.utilities.db import set_value
 from hw_diag.utilities.thix import get_unknown_gateways
 from hw_diag.utilities.thix import get_gateways
 from hw_diag.utilities.thix import submit_onboard
+from hw_diag.utilities.thix import convert_h3_to_lat_lon
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 
 
@@ -49,6 +50,14 @@ def get_thix_dashboard():
     gateways = get_gateways()
     gateway = gateways.get('onboarded')[0]
     diagnostics = read_diagnostics_file()
+    gw_details = gateway.get('details')
+
+    if gw_details:
+        try:
+            location = convert_h3_to_lat_lon(gw_details.get('location'))
+            gateway['details'] = gateway['details'] | location
+        except Exception:
+            pass
 
     # Else just render the THIX dashboard.
     return render_template(
