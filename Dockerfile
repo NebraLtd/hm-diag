@@ -24,7 +24,6 @@ RUN install_packages \
             build-essential \
             python3-dev \
             libdbus-glib-1-dev 
-RUN pip3 install --upgrade pip
 RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # firehose build, the tar is obtained from  quectel.

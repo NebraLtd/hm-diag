@@ -1,5 +1,4 @@
 import requests
-import h3
 
 
 THIX_FORWARDER_API = 'http://thix-forwarder:8080/v1'
@@ -29,11 +28,3 @@ def submit_onboard(gateway, wallet):
         return resp.json()
     else:
         raise Exception('Invalid onboard request')
-
-
-def convert_h3_to_lat_lon(h3_location):
-    geo = h3.h3_to_geo(h3_location)
-    return {
-        'latitude': geo[0],
-        'longitude': geo[1]
-    }
