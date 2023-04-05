@@ -11,6 +11,15 @@ def get_unknown_gateways():
 
 def get_gateways():
     resp = requests.get('%s/gateways' % THIX_FORWARDER_API)
+
+    try:
+        onboarded_gw = resp.json().get('onboarded')[0]
+        gw_id = onboarded_gw.get('localId')
+        requests.get('%s/gateways/%s/sync' % (THIX_FORWARDER_API, gw_id))
+        resp = requests.get('%s/gateways' % THIX_FORWARDER_API)
+    except Exception:
+        pass
+
     return resp.json()
 
 

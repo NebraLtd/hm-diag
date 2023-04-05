@@ -46,16 +46,22 @@ def get_thix_dashboard():
     except Exception:
         return render_template('thix_onboard.html')
 
-    gateways = get_gateways()
-    gateway = gateways.get('onboarded')[0]
-    diagnostics = read_diagnostics_file()
+    try:
+        gateways = get_gateways()
+        gateway = gateways.get('onboarded')[0]
+        diagnostics = read_diagnostics_file()
 
-    # Else just render the THIX dashboard.
-    return render_template(
-        'thix_dashboard.html',
-        gateway=gateway,
-        diagnostics=diagnostics
-    )
+        # Else just render the THIX dashboard.
+        return render_template(
+            'thix_dashboard.html',
+            gateway=gateway,
+            diagnostics=diagnostics
+        )
+
+    except Exception:
+        return render_template(
+            'thix_error.html'
+        )
 
 
 @THINGSIX.route('/thingsix/enable')
