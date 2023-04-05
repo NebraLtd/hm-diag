@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 from hw_diag.utilities.thix import get_gateways
 from hw_diag.utilities.thix import get_unknown_gateways
 from hw_diag.utilities.thix import submit_onboard
+# from hw_diag.utilities.thix import convert_h3_to_lat_lon
 
 
 class OKResponse(object):
@@ -128,3 +129,17 @@ class TestTHIXUtilities(unittest.TestCase):
                 'pushToThingsIX': True
             }
         )
+
+    '''
+    2023-04-04 - Rob - Function removed in favour of using JS implementation
+                       for conversions within the front end.
+
+    def test_h3_to_latlng(self):
+        location = '8a1874aeb4f7fff'
+        expected_geolocation = {
+            'latitude': 50.365592317652776,
+            'longitude': -4.083930206429006
+        }
+        result = convert_h3_to_lat_lon(location)
+        self.assertEqual(expected_geolocation, result)
+    '''

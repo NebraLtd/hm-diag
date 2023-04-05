@@ -17,11 +17,14 @@ COPY setup.py /tmp/build/setup.py
 COPY MANIFEST.in /tmp/build/MANIFEST.in
 WORKDIR /tmp/build
 
-RUN \
-    install_packages \
+RUN install_packages \
+            cmake \
+            gcc \
+            libtool \
             build-essential \
-            libdbus-glib-1-dev && \
-    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
+            python3-dev \
+            libdbus-glib-1-dev 
+RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
 
 # firehose build, the tar is obtained from  quectel.
 # there is no install target in Makefile, doing manual copy
