@@ -216,7 +216,7 @@ def detect_ecc(diagnostics):
         if os.getenv('SWARM_KEY_URI_OVERRIDE'):
             swarm_key_uri = os.getenv('SWARM_KEY_URI_OVERRIDE')
         else:
-            swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')
+            swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')[0]
 
         parse_result = urlparse(swarm_key_uri)
         i2c_bus = parse_i2c_bus(parse_result.hostname)
