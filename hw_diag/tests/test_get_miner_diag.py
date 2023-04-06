@@ -30,11 +30,6 @@ class TestGetMinerDiag(unittest.TestCase):
             diagnostics_report = DiagnosticsReport(diagnostics)
             diagnostics_report.perform_diagnostics()
             expected_data = {
-                DIAG_CONSTS.VALIDATOR_ADDRESS_KEY: TestData.validator_address_decoded,
-                DIAG_CONSTS.VALIDATOR_URI_KEY: TestData.height_res.gateway.uri,
-                DIAG_CONSTS.VALIDATOR_BLOCK_AGE: TestData.height_res.block_age,
-                DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_KEY: TestData.height_res.height,
-                DIAG_CONSTS.VALIDATOR_BLOCK_HEIGHT_SHORT_KEY: TestData.height_res.height,
                 DIAG_CONSTS.GATEWAY_REGION_KEY: TestData.region_name,
                 DIAG_CONSTS.GATEWAY_REGION_SHORT_KEY: TestData.region_name,
                 DIAG_CONSTS.GATEWAY_PUBKEY_KEY: TestData.pubkey_decoded
