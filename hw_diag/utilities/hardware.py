@@ -1,13 +1,11 @@
-import re
-import os
 import dbus
 import psutil
 from typing import Union
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
-from hm_pyhelper.miner_param import get_public_keys_rust
+from hm_pyhelper.miner_param import get_public_keys_rust, config_search_param, \
+                                    parse_i2c_bus, parse_i2c_address, get_ecc_location
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
-from hw_diag.utilities.shell import config_search_param
 from retry import retry
 
 
@@ -190,34 +188,13 @@ def set_diagnostics_bt_lte(diagnostics):
     return diagnostics
 
 
-def parse_i2c_bus(address):
-    """
-    Takes i2c bus as input parameter, extracts the bus number and returns it.
-    """
-    i2c_bus_pattern = r'i2c-(\d+)'
-    return re.search(i2c_bus_pattern, address).group(1)
-
-
-def parse_i2c_address(port):
-    """
-    Takes i2c address in decimal as input parameter, extracts the hex version and returns it.
-    """
-    return f'{port:x}'
-
-
 def detect_ecc(diagnostics):
     # The order of the values in the lists is important!
     # It determines which value will be available for which key
-    variant = diagnostics.get('VA')
-
     i2c_bus = ''
     try:
         # Example SWARM_KEY_URI: "ecc://i2c-1:96?slot=0"
-        if os.getenv('SWARM_KEY_URI_OVERRIDE'):
-            swarm_key_uri = os.getenv('SWARM_KEY_URI_OVERRIDE')
-        else:
-            swarm_key_uri = get_variant_attribute(variant, 'SWARM_KEY_URI')[0]
-
+        swarm_key_uri = get_ecc_location()
         parse_result = urlparse(swarm_key_uri)
         i2c_bus = parse_i2c_bus(parse_result.hostname)
         i2c_address = parse_i2c_address(parse_result.port)

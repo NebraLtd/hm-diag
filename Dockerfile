@@ -20,6 +20,10 @@ COPY MANIFEST.in ./MANIFEST.in
 
 RUN install_packages \
         build-essential \
+        cmake \
+        gcc \
+        libtool \
+        python3-dev \
         libdbus-glib-1-dev && \
     pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" . && \
     tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
@@ -80,6 +84,9 @@ RUN gpg --import manufacturing-key.gpg && \
     rm manufacturing-key.gpg && \
     chmod 700 /usr/sbin/start_admin_session && \
     mkdir -p /opt/nebra
+
+# Copy ThingsIX Config
+COPY thingsix_config.yaml /opt/thingsix/thingsix_config.yaml
 
 # Add python dependencies to PYTHONPATH
 ENV PYTHONPATH="${PYTHON_DEPENDENCIES_DIR}:${PYTHONPATH}"

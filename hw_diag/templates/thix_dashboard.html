@@ -1,0 +1,96 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}ThingsIX Configuration{% endblock %}
+
+{% block body %}
+        <script src="https://unpkg.com/h3-js"></script>
+        <h3 class="text-center mb-4">ThingsIX Configuration</h3>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td>Gateway Address</td>
+                    <td class="text-right"><a target="_blank" href="https://app-testnet.thingsix.com/gateways/{{ gateway.gatewayId }}">{{ gateway.gatewayId }}</a></td>
+                </tr>
+                <tr>
+                    <td class="border-0">Gateway Owner</td>
+                    <td class="text-right border-0"><a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}">{{ gateway.owner }}</a></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <table class="table dt-responsive nowrap m-2 w-auto">
+                <tr>
+                    <td>Radio Operational</td>
+                    {% if diagnostics.LOR %}
+                      <td class="text-success text-right">True</td>
+                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
+                      <td class="text-right">Awaiting Location Assertion</td>
+                    {% else %}
+                      <td class="text-danger text-right">False</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Band</td>
+                    <td>
+                        {% if gateway.details %}
+                            {{ gateway.details.band }}
+                        {% else %}
+                            Onboard Pending
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Antenna Gain</td>
+                    <td>
+                        {% if gateway.details %}
+                            {{ gateway.details.antennaGain }}dBi
+                        {% else %}
+                            Onboard Pending
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border-0">Antenna Altitude</td>
+                    <td class="border-0">
+                        {% if gateway.details %}
+                            {{ gateway.details.altitude }}m
+                        {% else %}
+                            Onboard Pending
+                        {% endif %}
+                    </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div><br/></div>
+          <div class="col-12 col-lg-12 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100" style="width:100%; height:500px;">
+                  <div id="mapdiv" style="width:100%; height:500px;"></div>
+                  <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+                  <script>
+                    var mapCentre = h3.cellToLatLng("{{ gateway.details.location }}");
+                    console.log(mapCentre);
+                    map = new OpenLayers.Map("mapdiv");
+                    map.addLayer(new OpenLayers.Layer.OSM());
+
+                    var lonLat = new OpenLayers.LonLat( mapCentre[1] , mapCentre[0] )
+                          .transform(
+                            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                            map.getProjectionObject() // to Spherical Mercator Projection
+                          );
+
+                    var zoom=16;
+                    var markers = new OpenLayers.Layer.Markers( "Markers" );
+                    map.addLayer(markers);
+                    markers.addMarker(new OpenLayers.Marker(lonLat));
+                    map.setCenter (lonLat, zoom);
+                  </script>
+            </div>
+          </div>
+        </div>
+{% endblock %}
