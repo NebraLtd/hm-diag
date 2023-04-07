@@ -11,6 +11,8 @@ from hw_diag.utilities.hardware import set_diagnostics_bt_lte
 from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors
 from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
+from hw_diag.diagnostics.gateway_diagnostics import GatewayDiagnostics
+from hm_pyhelper.diagnostics import DiagnosticsReport
 
 
 log = logging.getLogger()
@@ -20,7 +22,14 @@ log.setLevel(logging.DEBUG)
 def perform_hw_diagnostics(ship=False):  # noqa: C901
     log.info('Running periodic hardware diagnostics')
 
-    diagnostics = {}
+    diagnostics = [
+        GatewayDiagnostics()
+    ]
+
+    diagnostics_report = DiagnosticsReport(diagnostics)
+    diagnostics_report.perform_diagnostics()
+
+    diagnostics = diagnostics_report
 
     now = datetime.datetime.utcnow()
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
@@ -38,17 +47,6 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     set_diagnostics_bt_lte(diagnostics)
 
-    # Check if the region has been set
-    try:
-        with open("/var/pktfwd/region", 'r') as data:
-            region = data.read()
-            if len(region) > 3:
-                log.info("Frequency: " + str(region))
-                diagnostics['RE'] = str(region).rstrip('\n')
-    except FileNotFoundError:
-        # No region found, put a dummy region in
-        diagnostics['RE'] = "UN123"
-
     # Check the basics if they're fine and set an overall value
     # Basics are: ECC valid, Mac addresses aren't FF, BT Is present,
     # and LoRa hasn't failed
@@ -56,7 +54,9 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             diagnostics["ECC"] is True
             and diagnostics["E0"] is not None
             and diagnostics["W0"] is not None
-            and diagnostics["BT"] is True and diagnostics["LOR"] is True
+            and diagnostics["BT"] is True
+            and diagnostics["LOR"] is True
+            and not diagnostics.has_errors(["validator_uri"])
     ):
         diagnostics["PF"] = True
     else:

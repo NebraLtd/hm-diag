@@ -80,3 +80,17 @@ class TestECCDiagnostic(unittest.TestCase):
             DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
             'ECC': 'Resource Busy Error'
         })
+
+    @patch(
+        "hw_diag.diagnostics.ecc_diagnostic.get_gateway_mfr_test_result",
+        side_effect=UnboundLocalError("Unbound Local Error"))
+    def test_unboundlocalerror_exception(self, mock):
+        diagnostic = EccDiagnostic()
+        diagnostics_report = DiagnosticsReport([diagnostic])
+        diagnostics_report.perform_diagnostics()
+
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: ['ECC', 'ECC'],
+            'ECC': 'Unbound Local Error'
+        })

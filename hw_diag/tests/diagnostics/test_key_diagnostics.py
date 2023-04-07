@@ -116,3 +116,18 @@ class TestKeyDiagnostics(unittest.TestCase):
                 DIAGNOSTICS_ERRORS_KEY: [],
                 'KK': 'Resource Busy Error',
             })
+
+    @patch(
+      "hw_diag.diagnostics.key_diagnostics.KeyDiagnostic.perform_test",
+      side_effect=Exception("Undefined Exception"))
+    def test_generic_exception(self, mock):
+        with pytest.raises(Exception):
+            diagnostic = KeyDiagnostics()
+            diagnostics_report = DiagnosticsReport([diagnostic])
+            diagnostics_report.perform_diagnostics()
+
+            self.assertDictEqual(diagnostics_report, {
+                DIAGNOSTICS_PASSED_KEY: False,
+                DIAGNOSTICS_ERRORS_KEY: [],
+                'KK': 'Undefined Exception',
+            })

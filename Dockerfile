@@ -9,31 +9,30 @@ FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20221215 AS builder
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
 RUN mkdir /tmp/build
-COPY quectel/ /tmp/build/quectel
-COPY hw_diag/ /tmp/build/hw_diag
-COPY bigquery/ /tmp/build/bigquery
-COPY requirements.txt /tmp/build/requirements.txt
-COPY setup.py /tmp/build/setup.py
-COPY MANIFEST.in /tmp/build/MANIFEST.in
 WORKDIR /tmp/build
 
-RUN install_packages \
-            cmake \
-            gcc \
-            libtool \
-            build-essential \
-            python3-dev \
-            libdbus-glib-1-dev 
-RUN pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" .
+COPY quectel/ ./quectel
+COPY hw_diag/ ./hw_diag
+COPY bigquery/ ./bigquery
+COPY requirements.txt ./requirements.txt
+COPY setup.py ./setup.py
+COPY MANIFEST.in ./MANIFEST.in
 
-# firehose build, the tar is obtained from  quectel.
-# there is no install target in Makefile, doing manual copy
-RUN tar -xf quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar
+RUN install_packages \
+        build-essential \
+        cmake \
+        gcc \
+        libtool \
+        python3-dev \
+        libdbus-glib-1-dev && \
+    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" . && \
+    tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
+    # firehose build, the tar is obtained from quectel and cleaned from build artifacts,
+    # recompressed by us.
+
 # docker linter wants WORKDIR for changing directory
 WORKDIR /tmp/build/QFirehose_Linux_Android_V1.4.9
-RUN make && \
-    cp QFirehose /usr/sbin/QFirehose && \
-    rm -rf quectel/qfirehose
+RUN make
 
 # No need to cleanup the builder
 
@@ -48,7 +47,8 @@ RUN \
         wget \
         i2c-tools \
         libdbus-1-3 \
-        gpg
+        gpg \
+        libatomic1
 
 # Nebra uses /opt by convention
 WORKDIR /opt/
@@ -60,10 +60,7 @@ COPY keys/manufacturing-key.gpg ./
 COPY --from=builder "$PYTHON_DEPENDENCIES_DIR" "$PYTHON_DEPENDENCIES_DIR"
 
 # copy modem flashing tool
-COPY --from=builder /usr/sbin/QFirehose /usr/sbin/QFirehose
-
-# copy firmware files
-COPY --from=builder /tmp/build/quectel /quectel
+COPY --from=builder /tmp/build/QFirehose_Linux_Android_V1.4.9/QFirehose /usr/sbin/QFirehose
 
 # copy db migration files
 COPY migrations/ /opt/migrations/migrations
