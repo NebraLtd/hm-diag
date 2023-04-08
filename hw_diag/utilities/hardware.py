@@ -338,7 +338,7 @@ def is_button_present(diagnostics):
 
 
 def get_device_metrics():
-    if is_rockpi:
+    if is_rockpi():
         try:
             temperature = psutil.sensors_temperatures()['soc-thermal'][0].current
         except Exception:
