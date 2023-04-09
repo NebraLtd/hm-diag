@@ -5,7 +5,8 @@ from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust, config_search_param, \
                                     parse_i2c_bus, parse_i2c_address, get_ecc_location
-from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute
+from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute, \
+                                             is_rockpi
 from retry import retry
 
 
@@ -337,10 +338,16 @@ def is_button_present(diagnostics):
 
 
 def get_device_metrics():
-    try:
-        temperature = psutil.sensors_temperatures()['cpu_thermal'][0].current
-    except Exception:
-        temperature = 0
+    if is_rockpi():
+        try:
+            temperature = psutil.sensors_temperatures()['soc-thermal'][0].current
+        except Exception:
+            temperature = 0
+    else:
+        try:
+            temperature = psutil.sensors_temperatures()['cpu_thermal'][0].current
+        except Exception:
+            temperature = 0
 
     return {
         'cpu': psutil.cpu_percent(),
