@@ -14,8 +14,6 @@ from ..utilities.manufacturing_mode import (
     manufacturing_mode_ping_check,
 )
 
-TEMP_MANUFACTURING_MODE_FILE = "/tmp/nebra_in_manufacturing"
-
 
 @pytest.fixture()
 def set_manufacturing_mode_env_var_to_true():
