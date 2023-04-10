@@ -29,7 +29,7 @@ from hw_diag.database.config import DB_URL
 from hw_diag.database import get_db_session
 from hw_diag.database.migrations import run_migrations
 from hw_diag.utilities.network import setup_hostname
-from hw_diag.utilities.network import device_in_manufacturing
+from hw_diag.utilities.manufacturing_mode import device_in_manufacturing
 
 SENTRY_DSN = os.getenv('SENTRY_DIAG')
 DIAGNOSTICS_VERSION = os.getenv('DIAGNOSTICS_VERSION')

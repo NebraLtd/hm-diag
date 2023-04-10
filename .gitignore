@@ -140,4 +140,5 @@ cython_debug/
 
 # VSCode editor related stuff
 .vscode/
+*.code-workspace
 /.flake8
