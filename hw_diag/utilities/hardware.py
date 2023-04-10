@@ -349,10 +349,12 @@ def get_device_metrics():
         except Exception:
             temperature = 0
 
+    memory_used = psutil.virtual_memory().total - psutil.virtual_memory().available
+
     return {
         'cpu': psutil.cpu_percent(),
         'memory_total': psutil.virtual_memory().total,
-        'memory_used': psutil.virtual_memory().used,
+        'memory_used': memory_used,
         'disk_total': psutil.disk_usage('/').total,
         'disk_used': psutil.disk_usage('/').used,
         'temperature': temperature
