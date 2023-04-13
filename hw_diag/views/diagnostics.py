@@ -7,6 +7,7 @@ from flask import Blueprint, request
 from flask import render_template, Response
 from flask import jsonify
 from datetime import datetime
+from hm_pyhelper.constants import diagnostics as DIAG_CONSTS
 from hm_pyhelper.constants.shipping import DESTINATION_ADD_GATEWAY_TXN_KEY
 from hw_diag.diagnostics.shutdown_gateway_diagnostic import SHUTDOWN_GATEWAY_KEY
 from hw_diag.diagnostics.provision_key_diagnostic import KEY_PROVISIONING_KEY
