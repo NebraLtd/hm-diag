@@ -41,6 +41,7 @@ include hw_diag/static/js/hyper-config.js
 include hw_diag/static/js/hyper-syntax.js
 include hw_diag/static/js/vendor.min.js
 include hw_diag/templates/js/
+include hw_diag/templates/myst.html
 include hw_diag/templates/template_hyper.html
 include hw_diag/templates/template.html
 include hw_diag/templates/unauthenticated_template.html

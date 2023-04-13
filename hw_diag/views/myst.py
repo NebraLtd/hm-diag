@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Blueprint
+from flask import render_template
 
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.auth import authenticate
@@ -18,4 +19,4 @@ MYST = Blueprint('MYST', __name__)
 @authenticate
 @commercial_fleet_only
 def get_myst_dashboard():
-    return 'Hello', 200
+    return render_template('myst.html')
