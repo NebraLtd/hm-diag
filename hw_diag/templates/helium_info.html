@@ -58,9 +58,9 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  {% if not diagnostics.has_errors([DIAG_CONSTS.GATEWAY_REGION_KEY]) %}
+                  {% if not region_error %}
                     <td class="border-0">Region Plan</td>
-                    <td class="text-right">{{ diagnostics.get(DIAG_CONSTS.GATEWAY_REGION_KEY) }}</td>
+                    <td class="text-right">{{ region }}</td>
                   {% else %}
                     <td class="border-0">Region Plan</td>
                     <td class="border-0 text-right">Awaiting Location Assertion</td>
@@ -76,7 +76,7 @@
                     <td>Radio Operational</td>
                     {% if diagnostics.LOR %}
                       <td class="text-success text-right">True</td>
-                    {% elif diagnostics.has_errors([DIAG_CONSTS.GATEWAY_REGION_KEY]) and not diagnostics.LOR %}
+                    {% elif region_error and not diagnostics.LOR %}
                       <td class="text-right">Awaiting Location Assertion</td>
                     {% else %}
                       <td class="text-danger text-right">False</td>
