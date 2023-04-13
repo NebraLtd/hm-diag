@@ -95,8 +95,8 @@ def get_helium_info():
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
-        now=now
-        region_error=region_error
+        now=now,
+        region_error=region_error,
         region=region
     )
     return response
