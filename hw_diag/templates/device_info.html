@@ -69,16 +69,6 @@
             <div class="card mb-0 h-100">
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
-                    <td>Radio Operational</td>
-                    {% if diagnostics.LOR %}
-                      <td class="text-success text-right">True</td>
-                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
-                      <td class="text-right">Awaiting Location Assertion</td>
-                    {% else %}
-                      <td class="text-danger text-right">False</td>
-                    {% endif %}
-                </tr>
-                <tr>
                   <td>ECC Detected</td>
                   {% if diagnostics.ECC %}
                     <td class="text-success text-right">True</td>
