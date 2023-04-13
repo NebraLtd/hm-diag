@@ -1,0 +1,21 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}Mysterium{% endblock %}
+
+{% block body %}
+    <style>
+        .content-page {
+            position: relative;
+            margin-left: var(--ct-leftbar-width);
+            min-height: calc(100vh - var(--ct-topbar-height) - 2px);
+            padding: 0 0 0;
+            -webkit-transition: all .25s ease-in-out;
+            transition: all .25s ease-in-out;
+        }
+    </style>
+    <iframe id='frmMyst' frameborder="0" style="overflow:hidden; height: 100vh; width:100%">Loading...</iframe>
+    <script>
+        var url = 'http://' + window.location.href.split('/')[2] + ':4449';
+        document.getElementById('frmMyst').src = url;
+    </script>
+{% endblock %}
