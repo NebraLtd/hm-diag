@@ -70,7 +70,7 @@ def commercial_fleet_only(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         fleet_name = os.environ.get('BALENA_APP_NAME')
-        fleet_id = os.environ.get('BALENA_APP_ID')
+        fleet_id = int(os.environ.get('BALENA_APP_ID'))
         if not fleet_name.endswith('-c') or fleet_id not in COMMERCIAL_FLEETS:
             return redirect('/upgrade')
         return f(*args, **kwargs)
