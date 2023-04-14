@@ -4,6 +4,7 @@ import json
 
 from hm_pyhelper.hardware_definitions import variant_definitions
 from hm_pyhelper.miner_param import get_ethernet_addresses
+from hm_pyhelper.constants.diagnostics import GATEWAY_REGION_KEY
 from hw_diag.utilities.hardware import detect_ecc
 from hw_diag.utilities.hardware import get_serial_number
 from hw_diag.utilities.hardware import lora_module_test
@@ -31,6 +32,10 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
 
     diagnostics = diagnostics_report
 
+    if diagnostics_report.has_errors([GATEWAY_REGION_KEY]):
+        # No region found, put a dummy region in
+        diagnostics['RE'] = "UN123"
+
     now = datetime.datetime.utcnow()
     diagnostics['last_updated'] = now.strftime("%H:%M UTC %d %b %Y")
 
@@ -56,7 +61,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             and diagnostics["W0"] is not None
             and diagnostics["BT"] is True
             and diagnostics["LOR"] is True
-            and not diagnostics.has_errors(["validator_uri"])
+        )
     ):
         diagnostics["PF"] = True
     else:
