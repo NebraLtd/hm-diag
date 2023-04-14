@@ -55,10 +55,10 @@ jobs:
         with:
           build-args: BUILD_BOARD=${{ matrix.board }}
           push: true
-          labels: ${{ steps.meta.outputs.labels }}-${{ github.ref_name }}
+          labels: WOOP=${{ github.ref_name }}
           tags: |
-            TEST-${{ github.ref_name }}-${{ steps.meta.outputs.tags }}
-            teeeeesting
+            nebraltd/hm-diag:${{ github.ref_name }}
+            nebraltd/hm-diag:teeeeesting
           cache-from: type=registry,ref=nebraltd/hm-diag:buildcache-${{ matrix.arch }}
           cache-to: type=registry,ref=nebraltd/hm-diag:buildcache-${{ matrix.arch }},mode=max
 
