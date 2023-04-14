@@ -61,7 +61,6 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
             and diagnostics["W0"] is not None
             and diagnostics["BT"] is True
             and diagnostics["LOR"] is True
-        )
     ):
         diagnostics["PF"] = True
     else:
