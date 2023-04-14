@@ -27,7 +27,7 @@ COMMERCIAL_FLEETS = [
     143,  # Midas
     52,  # Helium OG
     80,  # Nebra Outdoor 868MHz
-    108,  # Nebra Outdoor 915MHz
+    107,  # Nebra Outdoor 915MHz
     47,  # PantherX
     66,  # Pisces
     73,  # Pycom
