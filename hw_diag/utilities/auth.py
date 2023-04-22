@@ -25,6 +25,10 @@ COMMERCIAL_FLEETS = [
     62,  # Linxdot
     42,  # Linxdot RKCM3
     143,  # Midas
+    145,  # Nebra indoor1
+    147,  # Nebra indoor2
+    148,  # Nebra outdoor1
+    149,  # Nebra outdoor2
     52,  # Helium OG
     80,  # Nebra Outdoor 868MHz
     107,  # Nebra Outdoor 915MHz
