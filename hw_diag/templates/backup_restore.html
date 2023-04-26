@@ -1,0 +1,44 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}Backup &amp; Restore{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <br/>
+        <h3 class="text-center mb-4">Backup &amp; Restore</h3>
+
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <center><h4>Backup</h4></center>
+              <p style="padding: 10px;">
+                  Create a backup of your hotspot's settings to easily allow you to restore your hotspot
+                  incase of failure. Please ensure you store this file securely as it will contain your
+                  ThingsIX &amp; Mysterium private keys. Please note that your Helium private key cannot
+                  be backed up as it is embedded in the hotspot's security chip.
+              </p>
+              <p>
+                  <center><a href="/backup" class="btn btn-primary">Create Backup</a></center>
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card mb-0 h-100">
+              <center><h4>Restore</h4></center>
+              <p style="padding: 10px;">
+                  Restore your hotspot's settings from an existing backup.
+                  <form action="/restore" method="POST" enctype=multipart/form-data>
+                    <label for="file" class="form-label">Select backup file.</label>
+                    <input class="form-control" type="file" accept=".nbf" id="file" name="file">
+                    <br/>
+                    <center><input type="submit" value="Restore from Backup" class="btn btn-primary"/></center>
+                  </form>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+    </div>
+{% endblock %}

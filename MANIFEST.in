@@ -51,6 +51,7 @@ include hw_diag/templates/thix_dashboard.html
 include hw_diag/templates/thix_onboard.html
 include hw_diag/templates/thix_setup.html
 include hw_diag/templates/thix_error.html
+include hw_diag/templates/backup_restore.html
 include hw_diag/templates/password_change_form.html
 include hw_diag/templates/login_form.html
 include hw_diag/templates/device_info.html
