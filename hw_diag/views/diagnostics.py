@@ -38,6 +38,7 @@ from hw_diag.utilities.network import get_device_hostname
 from hw_diag.utilities.network import get_wan_ip_address
 from hw_diag.utilities.diagnostics import get_device_info
 from hw_diag.utilities.hardware import get_device_metrics
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -68,6 +69,7 @@ def get_diagnostics():
     template_filename = 'device_info.html'
     wan_ip = get_wan_ip_address()
     device_metrics = get_device_metrics()
+    claim_deeplink = claim_miner_deeplink()
 
     response = render_template(
         template_filename,
@@ -77,7 +79,8 @@ def get_diagnostics():
         hostname=hostname,
         device_info=device_info,
         wan_ip_address=wan_ip,
-        device_metrics=device_metrics
+        device_metrics=device_metrics,
+        claim_deeplink=claim_deeplink
     )
 
     return response

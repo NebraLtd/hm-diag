@@ -4,9 +4,10 @@ from typing import Union
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
 from hm_pyhelper.miner_param import get_public_keys_rust, config_search_param, \
-                                    parse_i2c_bus, parse_i2c_address, get_ecc_location
+    parse_i2c_bus, parse_i2c_address, get_ecc_location
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute, \
-                                             is_rockpi
+    is_rockpi
+from hw_diag.constants import DIAG_JSON_KEYS
 from retry import retry
 
 
@@ -359,6 +360,14 @@ def get_device_metrics():
         'disk_used': psutil.disk_usage('/').used,
         'temperature': temperature
     }
+
+
+def is_nebra_device(diagnostics: dict) -> bool:
+    '''
+    returns true if device is manufactured by nebra.
+    '''
+    friendly_name = diagnostics[DIAG_JSON_KEYS.FRIENDLY_NAME]
+    return "nebra" in friendly_name.lower()
 
 
 if __name__ == '__main__':

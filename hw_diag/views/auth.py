@@ -23,6 +23,7 @@ from hw_diag.utilities.auth import update_password_reset_expiry
 from hw_diag.utilities.auth import perform_password_reset
 from hw_diag.utilities.auth import password_updated_in_last_minute
 from hw_diag.utilities.auth import can_spawn_admin_session
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -204,4 +205,8 @@ def spawn_admin_session():
 @AUTH.route('/upgrade')
 @authenticate
 def display_upgrade_page():
-    return render_template('upgrade.html')
+    claim_deeplink = claim_miner_deeplink()
+    return render_template(
+        'upgrade.html',
+        claim_deeplink=claim_deeplink
+    )

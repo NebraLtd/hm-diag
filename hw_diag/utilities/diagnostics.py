@@ -1,4 +1,5 @@
 import json
+import os
 
 from hm_pyhelper.diagnostics import DiagnosticsReport, Diagnostic
 from hw_diag.tasks import perform_hw_diagnostics
@@ -20,6 +21,13 @@ def read_diagnostics_file():
         diagnostics = {'error': msg % str(e)}
 
     return diagnostics
+
+
+def cached_diagnostics_data():
+    if os.path.exists('diagnostic_data.json'):
+        with open('diagnostic_data.json', 'r') as f:
+            return json.load(f)
+    return read_diagnostics_file()
 
 
 def compose_diagnostics_report_from_err_msg(diagnostic_key: str, err_msg: str) -> DiagnosticsReport:

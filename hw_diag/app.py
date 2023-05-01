@@ -14,6 +14,7 @@ from hm_pyhelper.logger import get_logger
 
 from hw_diag.cache import cache
 from hw_diag.tasks import perform_hw_diagnostics
+from hw_diag.utilities.dashboard_registration import register_third_party_miner
 from hw_diag.utilities.event_streamer import DiagEvent
 from hw_diag.utilities.network_watchdog import NetworkWatchdog
 from hw_diag.utilities.balena_migration \
@@ -97,6 +98,16 @@ def run_network_watchdog_task(watchdog, scheduler):
         logging.warning(f'Unknown error while checking the network connectivity : {e}')
 
 
+def run_dashboard_registration_task(app: Flask):
+    try:
+        with app.app_context():
+            g.db = get_db_session()
+            register_third_party_miner()
+            g.db.close()
+    except Exception as e:
+        logging.warning(f"unknown while running dashboard registration {e}")
+
+
 def run_heartbeat_task(watchdog):
     try:
         watchdog.emit_heartbeat()
@@ -127,6 +138,11 @@ def init_scheduled_tasks(app) -> None:
 
     scheduler.add_job(id='check_nebra_cloud_migration', func=run_balena_migration_task,
                       trigger='interval', hours=NEBRAOS_MIGRATION_INTERVAL_HOURS, jitter=3600)
+
+    scheduler.add_job(id='register_third_party_miner',
+                      func=partial(run_dashboard_registration_task, app),
+                      trigger='date',
+                      run_date=datetime.now() + timedelta(minutes=2))
 
     # bring first run time to run 2 minutes from now as well
     quectel_job = scheduler.get_job('quectel_repeating')
