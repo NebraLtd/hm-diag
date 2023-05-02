@@ -86,6 +86,9 @@ def get_ble_devices():
     ble_devices = []
     try:
         bus = dbus.SystemBus()
+        if DBUS_BLUEZ_SERVICE_NAME not in dbus.SystemBus().list_names():
+            logging.info("Bluetooth support not present")
+            return []
         proxy_object = bus.get_object(DBUS_BLUEZ_SERVICE_NAME, "/")
         dbus_obj_mgr = dbus.Interface(proxy_object, DBUS_OBJECTMANAGER)
         dbus_objs = dbus_obj_mgr.GetManagedObjects()

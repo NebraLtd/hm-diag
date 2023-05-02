@@ -31,7 +31,7 @@ class TestHardware(unittest.TestCase):
 
     @patch('dbus.SystemBus')
     @patch('dbus.Interface')
-    def test_get_ble_devices_success(self, mocked_interface, _):
+    def test_get_ble_devices_success(self, mocked_interface, mocked_bus):
         # Prepare mocked BLE devices
         mocked_ble_devices = {
             '/org/bluez/hci0': {
@@ -57,6 +57,10 @@ class TestHardware(unittest.TestCase):
         mocked_interface = mocked_interface.return_value
         mocked_interface.GetManagedObjects.return_value = mocked_ble_devices
 
+        # Mock the names of services returned by the bus
+        mocked_bus = mocked_bus.return_value
+        mocked_bus.list_names.return_value = ['org.bluez']
+
         # Retrieve list of BLE devices
         ble_devices = get_ble_devices()
 
@@ -81,6 +85,20 @@ class TestHardware(unittest.TestCase):
         # Set mocked BLE devices in dbus
         mocked_interface = mocked_interface.return_value
         mocked_interface.GetManagedObjects.return_value = mocked_ble_devices
+
+        # Retrieve list of BLE devices
+        ble_devices = get_ble_devices()
+
+        # Assertion
+        self.assertIsInstance(ble_devices, list)
+        self.assertEqual(len(ble_devices), 0)
+
+    @patch('dbus.SystemBus')
+    @patch('dbus.Interface')
+    def test_get_ble_devices_no_service(self, _, mocked_bus):
+        # Mock the names of services returned by the bus
+        mocked_bus = mocked_bus.return_value
+        mocked_bus.list_names.return_value = ['something.Else']
 
         # Retrieve list of BLE devices
         ble_devices = get_ble_devices()

@@ -50,6 +50,9 @@ class BtDiagnostic(Diagnostic):
     def get_bt_devices(self) -> list:
         bt_devices = []
         bus = dbus.SystemBus()
+        if self.DBUS_BLUEZ_SERVICE_NAME not in dbus.SystemBus().list_names():
+            LOGGER.info("Bluetooth support not present")
+            return []
         proxy_object = bus.get_object(self.DBUS_BLUEZ_SERVICE_NAME, "/")
         dbus_obj_mgr = dbus.Interface(proxy_object, self.DBUS_OBJECTMANAGER)
         dbus_objs = dbus_obj_mgr.GetManagedObjects()

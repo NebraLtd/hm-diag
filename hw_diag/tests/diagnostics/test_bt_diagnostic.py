@@ -38,6 +38,10 @@ class TestBtDiagnostic(unittest.TestCase):
         mock_interface = mock_interface.return_value
         mock_interface.GetManagedObjects.return_value = mock_bt_devices
 
+        # Mock the names of services returned by the bus
+        mock_sys_bus = mock_sys_bus.return_value
+        mock_sys_bus.list_names.return_value = ['org.bluez']
+
         diagnostic = BtDiagnostic()
         diagnostics_report = DiagnosticsReport([diagnostic])
         diagnostics_report.perform_diagnostics()
@@ -84,6 +88,24 @@ class TestBtDiagnostic(unittest.TestCase):
         })
 
     @patch('dbus.SystemBus')
+    @patch('dbus.Interface')
+    def test_failure_no_service(self, mock_interface, mock_sys_bus):
+        # Mock the names of services returned by the bus
+        mock_sys_bus = mock_sys_bus.return_value
+        mock_sys_bus.list_names.return_value = ['something.Else']
+
+        diagnostic = BtDiagnostic()
+        diagnostics_report = DiagnosticsReport([diagnostic])
+        diagnostics_report.perform_diagnostics()
+
+        self.assertDictEqual(diagnostics_report, {
+            DIAGNOSTICS_PASSED_KEY: False,
+            DIAGNOSTICS_ERRORS_KEY: ['BT', 'bluetooth'],
+            'BT': 'Bluez is working but, no Bluetooth devices detected.',
+            'bluetooth': 'Bluez is working but, no Bluetooth devices detected.'
+        })
+
+    @patch('dbus.SystemBus')
     @patch('dbus.Interface', side_effect=DBusException('Not authorized'))
     def test_failure_exception(self, mock_interface, mock_sys_bus):
         # Prepare mocked BT devices
@@ -92,6 +114,10 @@ class TestBtDiagnostic(unittest.TestCase):
         # Mock BT devices in dbus
         mock_interface = mock_interface.return_value
         mock_interface.GetManagedObjects.return_value = mock_bt_devices
+
+        # Mock the names of services returned by the bus
+        mock_sys_bus = mock_sys_bus.return_value
+        mock_sys_bus.list_names.return_value = ['org.bluez']
 
         diagnostic = BtDiagnostic()
         diagnostics_report = DiagnosticsReport([diagnostic])
