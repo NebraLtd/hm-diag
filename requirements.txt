@@ -1,7 +1,7 @@
-werkzeug==2.2.3
+werkzeug==2.3.3
 Flask-APScheduler==1.12.4
 Flask-Caching==2.0.1
-Flask==2.2.2
+Flask==2.3.2
 alembic==1.9.1
 SQLAlchemy==1.4.46
 bcrypt==3.2.2
