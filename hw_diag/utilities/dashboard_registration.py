@@ -12,6 +12,7 @@ from hw_diag.constants import DIAG_JSON_KEYS
 THIRD_PARTY_MINER_REGISTRATION_URL = \
     "https://dashboard.nebra.com/api/v0.1/register-third-party-hotspot"
 MINER_CLAIM_URL = "https://dashboard.nebra.com/devices/#qr-modal"
+REGISTERED_KEY = "is_registered"
 
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
@@ -33,6 +34,14 @@ def set_value_noexcept(key: str, value: str) -> bool:
     except Exception as e:
         logging.error(f"failed to set value {e}")
         return False
+
+
+def is_registered() -> bool:
+    return get_value_noexcept(REGISTERED_KEY) == 'True'
+
+
+def set_registered(state: bool):
+    set_value_noexcept(REGISTERED_KEY, str(state))
 
 
 def _prepare_registration_payload(diagnostics: dict) -> dict:
@@ -59,7 +68,7 @@ def register_third_party_miner() -> None:
             log.info("nebra devices are registered in manufacturing")
             return
 
-        if bool(get_value_noexcept("is_registered")):
+        if is_registered():
             log.info("local db state: miner already registered with dashboard.")
             return
 
@@ -68,11 +77,11 @@ def register_third_party_miner() -> None:
                                  headers={'Content-Type': 'application/json; charset=UTF-8'})
 
         if register.status_code == 400:
-            log.info("dashboard: miner  already registered.")
-            set_value_noexcept("is_registered", str(True))
+            log.info("dashboard: miner already registered.")
+            set_registered(True)
         elif register.status_code < 300:
             log.info("dashboard: miner successfully registered.")
-            set_value_noexcept("is_registered", str(True))
+            set_registered(True)
         else:
             log.error(f"dashboard: failed registration error: {register.status_code}")
     except KeyError as e:
