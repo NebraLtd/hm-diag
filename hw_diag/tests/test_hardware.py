@@ -1,10 +1,20 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
+import pytest
 from dbus import DBusException
 
-from hw_diag.utilities.hardware import get_public_keys_and_ignore_errors, \
-    get_wifi_devices, get_ble_devices, get_lte_devices, detect_ecc # noqa
+from hw_diag.utilities.hardware import (
+    DTPARAM_CONFIG_VAR_NAMES,
+    DTPARAM_CONFIG_VAR_NAME,
+    EXT_ANT_DTPARAM,
+    get_lte_devices, detect_ecc,
+    get_public_keys_and_ignore_errors,
+    get_wifi_devices, get_ble_devices,
+    has_external_antenna_support,
+    is_external_antenna_enabled,
+    set_external_antenna_enabled,
+)
 
 
 class TestHardware(unittest.TestCase):
@@ -415,3 +425,243 @@ class TestHardware(unittest.TestCase):
         self.assertTrue(diagnostics['ECC'])
         mocked_config_search_param.assert_called_once_with('i2cdetect -y 1',
                                                            self.ECC_I2C_DETECT_PATTERN)
+
+
+@patch.dict('os.environ', {"BALENA_DEVICE_TYPE": "raspberrypicm4-ioboard"})
+def test_has_external_antenna_support_true():
+    """Should return `True` for a CM4-based device."""
+
+    assert has_external_antenna_support() is True
+
+
+@patch.dict('os.environ', {"BALENA_DEVICE_TYPE": "raspberrypi4-64"})
+def test_has_external_antenna_support_false():
+    """Should return `False` for a non-CM4-based device."""
+
+    assert has_external_antenna_support() is False
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_is_external_antenna_no_device_var(mocked_bc_class):
+    """Should create a BalenaCloud instance, retrieve the device config variables and
+    return `False` due to absence of device config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1'},
+    ]
+
+    assert is_external_antenna_enabled() is False
+
+
+@pytest.mark.parametrize('dtparam_var_name', DTPARAM_CONFIG_VAR_NAMES)
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_is_external_antenna_no_ant2(mocked_bc_class, dtparam_var_name):
+    """Should create a BalenaCloud instance, retrieve the device config variables and
+    return `False` due to absence of `"ant2"` item in device config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1'},
+        {'name': dtparam_var_name, 'value': '"item1","item2"'},
+    ]
+
+    assert is_external_antenna_enabled() is False
+
+
+@pytest.mark.parametrize('dtparam_var_name', DTPARAM_CONFIG_VAR_NAMES)
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_is_external_antenna_ant2(mocked_bc_class, dtparam_var_name):
+    """Should create a BalenaCloud instance, retrieve the device config variables and
+    return `True` due to presence of `"ant2"` item in device config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1'},
+        {'name': dtparam_var_name, 'value': f'"item1",{EXT_ANT_DTPARAM},"item2"'},
+    ]
+
+    assert is_external_antenna_enabled() is True
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_set_external_antenna_enabled_enable_existing_device_var(mocked_bc_class):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    add `"ant2"` param to existing device config var, pushing it back via BalenaCloud."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item1","item2"',
+            'id': 20
+        },
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(True)
+
+    mocked_bc.update_device_config_variable.assert_called_once_with(
+        20, f'"item1","item2",{EXT_ANT_DTPARAM}'
+    )
+    mocked_bc.create_device_config_variable.assert_not_called()
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_set_external_antenna_enabled_enable_new_device_var(mocked_bc_class):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    create new device var from fleet var and `"ant2" param`, pushing it back via BalenaCloud."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {'name': 'TEST_VAR_2', 'value': 'test-value-2', 'id': 20},
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(True)
+
+    mocked_bc.update_device_config_variable.assert_not_called()
+    mocked_bc.create_device_config_variable.assert_called_once_with(
+        DTPARAM_CONFIG_VAR_NAME,
+        f'"item3","item4",{EXT_ANT_DTPARAM}'
+    )
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+@patch('hw_diag.utilities.hardware.logging')
+def test_set_external_antenna_enabled_enable_already_enabled(mocked_logging, mocked_bc_class):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    return right away with already enabled log message, due to presence of `"ant2"` item in device
+    config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': f'"item1",{EXT_ANT_DTPARAM},"item2"',
+            'id': 20
+        },
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(True)
+
+    mocked_bc.update_device_config_variable.assert_not_called()
+    mocked_bc.create_device_config_variable.assert_not_called()
+    mocked_logging.info.assert_called_with('External antenna already enabled')
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+def test_set_external_antenna_enabled_disable(mocked_bc_class):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    remove `"ant2"` param from existing device config var, pushing it back via BalenaCloud."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': f'"item1",{EXT_ANT_DTPARAM},"item2"',
+            'id': 20
+        },
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(False)
+
+    mocked_bc.update_device_config_variable.assert_called_once_with(20, '"item1","item2"')
+    mocked_bc.create_device_config_variable.assert_not_called()
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+@patch('hw_diag.utilities.hardware.logging')
+def test_set_external_antenna_enabled_disable_already_disabled_no_device_var(
+    mocked_logging, mocked_bc_class
+):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    return right away with already disabled log message, due to absence if device config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {'name': 'TEST_VAR_2', 'value': 'test-value-2', 'id': 20},
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(False)
+
+    mocked_bc.update_device_config_variable.assert_not_called()
+    mocked_bc.create_device_config_variable.assert_not_called()
+    mocked_logging.info.assert_called_with('External antenna already disabled')
+
+
+@patch('hw_diag.utilities.hardware.balena_cloud.BalenaCloud.new_from_env')
+@patch('hw_diag.utilities.hardware.logging')
+def test_set_external_antenna_enabled_disable_already_disabled_no_device_param(
+    mocked_logging, mocked_bc_class
+):
+    """Should create a BalenaCloud instance, retrieve the fleet and device config variables and
+    return right away with already disabled log message, due to absence of `"ant2"` item in device
+    config var."""
+
+    mocked_bc = mocked_bc_class.return_value
+    mocked_bc.get_device_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 10},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item1","item2"',
+            'id': 20
+        },
+    ]
+    mocked_bc.get_fleet_config_variables.return_value = [
+        {'name': 'TEST_VAR_1', 'value': 'test-value-1', 'id': 30},
+        {
+            'name': DTPARAM_CONFIG_VAR_NAMES[0],
+            'value': '"item3","item4"',
+            'id': 40
+        },
+    ]
+
+    set_external_antenna_enabled(False)
+
+    mocked_bc.update_device_config_variable.assert_not_called()
+    mocked_bc.create_device_config_variable.assert_not_called()
+    mocked_logging.info.assert_called_with('External antenna already disabled')
