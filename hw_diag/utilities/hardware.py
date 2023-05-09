@@ -1,4 +1,5 @@
 import dbus
+import os
 import psutil
 from typing import Union
 from urllib.parse import urlparse
@@ -8,6 +9,7 @@ from hm_pyhelper.miner_param import get_public_keys_rust, config_search_param, \
 from hm_pyhelper.hardware_definitions import variant_definitions, get_variant_attribute, \
     is_rockpi
 from hw_diag.constants import DIAG_JSON_KEYS
+from hw_diag.utilities import balena_cloud
 from retry import retry
 
 
@@ -70,6 +72,11 @@ MM_MODEM_CAPABILITY = {
     'ADVANCED': 1 << 4,
     'IRIDIUM': 1 << 5,
     'ANY': 0xFFFFFFFF}
+
+EXT_ANT_DEVICE_TYPES = {'raspberrypicm4-ioboard'}
+DTPARAM_CONFIG_VAR_NAME = 'BALENA_HOST_CONFIG_dtparam'
+DTPARAM_CONFIG_VAR_NAMES = ['BALENA_HOST_CONFIG_dtparam', 'RESIN_HOST_CONFIG_dtparam']
+EXT_ANT_DTPARAM = '"ant2"'
 
 
 def should_display_lte(diagnostics):
@@ -371,6 +378,97 @@ def is_nebra_device(diagnostics: dict) -> bool:
     '''
     friendly_name = diagnostics[DIAG_JSON_KEYS.FRIENDLY_NAME]
     return "nebra" in friendly_name.lower()
+
+
+def has_external_antenna_support() -> bool:
+    device_type = os.getenv('BALENA_DEVICE_TYPE')
+    return device_type in EXT_ANT_DEVICE_TYPES
+
+
+def is_external_antenna_enabled() -> bool:
+    bc = balena_cloud.BalenaCloud.new_from_env()
+    variables = bc.get_device_config_variables()
+    for var_dict in variables:
+        if var_dict['name'] not in DTPARAM_CONFIG_VAR_NAMES:
+            continue
+
+        # dtparam var value is a comma-separated list of values to be used as separate
+        # `dtparam=<val>` lines in `config.txt`
+        return EXT_ANT_DTPARAM in var_dict['value']
+
+    return False
+
+
+def _get_device_dtparams_var(bc: balena_cloud.BalenaCloud) -> tuple[list[str], int]:
+    # BALENA_HOST_CONFIG_dtparam/RESIN_HOST_CONFIG_dtparam var value is a comma-separated list of
+    # values to be used as separate `dtparam=<val>` lines in `config.txt`.
+    variables = bc.get_device_config_variables()
+    for var_dict in variables:
+        if var_dict['name'] not in DTPARAM_CONFIG_VAR_NAMES:
+            continue
+
+        device_dtparams_var_id = var_dict['id']
+
+        value = var_dict['value'].strip()
+        if value:
+            device_dtparams = value.split(',')
+        else:
+            device_dtparams = []
+        break
+    else:
+        device_dtparams = []
+        device_dtparams_var_id = None
+
+    return device_dtparams, device_dtparams_var_id
+
+
+def _get_fleet_dtparams_var(bc: balena_cloud.BalenaCloud) -> list[str]:
+    variables = bc.get_fleet_config_variables()
+    for var_dict in variables:
+        if var_dict['name'] not in DTPARAM_CONFIG_VAR_NAMES:
+            continue
+
+        value = var_dict['value'].strip()
+        if value:
+            return value.split(',')
+        else:
+            return []
+
+    return []
+
+
+def set_external_antenna_enabled(enabled: bool) -> None:
+    bc = balena_cloud.BalenaCloud.new_from_env()
+
+    # The device variable overrides the fleet variable, so we need to deal with both.
+    device_dtparams, device_dtparams_var_id = _get_device_dtparams_var(bc)
+    fleet_dtparams = _get_fleet_dtparams_var(bc)
+
+    if enabled:
+        logging.info('Enabling external antenna')
+        if EXT_ANT_DTPARAM in device_dtparams:
+            logging.info('External antenna already enabled')
+            return
+
+        # If we've already got device dtparams that override fleet ones, simply append ours;
+        # if there's no device override yet, we create the override by copying the fleet dtparams.
+        if device_dtparams:
+            device_dtparams.append(EXT_ANT_DTPARAM)
+        else:
+            device_dtparams = fleet_dtparams + [EXT_ANT_DTPARAM]
+    else:
+        logging.info('Disabling external antenna')
+        try:
+            device_dtparams.remove(EXT_ANT_DTPARAM)
+        except ValueError:
+            logging.info('External antenna already disabled')
+            return
+
+    value = ','.join(device_dtparams)
+    if device_dtparams_var_id is not None:
+        bc.update_device_config_variable(device_dtparams_var_id, value)
+    else:
+        bc.create_device_config_variable(DTPARAM_CONFIG_VAR_NAME, value)
 
 
 if __name__ == '__main__':

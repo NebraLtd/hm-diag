@@ -178,6 +178,95 @@
            <br/>
            <br/>
         </p>
+        {% if has_external_antenna_support %}
+        <p class="text-center mb-4">
+          <script>
+            function handleExternalAntennaButton() {
+                var button = document.getElementById('btnExternalAntenna');
+                if (button.externalAntennaEnabled == null) {
+                    /* Query */
+                    button.disabled = true;
+                    button.innerText = 'Querying...';
+                    fetch('/external_antenna', {
+                        method: 'GET',
+                    }).then(
+                        response => response.text()
+                    ).then(result => {
+                        button.disabled = false;
+                        var enabled = JSON.parse(result);
+                        button.externalAntennaEnabled = enabled;
+                        if (enabled) {
+                            button.innerText = 'Disable';
+                        }
+                        else {
+                            button.innerText = 'Enable';
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                        button.disabled = false;
+                        button.innerText = 'Error';
+                    });
+                }
+                else if (button.externalAntennaEnabled) {
+                    /* Disable */
+                    button.disabled = true;
+                    button.innerText = 'Disabling...';
+                    fetch('/external_antenna', {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(false)
+                    }).then(
+                        response => response.text()
+                    ).then(result => {
+                        button.disabled = false;
+                        var resultJson = JSON.parse(result);
+                        if (resultJson.action_invoked) {
+                            button.externalAntennaEnabled = false;
+                            button.innerText = 'Enable';
+                        }
+                        else {
+                            button.innerText = 'Error';
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                        button.disabled = false;
+                        button.innerText = 'Error';
+                    });
+                }
+                else {
+                    /* Enable */
+                    button.disabled = true;
+                    button.innerText = 'Enabling...';
+                    fetch('/external_antenna', {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(true)
+                    }).then(
+                        response => response.text()
+                    ).then(result => {
+                        button.disabled = false;
+                        var resultJson = JSON.parse(result);
+                        if (resultJson.action_invoked) {
+                            button.externalAntennaEnabled = true;
+                            button.innerText = 'Disable';
+                        }
+                        else {
+                            button.innerText = 'Error';
+                        }
+                    }).catch(e => {
+                        console.error(e);
+                        button.disabled = false;
+                        button.innerText = 'Error';
+                    });
+                }
+            }
+          </script>
+          <h4>External Antenna</h4>
+          <button type="button" class="btn btn-primary" onClick="handleExternalAntennaButton()" id="btnExternalAntenna">Query</button>
+          <br/>
+          <br/>
+        </p>
+        {% endif %}
     </div>
 
         <div class="row mb-4">

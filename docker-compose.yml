@@ -21,6 +21,7 @@ services:
       io.balena.features.dbus: '1'
       io.balena.features.sysfs: '1'
       io.balena.features.supervisor-api: '1'
+      io.balena.features.balena-api: '1'
 
 volumes:
   miner-storage:
