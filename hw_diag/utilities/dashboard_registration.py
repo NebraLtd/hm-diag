@@ -68,22 +68,23 @@ def register_third_party_miner() -> None:
             log.info("nebra devices are registered in manufacturing")
             return
 
-        if is_registered():
-            log.info("local db state: miner already registered with dashboard.")
-            return
+        # commenting for now, it is creating issues for us. Now that some devices have been
+        # erroneously marked registered, we can't really keep it at the moment. if we decide
+        # to enable this later, we should also take care of all the sub errors that might
+        # happen for HTTP 400. Right now trying to re-register also returns 400.
+        # if is_registered():
+        #     log.info("local db state: miner already registered with dashboard.")
+        #     return
 
         payload = _prepare_registration_payload(diagnostics)
         register = requests.post(THIRD_PARTY_MINER_REGISTRATION_URL, data=json.dumps(payload),
                                  headers={'Content-Type': 'application/json; charset=UTF-8'})
 
-        if register.status_code == 400:
-            log.info("dashboard: miner already registered.")
-            set_registered(True)
-        elif register.status_code < 300:
+        if register.status_code < 300:
             log.info("dashboard: miner successfully registered.")
             set_registered(True)
         else:
-            log.error(f"dashboard: failed registration error: {register.status_code}")
+            log.error(f"dashboard: failed registration: {register} {register.text}")
     except KeyError as e:
         log.error(f"failed registration, missing key in diagnostics {e}")
     except Exception as e:
