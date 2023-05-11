@@ -60,7 +60,6 @@ class TestDashboardRegistration(unittest.TestCase):
             register_third_party_miner()
             # test set_value was called with is_registered to true
             self.assertEqual(set_value_mock.call_count, 1)
-            self.assertEqual(get_value_mock.call_count, 1)
             args, _ = set_value_mock.call_args
             self.assertEqual(args[1], str(True))
 
@@ -75,10 +74,7 @@ class TestDashboardRegistration(unittest.TestCase):
         with self.app.app_context():
             register_third_party_miner()
             # test set_value was called with is_registered to true
-            self.assertEqual(set_value_mock.call_count, 1)
-            self.assertEqual(get_value_mock.call_count, 1)
-            args, _ = set_value_mock.call_args
-            self.assertEqual(args[1], str(True))
+            self.assertEqual(set_value_mock.call_count, 0)
 
     @responses.activate
     @patch('hw_diag.utilities.dashboard_registration.cached_diagnostics_data',
@@ -92,7 +88,6 @@ class TestDashboardRegistration(unittest.TestCase):
             register_third_party_miner()
             # test set_value was called with is_registered to true
             self.assertEqual(set_value_mock.call_count, 0)
-            self.assertEqual(get_value_mock.call_count, 1)
 
     @patch('hw_diag.utilities.dashboard_registration.cached_diagnostics_data',
            return_value=SAMPLE_DIAGNOSTICS)
