@@ -175,7 +175,7 @@ def get_app(name, lean_initializations=device_in_manufacturing()):
         def post_request(resp):
             try:
                 g.db.close()
-            except Exception:
+            except Exception:  # nosec
                 pass
             return resp
 

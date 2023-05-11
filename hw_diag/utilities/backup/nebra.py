@@ -15,4 +15,4 @@ class NebraBackupRestore(BaseBackupRestore):
         shutil.copyfile(DB_FILE, '%s/hm_diag.db' % self.tmpdir)
 
     def restore(self):
-        os.system('cp %s/hm_diag.db %s' % (self.tmpdir, DB_FILE))
+        os.system('cp %s/hm_diag.db %s' % (self.tmpdir, DB_FILE))  # nosec

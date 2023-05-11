@@ -1,5 +1,0 @@
-pytest
-pytest-cov
-flake8
-responses
-grpcio==1.53.0

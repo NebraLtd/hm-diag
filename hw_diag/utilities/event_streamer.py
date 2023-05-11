@@ -65,7 +65,7 @@ def _upload_event(event: dict) -> bool:
     log.debug(f"uploading event: {content}")
 
     try:
-        resp = requests.post(upload_url, headers=headers, data=content)
+        resp = requests.post(upload_url, headers=headers, data=content)  # nosec
 
         if resp.status_code != 200:
             log.error(

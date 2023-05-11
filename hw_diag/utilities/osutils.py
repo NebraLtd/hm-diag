@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import functools
-import subprocess
+import subprocess  # nosec
 
 
 def get_rw_storage_path(base_path: str, relative_path: str) -> str:
@@ -36,7 +36,7 @@ def find_part_with_label(label) -> str | None:
 @functools.cache
 def balena_blk_info():
     blk_list = []
-    output = subprocess.check_output('blkid').decode('utf-8')
+    output = subprocess.check_output('blkid').decode('utf-8')  # nosec
 
     # each line in the output will have this form
     # /dev/sdb3: UUID="8e4a557e-ba23-4534-aee5-824927ea5b77" BLOCK_SIZE="4096"

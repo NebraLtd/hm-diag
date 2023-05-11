@@ -1,6 +1,6 @@
-name: Python tests
+name: Python Linting
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -27,14 +27,6 @@ jobs:
       run: |
         poetry install --with dev
 
-    - name: Move migrations to expected location
+    - name: Lint with ruff
       run: |
-        mkdir /opt/migrations
-        cp -r migrations /opt/migrations/.
-        cp -r alembic.ini /opt/migrations/.
-        sudo mkdir /var/data
-        sudo chmod 777 /var/data
-
-    - name: Unit tests
-      run: |
-        poetry run pytest --cov=hw_diag --cov=bigquery --cov-fail-under=80
+        poetry run ruff check hw_diag

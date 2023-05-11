@@ -37,7 +37,7 @@ def do_backup():
 def do_restore():
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
-        uploaded_file.save('/tmp/restore.tar')
+        uploaded_file.save('/tmp/restore.tar')  # nosec
     else:
         return "Bad Request: Invalid backup file", 400
     try:

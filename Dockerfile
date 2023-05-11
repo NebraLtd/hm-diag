@@ -14,18 +14,26 @@ WORKDIR /tmp/build
 COPY quectel/ ./quectel
 COPY hw_diag/ ./hw_diag
 COPY bigquery/ ./bigquery
-COPY requirements.txt ./requirements.txt
-COPY setup.py ./setup.py
+COPY pyproject.toml ./pyproject.toml
+COPY poetry.lock ./poetry.lock
 COPY MANIFEST.in ./MANIFEST.in
+COPY README.md ./README.md
 
+# hadolint ignore=DL3013
 RUN install_packages \
         build-essential \
         cmake \
         gcc \
         libtool \
         python3-dev \
-        libdbus-glib-1-dev && \
-    pip3 install --no-cache-dir --target="$PYTHON_DEPENDENCIES_DIR" . && \
+        libdbus-glib-1-dev \
+        libdbus-1-dev && \
+    python -m venv "$PYTHON_DEPENDENCIES_DIR" && . "$PYTHON_DEPENDENCIES_DIR/bin/activate" && \
+    pip install --no-cache-dir poetry==1.5.0 && \
+    poetry config installer.max-workers 10 && \
+    poetry install --no-cache --no-root && \
+    poetry build && \
+    pip install --no-cache-dir dist/hw_diag-1.0.tar.gz && \
     tar -xf ./quectel/qfirehose/QFirehose_Linux_Android_V1.4.9.tar.xz
     # firehose build, the tar is obtained from quectel and cleaned from build artifacts,
     # recompressed by us.

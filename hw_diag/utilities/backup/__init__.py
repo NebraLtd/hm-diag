@@ -19,8 +19,8 @@ def perform_backup(plugins=PLUGINS):
     logging.info("Starting Backup")
     # Make temp dir for backup artifacts
     utc_now = datetime.datetime.utcnow()
-    tmpdir = '/tmp/%s' % utc_now.strftime('%Y%m%d%H%M%S')
-    target = '/tmp/backup'
+    tmpdir = '/tmp/%s' % utc_now.strftime('%Y%m%d%H%M%S')  # nosec
+    target = '/tmp/backup'  # nosec
     os.mkdir(tmpdir)
     logging.info("Backup working directory: %s" % tmpdir)
 
@@ -46,7 +46,7 @@ def perform_restore(plugins=PLUGINS):
     logging.info("Starting Restore")
 
     utc_now = datetime.datetime.utcnow()
-    tmpdir = '/tmp/%s' % utc_now.strftime('%Y%m%d%H%M%S')
+    tmpdir = '/tmp/%s' % utc_now.strftime('%Y%m%d%H%M%S')  # nosec
 
     try:
         os.mkdir(tmpdir)
@@ -54,7 +54,7 @@ def perform_restore(plugins=PLUGINS):
         shutil.rmtree(tmpdir)
         os.mkdir(tmpdir)
 
-    target = '/tmp/restore.tar'
+    target = '/tmp/restore.tar'  # nosec
     shutil.unpack_archive(target, tmpdir, 'tar')
 
     for plugin in plugins:

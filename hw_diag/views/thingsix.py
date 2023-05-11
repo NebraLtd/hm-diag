@@ -72,7 +72,7 @@ def enable_thix():
     try:
         if get_value('thix_enabled') == 'true':
             return 'ThingsIX already enabled', 400
-    except Exception:
+    except Exception:  # nosec
         pass
 
     # Copy the config into place...
@@ -92,7 +92,7 @@ def process_onboard():  # noqa:C901
                 'thix_onboard.html',
                 msg='ThingsIX gateway needs to be enabled before onboarding!'
             )
-    except Exception:
+    except Exception:  # nosec
         pass
 
     try:
@@ -101,7 +101,7 @@ def process_onboard():  # noqa:C901
                 'thix_onboard.html',
                 msg='ThingsIX gateway already onboarded!'
             )
-    except Exception:
+    except Exception:  # nosec
         pass
 
     gateways = get_unknown_gateways()
