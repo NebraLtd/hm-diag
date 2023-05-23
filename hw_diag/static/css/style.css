@@ -17,3 +17,8 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-m
 html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link.active {
     background-color: #0083BD !important;
 }
+
+.btn-primary:active {
+    background-color: #0083BD !important;
+    border-color: #0083BD !important;
+}
