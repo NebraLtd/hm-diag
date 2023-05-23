@@ -12,8 +12,11 @@
             -webkit-transition: all .25s ease-in-out;
             transition: all .25s ease-in-out;
         }
+        footer {
+                bottom: -52px !important;
+        }
     </style>
-    <iframe id='frmMyst' frameborder="0" style="overflow: hidden; height: 100vh; width: 100%; padding-bottom: 52px;">Loading...</iframe>
+    <iframe id='frmMyst' frameborder="0" style="overflow: hidden; height: 100vh; width: 100%;">Loading...</iframe>
     <script>
         var url = 'http://' + window.location.href.split('/')[2] + ':4449';
         document.getElementById('frmMyst').src = url;
