@@ -172,12 +172,12 @@
         <h3 class="text-center mb-4">Device Configuration</h3>
         <p class="text-center mb-4">
            <h4>Quick Tasks</h4>
-           <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalReboot">Reboot</button>
-           <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalShutdown">Shutdown</button>
-           <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalPurge">Reset to Factory Defaults</button>
-           <br/>
-           <br/>
-        </p>
+           <div class="d-flex flex-column flex-sm-row justify-content-center">
+            <button type="button" class="btn btn-warning mb-2 me-sm-2" data-bs-toggle="modal" data-bs-target="#modalReboot">Reboot</button>
+            <button type="button" class="btn btn-danger mb-2 me-sm-2" data-bs-toggle="modal" data-bs-target="#modalShutdown">Shutdown</button>
+            <button type="button" class="btn btn-info mb-2 me-sm-2" data-bs-toggle="modal" data-bs-target="#modalPurge">Reset to Factory Defaults</button>
+          </div>
+          </p>
         {% if has_external_antenna_support %}
         <p class="text-center mb-4">
           <script>
