@@ -3,147 +3,211 @@
  {% block title %}Device Information{% endblock %}
 
  {% block body %}
-     <div class="content"><br/>
-        <h3 class="text-center mb-4">Device Information</h3>
 
-        <h4 class="text-center mb-4">Overall Status:
-        {% if diagnostics.PF %}
-                    <span class="text-success">All Ok</span>
-            {% else %}
-                    <span class="text-danger">Errors Found</span>
-            {% endif %}
-        </h4>
+ <style>
 
-        <div class="row mb-4">
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-            <div class="card mb-0 h-100">
-              <table class="table dt-responsive nowrap m-2 w-auto">
-                <tr>
-                  <td>Firmware Version</td>
-                  <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
-                </tr>
-                <tr>
-                  <td>Variant</td>
-                  <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
-                </tr>
-                <tr>
-                  <td>Hardware Serial Number</td>
-                  <td class="text-right">{{ diagnostics.serial_number }}</td>
-                </tr>
-                <tr>
-                  <td>Hostname</td>
-                  {% if hostname %}
-                    <td class="text-right">{{ hostname }}</td>
-                  {% else %}
-                    <td class="text-danger text-right">Unknown</td>
-                  {% endif %}
-                </tr>
-                <tr>
-                  <td>Local IP Address</td>
-                  <td class="text-right">{{ device_info.ip_address }}</td>
-                </tr>
-                <tr>
-                  <td>WAN IP Address</td>
-                  <td class="text-right">{{ wan_ip_address }}</td>
-                </tr>
-                <tr>
-                  <td>Ethernet MAC Address</td>
-                  {% if diagnostics.E0 %}
-                  <td class="text-right">{{ diagnostics.E0 }}</td>
-                  {% else %}
-                    <td class="text-danger text-right">N/A</td>
-                  {% endif %}
-                </tr>
-                <tr>
-                  <td class="border-0">WiFi MAC Address</td>
-                  {% if diagnostics.W0 %}
-                  <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
-                  {% else %}
-                    <td class="border-0 text-danger text-right">N/A</td>
-                  {% endif %}
-                </tr>
-              </table>
-            </div>
-          </div>
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-            <div class="card mb-0 h-100">
-              <table class="table dt-responsive nowrap m-2 w-auto">
-                {% if display_lte  %}
-                  <tr>
-                    <td>Modem Detected</td>
-                    {% if diagnostics.LTE %}
-                      <td class="text-success text-right">True</td>
-                    {% else %}
-                      <td class="text-warning text-right">False</td>
-                    {% endif %}
-                  </tr>
-                {% endif %}
-                <tr>
-                  <td>Bluetooth Detected</td>
-                  {% if diagnostics.BT %}
-                    <td class="text-success text-right">True</td>
-                  {% else %}
-                    <td class="text-danger text-right">False</td>
-                  {% endif %}
-                </tr>
-                <tr>
-                  <td>CPU Usage</td>
-                  <td class="text-right">
-                      <div class="progress progress-xl">
-                          {% if device_metrics.cpu > 79 %}
-                            <div class="progress-bar bg-danger text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
-                          {% elif device_metrics.cpu > 59 %}
-                            <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
-                          {% else %}
-                            <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ device_metrics.cpu|round|int }}%;" aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.cpu|round|int }}%</div>
-                          {% endif %}
-                      </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>CPU Temperature</td>
-                  <td class="text-right">
-                      <div class="progress progress-xl">
-                        {% if device_metrics.temperature > 84 %}
-                          <div class="progress-bar bg-danger text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
-                        {% elif device_metrics.temperature > 74 %}
-                          <div class="progress-bar bg-warning text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
-                        {% else %}
-                          <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ device_metrics.temperature|round|int }}%;" aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">{{ device_metrics.temperature|round|int }}&deg;C</div>
-                        {% endif %}
-                      </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>RAM Usage</td>
-                  <td class="text-right">
-                      <div class="progress progress-xl">
-                        <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ ((device_metrics.memory_used/device_metrics.memory_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.memory_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.memory_total|round|int }}">{{ (device_metrics.memory_used / 1048576)|round|int }} MB / {{ (device_metrics.memory_total / 1048576)|round|int }} MB</div>
-                      </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="border-0">Disk Usage</td>
-                  <td class="border-0 text-right">
-                      <div class="progress progress-xl">
-                        <div class="progress-bar bg-success text-black" role="progressbar" style="width: {{ ((device_metrics.disk_used/device_metrics.disk_total) * 100)|round|int }}%;" aria-valuenow="{{ device_metrics.disk_used|round|int }}" aria-valuemin="0" aria-valuemax="{{ device_metrics.disk_total|round|int }}">{{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB / {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB</div>
-                      </div>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </div>
+  .progress-row {
+    width: 33.3%;
+  }
 
-       <div class="text-center">
-          {% if diagnostics.last_updated %}
-            <p>Last Updated: {{ diagnostics.last_updated }}</p>
-          {% else %}
-            <p>Last Updated: Never</p>
-          {% endif %}
-          <p>To get support please visit <a href="https://nebra.io/support-diag-footer">the Nebra knowledgebase</a></p>
-          <p><a href={{ claim_deeplink }}>Claim your device on dashboard</a></p>
-          <p><a href="/json">Download Diagnostics Info for Support</a></p>
-      </div>
+</style>
+
+ <div class="content"><br />
+   <h3 class="text-center mb-4">Device Information</h3>
+
+   <h4 class="text-center mb-4">Overall Status:
+     {% if diagnostics.PF %}
+     <span class="text-success">All Ok</span>
+     {% else %}
+     <span class="text-danger">Errors Found</span>
+     {% endif %}
+   </h4>
+
+   <div class="row mb-4">
+     <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+       <div class="card mb-0 h-100">
+         <table class="table dt-responsive nowrap m-2 w-auto">
+           <tr>
+             <td>Firmware Version</td>
+             <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+           </tr>
+           <tr>
+             <td>Variant</td>
+             <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
+           </tr>
+           <tr>
+             <td>Hardware Serial Number</td>
+             <td class="text-right">{{ diagnostics.serial_number }}</td>
+           </tr>
+           <tr>
+             <td>Hostname</td>
+             {% if hostname %}
+             <td class="text-right">{{ hostname }}</td>
+             {% else %}
+             <td class="text-danger text-right">Unknown</td>
+             {% endif %}
+           </tr>
+           <tr>
+             <td>Local IP Address</td>
+             <td class="text-right">{{ device_info.ip_address }}</td>
+           </tr>
+           <tr>
+             <td>WAN IP Address</td>
+             <td class="text-right">{{ wan_ip_address }}</td>
+           </tr>
+           <tr>
+             <td>Ethernet MAC Address</td>
+             {% if diagnostics.E0 %}
+             <td class="text-right">{{ diagnostics.E0 }}</td>
+             {% else %}
+             <td class="text-danger text-right">N/A</td>
+             {% endif %}
+           </tr>
+           <tr>
+             <td class="border-0">WiFi MAC Address</td>
+             {% if diagnostics.W0 %}
+             <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
+             {% else %}
+             <td class="border-0 text-danger text-right">N/A</td>
+             {% endif %}
+           </tr>
+         </table>
+       </div>
      </div>
-{% endblock %}
+     <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+       <div class="card mb-0 h-100">
+         <table class="table dt-responsive nowrap m-2 w-auto">
+           {% if display_lte  %}
+           <tr>
+             <td>Modem Detected</td>
+             <td></td>
+             {% if diagnostics.LTE %}
+             <td class="progress-row">
+               <span class="uil uil-check-circle text-success"></span>
+             </td>
+             {% else %}
+             <td class="progress-row">
+               <span class="uil uil-times-circle text-danger"></span>
+             </td>
+             {% endif %}
+           </tr>
+           {% endif %}
+           <tr>
+             <td>Bluetooth Detected</td>
+             <td></td>
+             <td class="progress-row">
+               {% if diagnostics.BT %}
+               <span class="uil uil-check-circle text-success"></span>
+               {% else %}
+               <span class="uil uil-times-circle text-danger"></span>
+               {% endif %}
+             </td>
+           </tr>
+           <tr>
+             <td>CPU Usage</td>
+             <td>
+               {% if device_metrics.cpu > 79 %}
+               {{ device_metrics.cpu|round|int }}%
+               {% elif device_metrics.cpu > 59 %}
+               {{ device_metrics.cpu|round|int }}%
+               {% else %}
+               {{ device_metrics.cpu|round|int }}%
+               {% endif %}
+             </td>
+             <td class="text-right progress-row">
+               <div class="progress progress-xl">
+                 {% if device_metrics.cpu > 79 %}
+                 <div class="progress-bar bg-danger text-black" role="progressbar"
+                   style="width: {{ device_metrics.cpu|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                 {% elif device_metrics.cpu > 59 %}
+                 <div class="progress-bar bg-warning text-black" role="progressbar"
+                   style="width: {{ device_metrics.cpu|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                 {% else %}
+                 <div class="progress-bar bg-success text-black" role="progressbar"
+                   style="width: {{ device_metrics.cpu|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.cpu|round|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                 {% endif %}
+               </div>
+             </td>
+           </tr>
+           <tr>
+             <td>CPU Temperature</td>
+             <td>
+               {% if device_metrics.temperature > 84 %}
+               {{ device_metrics.temperature|round|int }}&deg;C
+               {% elif device_metrics.temperature > 74 %}
+               {{ device_metrics.temperature|round|int }}&deg;C
+               {% else %}
+               {{ device_metrics.temperature|round|int }}&deg;C
+               {% endif %}
+             </td>
+             <td class="text-right progress-row">
+               <div class="progress progress-xl">
+                 {% if device_metrics.temperature > 84 %}
+                 <div class="progress-bar bg-danger text-black" role="progressbar"
+                   style="width: {{ device_metrics.temperature|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">
+                 </div>
+                 {% elif device_metrics.temperature > 74 %}
+                 <div class="progress-bar bg-warning text-black" role="progressbar"
+                   style="width: {{ device_metrics.temperature|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">
+                 </div>
+                 {% else %}
+                 <div class="progress-bar bg-success text-black" role="progressbar"
+                   style="width: {{ device_metrics.temperature|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.temperature|round|int }}" aria-valuemin="0" aria-valuemax="100">
+                 </div>
+                 {% endif %}
+               </div>
+             </td>
+           </tr>
+           <tr>
+             <td>RAM Usage</td>
+             <td>
+               {{ (device_metrics.memory_used / 1048576)|round|int }} MB /
+               {{ (device_metrics.memory_total / 1048576)|round|int }} MB
+             </td>
+             <td class="text-right progress-row">
+               <div class="progress progress-xl">
+                 <div class="progress-bar bg-success text-black" role="progressbar"
+                   style="width: {{ ((device_metrics.memory_used/device_metrics.memory_total) * 100)|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.memory_used|round|int }}" aria-valuemin="0"
+                   aria-valuemax="{{ device_metrics.memory_total|round|int }}"></div>
+               </div>
+             </td>
+           </tr>
+           <tr>
+             <td class="border-0">Disk Usage</td>
+             <td class="border-0">
+               {{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB /
+               {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB
+             </td>
+             <td class="border-0 text-right progress-row">
+               <div class="progress progress-xl">
+                 <div class="progress-bar bg-success text-black" role="progressbar"
+                   style="width: {{ ((device_metrics.disk_used/device_metrics.disk_total) * 100)|round|int }}%;"
+                   aria-valuenow="{{ device_metrics.disk_used|round|int }}" aria-valuemin="0"
+                   aria-valuemax="{{ device_metrics.disk_total|round|int }}"></div>
+               </div>
+             </td>
+           </tr>
+         </table>
+       </div>
+     </div>
+   </div>
+
+   <div class="text-center">
+     {% if diagnostics.last_updated %}
+     <p>Last Updated: {{ diagnostics.last_updated }}</p>
+     {% else %}
+     <p>Last Updated: Never</p>
+     {% endif %}
+     <p>To get support please visit <a href="https://nebra.io/support-diag-footer">the Nebra knowledgebase</a></p>
+     <p><a href={{ claim_deeplink }}>Claim your device on dashboard</a></p>
+     <p><a href="/json">Download Diagnostics Info for Support</a></p>
+   </div>
+ </div>
+ {% endblock %}
