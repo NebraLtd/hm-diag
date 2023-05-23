@@ -28,19 +28,19 @@
        <div class="card mb-0 h-100">
          <table class="table dt-responsive nowrap m-2 w-auto">
            <tr>
-             <td>Firmware Version</td>
+             <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
              <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
            </tr>
            <tr>
-             <td>Variant</td>
+             <td><span class="uil uil-focus icon"></span> Variant</td>
              <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
            </tr>
            <tr>
-             <td>Hardware Serial Number</td>
+             <td><span class="uil uil-shield-check icon"></span> Hardware Serial Number</td>
              <td class="text-right">{{ diagnostics.serial_number }}</td>
            </tr>
            <tr>
-             <td>Hostname</td>
+             <td><span class="uil uil-external-link-alt icon"></span> Hostname</td>
              {% if hostname %}
              <td class="text-right">{{ hostname }}</td>
              {% else %}
@@ -48,15 +48,15 @@
              {% endif %}
            </tr>
            <tr>
-             <td>Local IP Address</td>
+             <td><span class="uil uil-cloud-data-connection icon"></span> Local IP Address</td>
              <td class="text-right">{{ device_info.ip_address }}</td>
            </tr>
            <tr>
-             <td>WAN IP Address</td>
+             <td><span class="uil uil-cloud-data-connection icon"></span> WAN IP Address</td>
              <td class="text-right">{{ wan_ip_address }}</td>
            </tr>
            <tr>
-             <td>Ethernet MAC Address</td>
+             <td><span class="uil uil-data-sharing icon"></span> Ethernet MAC Address</td>
              {% if diagnostics.E0 %}
              <td class="text-right">{{ diagnostics.E0 }}</td>
              {% else %}
@@ -64,7 +64,7 @@
              {% endif %}
            </tr>
            <tr>
-             <td class="border-0">WiFi MAC Address</td>
+             <td class="border-0"><span class="uil uil-data-sharing icon"></span> WiFi MAC Address</td>
              {% if diagnostics.W0 %}
              <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
              {% else %}
@@ -79,7 +79,7 @@
          <table class="table dt-responsive nowrap m-2 w-auto">
            {% if display_lte  %}
            <tr>
-             <td>Modem Detected</td>
+             <td><span class="uil uil-cloud-computing icon"></span> Modem Detected</td>
              <td></td>
              {% if diagnostics.LTE %}
              <td class="progress-row">
@@ -93,7 +93,7 @@
            </tr>
            {% endif %}
            <tr>
-             <td>Bluetooth Detected</td>
+             <td><span class="uil uil-bluetooth-b icon"></span> Bluetooth Detected</td>
              <td></td>
              <td class="progress-row">
                {% if diagnostics.BT %}
@@ -104,7 +104,7 @@
              </td>
            </tr>
            <tr>
-             <td>CPU Usage</td>
+             <td><span class="uil uil-circuit icon"></span> CPU Usage</td>
              <td>
                {% if device_metrics.cpu > 79 %}
                {{ device_metrics.cpu|round|int }}%
@@ -133,7 +133,7 @@
              </td>
            </tr>
            <tr>
-             <td>CPU Temperature</td>
+             <td><span class="uil uil-temperature-three-quarter icon"></span> CPU Temperature</td>
              <td>
                {% if device_metrics.temperature > 84 %}
                {{ device_metrics.temperature|round|int }}&deg;C
@@ -165,7 +165,7 @@
              </td>
            </tr>
            <tr>
-             <td>RAM Usage</td>
+             <td><span class="uil uil-coins icon"></span> RAM Usage</td>
              <td>
                {{ (device_metrics.memory_used / 1048576)|round|int }} MB /
                {{ (device_metrics.memory_total / 1048576)|round|int }} MB
@@ -180,7 +180,7 @@
              </td>
            </tr>
            <tr>
-             <td class="border-0">Disk Usage</td>
+             <td class="border-0"><span class="uil uil-database icon"></span> Disk Usage</td>
              <td class="border-0">
                {{ "%.2f"|format((device_metrics.disk_used / 1073741824)|float) }} GB /
                {{ "%.2f"|format((device_metrics.disk_total / 1073741824)|float) }} GB
