@@ -138,7 +138,7 @@
                 </div>
             </div>
             <!-- ========== Left Sidebar End ========== -->
-            
+
 
             <!-- ============================================================== -->
             <!-- Start Page Content here -->
@@ -153,6 +153,11 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
+                                {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+                                <div class="text-md-start footer-links d-none d-md-block">
+                                    <i class="fa fa-star" aria-hidden="true"></i> Premium
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <div class="text-md-end footer-links d-none d-md-block">
@@ -172,7 +177,7 @@
 
         </div>
         <!-- END wrapper -->
-        
+
         <!-- Vendor js -->
         <script src="/static/js/vendor.min.js"></script>
 
@@ -180,4 +185,4 @@
         <script src="/static/js/app.min.js"></script>
 
     </body>
-</html> 
+</html>
