@@ -10,6 +10,7 @@ from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.auth import authenticate
 from hw_diag.utilities.backup import perform_backup
 from hw_diag.utilities.backup import perform_restore
+from hw_diag.utilities.backup import update_backup_checkpoint
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 
 
@@ -29,6 +30,7 @@ def get_backup_page():
 @authenticate
 def do_backup():
     backup_file = perform_backup()
+    update_backup_checkpoint()
     return send_file(backup_file, as_attachment=True)
 
 
@@ -42,6 +44,7 @@ def do_restore():
         return "Bad Request: Invalid backup file", 400
     try:
         perform_restore()
+        update_backup_checkpoint()
         supervisor = BalenaSupervisor.new_from_env()
         supervisor.reboot()
 
