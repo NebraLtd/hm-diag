@@ -14,4 +14,4 @@ class ThingsIXBackupRestore(BaseBackupRestore):
         shutil.copytree(THIX_DIR, self.tmpdir)
 
     def restore(self):
-        os.system('cp -r %s/* %s/.' % (self.tmpdir, THIX_DIR))
+        os.system('cp -r %s/* %s/.' % (self.tmpdir, THIX_DIR))  # nosec

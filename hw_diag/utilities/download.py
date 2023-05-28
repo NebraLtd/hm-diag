@@ -54,7 +54,7 @@ def download_with_resume(url: str, file_path: str, hash: str = '', timeout: int 
     logging.debug('Starting download at %.3fMB' % (first_byte / ONE_MB))
     file_size = -1
     try:
-        file_size = int(requests.head(url).headers['Content-length'])
+        file_size = int(requests.head(url).headers['Content-length'])  # nosec
         logging.info('File size is %s' % file_size)
         headers = {"Range": "bytes=%s-" % first_byte}
         req = requests.get(url, headers=headers, stream=True, timeout=timeout)

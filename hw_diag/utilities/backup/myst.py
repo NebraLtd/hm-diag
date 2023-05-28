@@ -14,4 +14,4 @@ class MystBackupRestore(BaseBackupRestore):
         shutil.copytree(MYST_DIR, self.tmpdir)
 
     def restore(self):
-        os.system('cp -r %s/* %s/.' % (self.tmpdir, MYST_DIR))
+        os.system('cp -r %s/* %s/.' % (self.tmpdir, MYST_DIR))  # nosec

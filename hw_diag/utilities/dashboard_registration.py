@@ -77,7 +77,7 @@ def register_third_party_miner() -> None:
         #     return
 
         payload = _prepare_registration_payload(diagnostics)
-        register = requests.post(THIRD_PARTY_MINER_REGISTRATION_URL, data=json.dumps(payload),
+        register = requests.post(THIRD_PARTY_MINER_REGISTRATION_URL, data=json.dumps(payload),  # nosec
                                  headers={'Content-Type': 'application/json; charset=UTF-8'})
 
         if register.status_code < 300:

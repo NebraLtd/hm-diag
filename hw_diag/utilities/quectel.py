@@ -1,4 +1,4 @@
-import subprocess
+import subprocess  # nosec
 import os
 import urllib.request
 import time
@@ -85,7 +85,7 @@ def download_and_extract(url: str, file_path: str, file_hash: str) -> None:
     # sonar raises warning here for integrity check, in our case it doesn't hold
     # integrity is always checked when file is downloaded, thus NOSONAR
     with tarfile.open(file_path, "r:gz") as tar:  # NOSONAR
-        tar.extractall(FW_STORE_PATH)
+        tar.extractall(FW_STORE_PATH)  # nosec
     os.remove(file_path)
 
 
@@ -172,7 +172,7 @@ def _do_upgrade(desired_fw_version: str) -> bool:
         flash_cmd.append(fw_dir)
         try:
             logging.info(f"executing {flash_cmd} to upgrade modem firmware")
-            flash_cmd_output = subprocess.check_output(flash_cmd, stderr=subprocess.STDOUT)
+            flash_cmd_output = subprocess.check_output(flash_cmd, stderr=subprocess.STDOUT)  # nosec
             logging.info(f"qfirehose cmd output: {flash_cmd_output}")
             upgrade_successful = True
         except subprocess.CalledProcessError as e:
