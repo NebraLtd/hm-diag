@@ -44,6 +44,7 @@ from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.network import get_device_hostname
 from hw_diag.utilities.network import get_wan_ip_address
 from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
+from hw_diag.utilities.backup import services_pending_backup
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -75,6 +76,7 @@ def get_diagnostics():
     wan_ip = get_wan_ip_address()
     device_metrics = get_device_metrics()
     claim_deeplink = claim_miner_deeplink()
+    backup_pending_services = services_pending_backup()
 
     response = render_template(
         template_filename,
@@ -85,7 +87,8 @@ def get_diagnostics():
         device_info=device_info,
         wan_ip_address=wan_ip,
         device_metrics=device_metrics,
-        claim_deeplink=claim_deeplink
+        claim_deeplink=claim_deeplink,
+        backup_pending=backup_pending_services
     )
 
     return response

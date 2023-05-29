@@ -4,6 +4,10 @@ import shutil
 
 import gnupg
 
+from hm_pyhelper.logger import get_logger
+
+logging = get_logger(__name__)
+
 
 class GnuPG(object):
     def __init__(self, gnupghome: str = None):
