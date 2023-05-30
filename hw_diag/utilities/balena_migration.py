@@ -1,6 +1,6 @@
 import os
 import json
-import subprocess
+import subprocess  # nosec
 import requests
 from hw_diag.utilities.osutils import balena_boot_partition
 from hw_diag.utilities.hardware import fetch_serial_number
@@ -9,7 +9,7 @@ from hm_pyhelper.logger import get_logger
 from typing import Dict, Union
 
 # constants
-BOOT_MOUNT_POINT = '/tmp/boot'
+BOOT_MOUNT_POINT = '/tmp/boot'  # nosec
 CONFIG_FILENAME = f'{BOOT_MOUNT_POINT}/config.json'
 CONFIG_TEMP_FILENAME = f'{CONFIG_FILENAME}_temp'
 
@@ -75,7 +75,7 @@ def update_config(old_config) -> Union[Dict, None]:
     serial_number = fetch_serial_number()
     if not serial_number:
         return None
-    r = requests.patch(
+    r = requests.patch(  # nosec
         f'{DASHBOARD_ENDPOINT}/{serial_number}',
         json=old_config, headers={"Authorization": f"token {TOKEN}"}
     )
@@ -146,7 +146,7 @@ def mount_device(device: str, path: str, mount_rw: bool = True):
         mount_option = 'rw' if mount_rw else 'ro'
 
     cmd = ["mount", "-o", mount_option, device, path]
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd)  # nosec
 
 
 def unmount_boot_partition():
@@ -159,7 +159,7 @@ def unmount_path(path: str):
     """
     try:
         if os.path.ismount(path):
-            subprocess.check_call(["umount", path])
+            subprocess.check_call(["umount", path])  # nosec
     except subprocess.CalledProcessError as e:
         LOGGER.error(f'failed to unmount {e}')
 

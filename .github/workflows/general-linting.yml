@@ -1,15 +1,9 @@
----
-###########################
-###########################
-## Linter GitHub Actions ##
-###########################
-###########################
-name: Lint Code Base
-
 #
 # Documentation:
 # https://help.github.com/en/articles/workflow-syntax-for-github-actions
 #
+
+name: General Linting
 
 #############################
 # Start the job on all push #
@@ -48,7 +42,6 @@ jobs:
         uses: github/super-linter/slim@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          VALIDATE_PYTHON_FLAKE8: true
           VALIDATE_BASH: true
           VALIDATE_JSON: true
           VALIDATE_DOCKERFILE_HADOLINT: true

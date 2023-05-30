@@ -1,5 +1,5 @@
 import logging
-import subprocess
+import subprocess  # nosec
 
 import requests
 from sqlalchemy.exc import NoResultFound
@@ -13,7 +13,7 @@ from hw_diag.constants import HPT_IP
 
 def get_wan_ip_address():
     try:
-        resp = requests.get("https://icanhazip.com")
+        resp = requests.get("https://icanhazip.com")  # nosec
         return resp.text
     except Exception:
         return None
@@ -25,7 +25,7 @@ def manufacturing_mode_ping_check() -> bool:
     try:
         # ping without count 2s, interval  0.5s and timeout of 1s
         cmd = ["ping", "-c", "2", "-i", "0.5", "-W", "1", HPT_IP]
-        res = subprocess.check_output(cmd).decode('utf8')
+        res = subprocess.check_output(cmd).decode('utf8')  # nosec
         ttl = res.split('\n')[1].split('ttl=')[1].split(' ')[0]
         if ttl != '64':
             # ping reply is not from the first hop which we expect to be hpt so

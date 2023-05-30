@@ -80,9 +80,9 @@ If you are on the same network as the Raspberry Pi, enter `LOCAL IP ADDRESS` fro
 ### Testing
 
 ```
-pip install -r test-requirements.txt
-pytest
-flake8 hw_diag
+poetry install --with dev
+poetry run pytest --cov=hw_diag --cov=bigquery --cov-fail-under=80
+poetry run ruff check hw_diag
 ```
 
 ### Deprecated deployment
