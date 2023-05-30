@@ -1,0 +1,24 @@
+.content-page a {
+    color: #02A8F5 !important;
+}
+
+.progress-row {
+    width: 33.3%;
+}
+
+li.menuitem-active {
+    background-color: rgba(0,0,0,0.25);
+}
+
+html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link {
+    background: #02A8F5 !important;
+}
+
+html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link.active {
+    background-color: #0083BD !important;
+}
+
+.btn-primary:active {
+    background-color: #0083BD !important;
+    border-color: #0083BD !important;
+}

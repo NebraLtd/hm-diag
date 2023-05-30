@@ -4,39 +4,33 @@
 {% block body %}
     <div class="content"><br/>
         <h3 class="text-center mb-4">Login</h3>
-
         <div class="row mb-4">
             <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
-            <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
-                <div class="card mb-0 h-100">
+            <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                <div class="card p-3">
                     <div class="row">
-                        <div class="col-1"></div>
-                        <div class="col-10">
-                            <br />
-                            {% if msg %}
-                                <span style="color: red; text-align: center;">{{ msg }}</span><br/><br/>
-                            {% endif %}
-                            <form method="POST" action="/login">
-                                <div class="form-group">
-                                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" />
-                                </div>
-                                <br/>
-                                <div class="text-center"><button type="submit" class="btn btn-primary">Login</button></div>
-                            </form>
+                        {% if msg %}
+                            <span style="color: red; text-align: center;">{{ msg }}</span><br/><br/>
+                        {% endif %}
+                        <form method="POST" action="/login">
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Password" />
+                            </div>
                             <br/>
-                            <p style="color: blue;">
-                                Hint: The default password is the
-                                {% if diagnostics.E0 %}
-                                    Ethernet
-                                {% else %}
-                                    WiFi
-                                {% endif %}
-                                MAC address of your device (in upper case and without any colons) which may be found on your device's identification sticker.</p>
-                            <p class="text-center"><a href="/reset_password">Forgotten Password?</a></p>
-                        </div>
-                        <div class="col-1"></div>
+                            <div class="text-center"><button type="submit" class="btn btn-primary w-100">Login</button></div>
+                        </form>
                     </div>
                 </div>
+                <small class="mb-3">
+                    Hint: The default password is the
+                    {% if diagnostics.E0 %}
+                        Ethernet
+                    {% else %}
+                        WiFi
+                    {% endif %}
+                    MAC address of your device (in upper case and without any colons) which may be found on your device's identification sticker.
+                </small>
+                <p class="text-center mt-3"><a href="/reset_password">Forgotten Password?</a></p>
             </div>
             <div class="col-12 col-lg-3 mb-4 mb-lg-0"></div>
         </div>
