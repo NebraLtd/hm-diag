@@ -21,7 +21,7 @@ class MystBackupRestore(BaseBackupRestore):
 
     def restore(self):
         os.system('cp -r %s/* %s/.' % (self.tmpdir, MYST_DIR))  # nosec
-        
+
     def identity_hash(self) -> dict[str, str]:
         # find the file matching UTC* in myst key store
         file_paths = glob.glob(f'{MYST_DIR}/keystore/UTC*')
@@ -33,6 +33,9 @@ class MystBackupRestore(BaseBackupRestore):
                     json.load(f)
             except json.JSONDecodeError as e:
                 logging.error(f"corrupt file: {file} : {e}")
+                file_paths.remove(file)
+            except Exception as e:
+                logging.error(f"error reading file: {file} : {e}")
                 file_paths.remove(file)
 
         return {'Mysterium': calculate_file_hash(file_paths)}

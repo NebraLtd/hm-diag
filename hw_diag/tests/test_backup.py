@@ -85,6 +85,7 @@ class PerformBackupTestCase(unittest.TestCase):
             expected_result = {'Mysterium': self.myst_hash}
             actual_result = self.myst_backup_plugin.identity_hash()
             self.assertEqual(expected_result, actual_result)
+            os.remove(temp_file.name)
 
     def test_myst_identity_hash_with_invalid_json(self):
         with patch('hw_diag.utilities.backup.myst.MYST_DIR', self.temp_myst_dir.name):
@@ -99,6 +100,7 @@ class PerformBackupTestCase(unittest.TestCase):
             expected_result = {'Mysterium': empty_hash()}
             actual_result = self.myst_backup_plugin.identity_hash()
             self.assertEqual(expected_result, actual_result)
+            os.remove(temp_file.name)
 
     def test_myst_identity_hash_with_no_files(self):
         with patch('hw_diag.utilities.backup.myst.MYST_DIR', self.temp_myst_dir.name):
@@ -116,6 +118,7 @@ class PerformBackupTestCase(unittest.TestCase):
             expected_result = {'Thingsix': self.thingsix_hash}
             actual_result = self.thingsix_backup_plugin.identity_hash()
             self.assertEqual(expected_result, actual_result)
+            os.remove(temp_file.name)
 
     def test_thingsix_identity_hash_with_invalid_yaml(self):
         with patch('hw_diag.utilities.backup.thingsix.THIX_DIR', self.temp_thingsix_dir.name):
@@ -123,6 +126,13 @@ class PerformBackupTestCase(unittest.TestCase):
             with open(f"{self.temp_thingsix_dir.name}/gateways.yaml", 'wb') as temp_file:
                 temp_file.write(b"")
 
+            expected_result = {'Thingsix': empty_hash()}
+            actual_result = self.thingsix_backup_plugin.identity_hash()
+            self.assertEqual(expected_result, actual_result)
+            os.remove(temp_file.name)
+
+    def test_thingsix_identity_hash_with_no_files(self):
+        with patch('hw_diag.utilities.backup.thingsix.THIX_DIR', self.temp_thingsix_dir.name):
             expected_result = {'Thingsix': empty_hash()}
             actual_result = self.thingsix_backup_plugin.identity_hash()
             self.assertEqual(expected_result, actual_result)
