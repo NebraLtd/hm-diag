@@ -1,5 +1,9 @@
 .content-page a {
-    color: #02A8F5 !important;
+    color: #02A8F5;
+}
+
+.content-page a.btn {
+    color: white !important;
 }
 
 .progress-row {
