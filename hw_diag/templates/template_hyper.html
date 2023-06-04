@@ -12,9 +12,35 @@
         <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
         <link href="/static/css/icons.min.css" rel="stylesheet" type="text/css" />
         <script src="https://kit.fontawesome.com/ec9cfb2281.js" crossorigin="anonymous"></script>
-    </head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    </head>
 
     <body>
+        <!-- Mobile Nav -->
+        <div class="d-md-none">
+            <nav class="navbar navbar-dark bg-primary px-2">
+              <button id="navbar-toggler" class="navbar-toggler" type="button" aria-expanded="false" aria-label="Toggle mobile navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="nav-mobile-logo">
+                <img src="/static/images/nebra-logo-white.png" alt="Nebra Logo">
+              </div>
+            </nav>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $("#navbar-toggler").click(function() {
+                  var sidenavSize = $("html").attr("data-sidenav-size");
+                  if (sidenavSize === "condensed") {
+                    $("html").attr("data-sidenav-size", "full");
+                    $(this).css("margin-left", "0");
+                  } else {
+                    $("html").attr("data-sidenav-size", "condensed");
+                    $(this).css("margin-left", "70px");
+                  }
+                });
+              });     
+        </script>
+
         <!-- Begin page -->
         <div class="wrapper">
 

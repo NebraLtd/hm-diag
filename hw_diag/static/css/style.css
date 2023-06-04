@@ -1,5 +1,9 @@
 .content-page a {
-    color: #02A8F5 !important;
+    color: #02A8F5;
+}
+
+.content-page a.btn {
+    color: white;
 }
 
 .progress-row {
@@ -7,7 +11,7 @@
 }
 
 li.menuitem-active {
-    background-color: rgba(0,0,0,0.25);
+    background-color: rgba(0, 0, 0, 0.25);
 }
 
 html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav .side-nav-item:hover .side-nav-link {
@@ -19,6 +23,57 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-m
 }
 
 .btn-primary:active {
-    background-color: #0083BD !important;
-    border-color: #0083BD !important;
+    background-color: #02A8F5 !important;
+    border-color: #02A8F5 !important;
+}
+
+.bg-primary {
+    background-color: #02A8F5 !important;
+    border-color: #02A8F5 !important;
+}
+
+.alert {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px;
+    gap: 30px;
+}
+
+.alert-myst {
+    background-color: #EA339A;
+    color: white;
+}
+
+.alert-myst .btn-outline-light {
+    font-weight: bold;
+}
+
+.alert-myst .btn-outline-light:hover {
+    color: #EA339A !important;
+    font-weight: bold;
+}
+
+/* --- Mobile Nav Fix --- */
+
+.logo-sm img {
+    height: auto !important;
+}
+
+html[data-sidenav-size=sm-hover]:not([data-layout=topnav]) .wrapper .leftside-menu:not(:hover) .button-sm-hover {
+    display: none !important;
+}
+
+#navbar-toggler {
+    border: none;
+}
+
+.nav-mobile-logo {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nav-mobile-logo img {
+    margin-left: -54.02px; /* Minus navbar toggle button */
+    max-height: 20px;
 }
