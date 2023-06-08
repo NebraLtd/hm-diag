@@ -88,3 +88,9 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .content-pa
     min-height: 100% !important;
 }
 
+/* --- Upgrade Page --- */
+
+.dashboard-upsell--button {
+    color: #02A8F5 !important;
+}
+
