@@ -100,6 +100,16 @@ table {
     overflow-wrap: anywhere !important;
 }
 
+table td {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    table td {
+        width: auto;
+    }
+}
+
 /* --- Badge --- */
 
 .badge-light {
