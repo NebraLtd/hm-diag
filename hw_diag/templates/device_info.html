@@ -55,41 +55,60 @@
          <table class="table dt-responsive nowrap m-2 w-auto">
            <tr>
              {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
-             <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
-             <td class="text-right"><i class="fa fa-star" aria-hidden="true"></i> Premium - {{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+             <td style="width: 100%;"><span class="uil uil-refresh icon"></span> Firmware Version</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2"><i class="fa fa-star" aria-hidden="true"></i> Premium - {{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</span>
+              </td>
              {% else %}
              <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
-             <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</span>
+              </td>
              {% endif %}
            </tr>
            <tr>
              <td><span class="uil uil-focus icon"></span> Variant</td>
-             <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.FRIENDLY }}</span>
+              </td>
            </tr>
            <tr>
              <td><span class="uil uil-shield-check icon"></span> Hardware Serial Number</td>
-             <td class="text-right">{{ diagnostics.serial_number }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.serial_number }}</span>
+              </td>
            </tr>
            <tr>
              <td><span class="uil uil-external-link-alt icon"></span> Hostname</td>
              {% if hostname %}
-             <td class="text-right">{{ hostname }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ hostname }}</span>
+            </td>
              {% else %}
              <td class="text-danger text-right">Unknown</td>
              {% endif %}
            </tr>
            <tr>
              <td><span class="uil uil-cloud-data-connection icon"></span> Local IP Address</td>
-             <td class="text-right">{{ device_info.ip_address }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2 mb-1 firstIpAddress"></span>
+              <span class="badge badge-light p-2 mb-1 secondIpAddress"></span>
+              <span class="badge badge-light p-2 mb-1 thirdIpAddress"></span>
+              <span class="badge badge-light p-2 mb-1 fourthIpAddress"></span>
+             </td>
            </tr>
            <tr>
              <td><span class="uil uil-cloud-data-connection icon"></span> WAN IP Address</td>
-             <td class="text-right">{{ wan_ip_address }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ wan_ip_address }}</span>
+            </td>
            </tr>
            <tr>
              <td><span class="uil uil-data-sharing icon"></span> Ethernet MAC Address</td>
              {% if diagnostics.E0 %}
-             <td class="text-right">{{ diagnostics.E0 }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.E0 }}</span>
+              </td>
              {% else %}
              <td class="text-danger text-right">N/A</td>
              {% endif %}
@@ -97,7 +116,9 @@
            <tr>
              <td class="border-0"><span class="uil uil-data-sharing icon"></span> WiFi MAC Address</td>
              {% if diagnostics.W0 %}
-             <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
+             <td class="border-0 text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.W0 }}</span>
+            </td>
              {% else %}
              <td class="border-0 text-danger text-right">N/A</td>
              {% endif %}
@@ -245,4 +266,22 @@
      <p><a href="/json">Download Diagnostics Info for Support</a></p>
    </div>
  </div>
+
+ <script>
+  var firstIpAddress = "{{ device_info.ip_address }}".split(" ")[0];
+  var secondIpAddress = "{{ device_info.ip_address }}".split(" ")[1];
+  var thirdIpAddress = "{{ device_info.ip_address }}".split(" ")[2];
+  var fourthIpAddress = "{{ device_info.ip_address }}".split(" ")[3];
+
+  var firstIpAddressSpan = document.querySelector('.firstIpAddress');
+  var secondIpAddressSpan = document.querySelector('.secondIpAddress');
+  var thirdIpAddressSpan = document.querySelector('.thirdIpAddress');
+  var fourthIpAddressSpan = document.querySelector('.fourthIpAddress');
+
+  firstIpAddressSpan.innerHTML = firstIpAddress;
+  secondIpAddressSpan.innerHTML = secondIpAddress;
+  thirdIpAddressSpan.innerHTML = thirdIpAddress;
+  fourthIpAddressSpan.innerHTML = fourthIpAddress;
+</script>
+
  {% endblock %}

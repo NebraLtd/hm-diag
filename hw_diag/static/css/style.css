@@ -99,3 +99,12 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .content-pa
 table {
     overflow-wrap: anywhere !important;
 }
+
+/* --- Badge --- */
+
+.badge-light {
+    color: #212529;
+    background-color: #f8f9fa;
+    font-weight: 400;
+}
+
