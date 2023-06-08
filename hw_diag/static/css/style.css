@@ -77,3 +77,14 @@ html[data-sidenav-size=sm-hover]:not([data-layout=topnav]) .wrapper .leftside-me
     margin-left: -54.02px; /* Minus navbar toggle button */
     max-height: 20px;
 }
+
+/* --- Page length fix --- */
+
+.content-page {
+    min-height: calc(100vh - 10px) !important;
+}
+
+html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .content-page {
+    min-height: 100% !important;
+}
+
