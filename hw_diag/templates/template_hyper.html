@@ -142,6 +142,19 @@
                             </a>
                         </li>
                         <li class="side-nav-item">
+                            {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+                            <a href="https://dashboard.nebra.com/devices/{{ diagnostics.serial_number }}/" target="_blank" class="side-nav-link">
+                                <i class="fa-duotone fa-chart-line"></i>
+                                <span> View on Dashboard </span>
+                            </a>
+                            {% else %}
+                            <a href={{ claim_deeplink }} target="_blank" class="side-nav-link">
+                                <i class="fa-duotone fa-chart-line"></i>
+                                <span> Claim on Dashboard </span>
+                            </a>
+                            {% endif %}
+                        </li>
+                        <li class="side-nav-item">
                             <a href="https://nebra.io/support-diag-sidebar" target="_blank" class="side-nav-link">
                                 <i class="fa-duotone fa-user-headset"></i>
                                 <span> Support </span>
