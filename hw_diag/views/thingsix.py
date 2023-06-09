@@ -15,6 +15,7 @@ from hw_diag.utilities.db import set_value
 from hw_diag.utilities.thix import get_unknown_gateways
 from hw_diag.utilities.thix import get_gateways
 from hw_diag.utilities.thix import submit_onboard
+from hw_diag.utilities.thix import remove_testnet
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 
 
@@ -23,7 +24,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 LOGGER = get_logger(__name__)
 THINGSIX = Blueprint('THINGSIX', __name__)
 
-THINGSIX_ONBOARD_URL = 'https://app-testnet.thingsix.com/gateways/onboarding?gatewayId=%s'
+THINGSIX_ONBOARD_URL = 'https://app.thingsix.com/gateways/onboarding?gatewayId=%s'
 THINGSIX_CONFIG_TEMPLATE = '/opt/thingsix/thingsix_config.yaml'
 THINGSIX_CONFIG_FILE = '/var/thix/config.yaml'
 
@@ -39,9 +40,19 @@ def get_thix_dashboard():
     except Exception:
         return render_template('thix_setup.html')
 
+    try:
+        if get_value('thix_onboarded') == 'true':
+            # Here we must undo the previous testnet stuff...
+            remove_testnet()
+            set_value('thix_enabled', 'false')
+            set_value('thix_onboarded', 'false')
+            return render_template('thix_setup.html')
+    except Exception:  # nosec
+        pass
+
     # If THIX is enabled but isn't onboarded render the onboard page.
     try:
-        if get_value('thix_onboarded') != 'true':
+        if get_value('thix_onboarded') != 'mainnet':
             render_template('thix_onboard.html')
     except Exception:
         return render_template('thix_onboard.html')
@@ -58,7 +69,7 @@ def get_thix_dashboard():
             diagnostics=diagnostics
         )
 
-    except Exception:
+    except Exception:  # nosec
         return render_template(
             'thix_error.html'
         )
@@ -131,5 +142,5 @@ def process_onboard():  # noqa:C901
         )
 
     gateway_id = onboard.get('gatewayId')
-    set_value('thix_onboarded', 'true')
+    set_value('thix_onboarded', 'mainnet')
     return redirect(THINGSIX_ONBOARD_URL % gateway_id)
