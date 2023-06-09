@@ -1,4 +1,5 @@
 import requests
+import shutil
 
 
 THIX_FORWARDER_API = 'http://thix-forwarder:8080/v1'
@@ -37,3 +38,10 @@ def submit_onboard(gateway, wallet):
         return resp.json()
     else:
         raise Exception('Invalid onboard request')
+
+
+def remove_testnet():
+    try:
+        shutil.rmtree('/var/thix/')
+    except Exception:  # nosec
+        pass
