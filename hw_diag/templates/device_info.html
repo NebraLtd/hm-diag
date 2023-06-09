@@ -91,10 +91,7 @@
            <tr>
              <td><span class="uil uil-cloud-data-connection icon"></span> Local IP Address</td>
              <td class="text-right">
-              <span class="badge badge-light p-2 mb-1 firstIpAddress"></span>
-              <span class="badge badge-light p-2 mb-1 secondIpAddress"></span>
-              <span class="badge badge-light p-2 mb-1 thirdIpAddress"></span>
-              <span class="badge badge-light p-2 mb-1 fourthIpAddress"></span>
+              <div id="ip-addresses"></div>
              </td>
            </tr>
            <tr>
@@ -268,20 +265,20 @@
  </div>
 
  <script>
-  var firstIpAddress = "{{ device_info.ip_address }}".split(" ")[0];
-  var secondIpAddress = "{{ device_info.ip_address }}".split(" ")[1];
-  var thirdIpAddress = "{{ device_info.ip_address }}".split(" ")[2];
-  var fourthIpAddress = "{{ device_info.ip_address }}".split(" ")[3];
+  // Split the IP address string into an array of strings
+  var ipAddressArray = "{{ device_info.ip_address }}".split(" ");
 
-  var firstIpAddressSpan = document.querySelector('.firstIpAddress');
-  var secondIpAddressSpan = document.querySelector('.secondIpAddress');
-  var thirdIpAddressSpan = document.querySelector('.thirdIpAddress');
-  var fourthIpAddressSpan = document.querySelector('.fourthIpAddress');
+  // Get a reference to the parent div for the IP addresses
+  var ipAddressesDiv = document.getElementById('ip-addresses');
 
-  firstIpAddressSpan.innerHTML = firstIpAddress;
-  secondIpAddressSpan.innerHTML = secondIpAddress;
-  thirdIpAddressSpan.innerHTML = thirdIpAddress;
-  fourthIpAddressSpan.innerHTML = fourthIpAddress;
+  // Loop over the IP address array and create a new span element for each octet
+  for (var i = 0; i < ipAddressArray.length; i++) {
+    var octetSpan = document.createElement('span');
+    octetSpan.classList.add('badge', 'badge-light', 'p-2', 'mb-1');
+    octetSpan.innerHTML = ipAddressArray[i];
+
+    ipAddressesDiv.appendChild(octetSpan);
+  }
 </script>
 
  {% endblock %}
