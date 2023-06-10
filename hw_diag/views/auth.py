@@ -205,8 +205,10 @@ def spawn_admin_session():
 @AUTH.route('/upgrade')
 @authenticate
 def display_upgrade_page():
+    diagnostics = read_diagnostics_file()
     claim_deeplink = claim_miner_deeplink()
     return render_template(
         'upgrade.html',
+        diagnostics=diagnostics,
         claim_deeplink=claim_deeplink
     )

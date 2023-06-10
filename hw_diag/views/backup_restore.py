@@ -12,6 +12,7 @@ from hw_diag.utilities.backup import perform_backup
 from hw_diag.utilities.backup import perform_restore
 from hw_diag.utilities.backup import update_backup_checkpoint
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
+from hw_diag.utilities.diagnostics import read_diagnostics_file
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -23,7 +24,9 @@ BACKUP_RESTORE = Blueprint('BACKUP_RESTORE', __name__)
 @BACKUP_RESTORE.route('/backup_restore')
 @authenticate
 def get_backup_page():
-    return render_template('backup_restore.html')
+    diagnostics = read_diagnostics_file()
+    
+    return render_template('backup_restore.html', diagnostics=diagnostics)
 
 
 @BACKUP_RESTORE.route('/backup')
