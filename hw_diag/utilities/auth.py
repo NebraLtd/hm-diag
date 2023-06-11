@@ -1,6 +1,5 @@
 import datetime
 import bcrypt
-import os
 
 from functools import wraps
 from flask import redirect
@@ -10,55 +9,9 @@ from sqlalchemy.exc import NoResultFound
 from password_strength import PasswordPolicy
 
 from hm_pyhelper.miner_param import get_ethernet_addresses
+from hm_pyhelper.sbc import is_commercial_fleet
 from hw_diag.database.models.auth import AuthKeyValue
 from hw_diag.database.models.auth import AuthFailure
-
-
-COMMERCIAL_FLEETS = [
-    56,  # Controllino
-    106,  # COTX,
-    53,  # Finestra
-    31,  # Nebra Indoor 868MHz
-    40,  # Nebra Indoor RockPi 868MHz
-    119,  # Nebra Indoor 915MHz
-    58,  # Nebra Indoor RockPi 915MHz
-    62,  # Linxdot
-    42,  # Linxdot RKCM3
-    143,  # Midas
-    145,  # Nebra indoor1
-    147,  # Nebra indoor2
-    148,  # Nebra outdoor1
-    149,  # Nebra outdoor2
-    52,  # Helium OG
-    80,  # Nebra Outdoor 868MHz
-    107,  # Nebra Outdoor 915MHz
-    47,  # PantherX
-    66,  # Pisces
-    73,  # Pycom
-    88,  # RAK
-    114,  # RisingHF
-    124,  # Sensecap
-    90,  # Syncrobit
-    126,  # Syncrobit RKCM3
-    98,  # Nebra Indoor Testing
-    127,  # Controllino Testing
-    87,  # COTX Testing,
-    76,  # Finestra Testing
-    132,  # Linxdot Testing
-    84,  # Linxdot RKCM3 Testing
-    144,  # Midas Testing
-    128,  # Helium OG Testing
-    41,  # PantherX Testing
-    43,  # Pisces Testing
-    116,  # Pycom Testing
-    113,  # RAK Testing
-    103,  # RisingHF Testing
-    60,  # Nebra RockPi Testing
-    137,  # Sensecap Testing
-    57,  # Syncrobit Testing
-    111,  # Syncrobit RKCM3 Testing
-    2006816,  # Rob Testing
-]
 
 
 def authenticate(f):
@@ -73,9 +26,7 @@ def authenticate(f):
 def commercial_fleet_only(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        fleet_name = os.environ.get('BALENA_APP_NAME')
-        fleet_id = int(os.environ.get('BALENA_APP_ID'))
-        if not fleet_name.endswith('-c') or fleet_id not in COMMERCIAL_FLEETS:
+        if not is_commercial_fleet():
             return redirect('/upgrade')
         return f(*args, **kwargs)
     return wrapper
