@@ -214,7 +214,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 {% if diagnostics.commercial_fleet %}
-                                <div class="text-md-start footer-links d-none d-md-block">
+                                <div class="text-md-start footer-links d-block">
                                     <i class="fa fa-star" aria-hidden="true"></i> Premium
                                 </div>
                                 {% endif %}
@@ -255,6 +255,7 @@
                   mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'data-sidenav-size') {
                       checkSidenavSize();
+                      console.log("sidenav state changed");
                     }
                   });
                 });
@@ -267,6 +268,9 @@
                 
                   if (sidenavSize === 'full') {
                     $('#navbar-toggler').css('margin-left', '0');
+                    console.log("sidenav closed");
+                  } else {
+                    console.log("sidenav open");
                   }
                 }
               });          
