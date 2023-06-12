@@ -18,7 +18,7 @@
     </style>
     <iframe title="mysterium" id='frmMyst' frameborder="0" style="overflow: hidden; height: 100vh; width: 100%;">Loading...</iframe>
     <script>
-        var url = 'http://' + window.location.href.split('/')[2] + ':4449';
+        var url = 'http://' + window.location.href.split('/')[2] + ':4449?ts={{ now }}';
         document.getElementById('frmMyst').src = url;
     </script>
 {% endblock %}

@@ -27,18 +27,21 @@ THINGSIX = Blueprint('THINGSIX', __name__)
 THINGSIX_ONBOARD_URL = 'https://app.thingsix.com/gateways/onboarding?gatewayId=%s'
 THINGSIX_CONFIG_TEMPLATE = '/opt/thingsix/thingsix_config.yaml'
 THINGSIX_CONFIG_FILE = '/var/thix/config.yaml'
-
+THINGSIX_SETUP_TEMPLATE = 'thix_setup.html'
+THINGSIX_ONBOARD_TEMPLATE = 'thix_onboard.html'
 
 @THINGSIX.route('/thingsix')
 @authenticate
 @commercial_fleet_only
 def get_thix_dashboard():
     # If THIX isn't enabled render the setup page.
+    diagnostics = read_diagnostics_file()
+
     try:
         if get_value('thix_enabled') != 'true':
-            render_template('thix_setup.html')
+            render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
     except Exception:
-        return render_template('thix_setup.html')
+        return render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
 
     try:
         if get_value('thix_onboarded') == 'true':
@@ -46,21 +49,20 @@ def get_thix_dashboard():
             remove_testnet()
             set_value('thix_enabled', 'false')
             set_value('thix_onboarded', 'false')
-            return render_template('thix_setup.html')
+            return render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
     except Exception:  # nosec
         pass
 
     # If THIX is enabled but isn't onboarded render the onboard page.
     try:
         if get_value('thix_onboarded') != 'mainnet':
-            render_template('thix_onboard.html')
+            render_template(THINGSIX_ONBOARD_TEMPLATE, diagnostics=diagnostics)
     except Exception:
-        return render_template('thix_onboard.html')
+        return render_template(THINGSIX_ONBOARD_TEMPLATE, diagnostics=diagnostics)
 
     try:
         gateways = get_gateways()
         gateway = gateways.get('onboarded')[0]
-        diagnostics = read_diagnostics_file()
 
         # Else just render the THIX dashboard.
         return render_template(
@@ -71,7 +73,8 @@ def get_thix_dashboard():
 
     except Exception:  # nosec
         return render_template(
-            'thix_error.html'
+            'thix_error.html',
+            diagnostics=diagnostics
         )
 
 
@@ -96,11 +99,13 @@ def enable_thix():
 @authenticate
 @commercial_fleet_only
 def process_onboard():  # noqa:C901
+    diagnostics = read_diagnostics_file()
     # Only allow this if it's currently enabled and not onboarded...
     try:
         if get_value('thix_enabled') != 'true':
             return render_template(
-                'thix_onboard.html',
+                THINGSIX_ONBOARD_TEMPLATE,
+                diagnostics=diagnostics,
                 msg='ThingsIX gateway needs to be enabled before onboarding!'
             )
     except Exception:  # nosec
@@ -109,7 +114,8 @@ def process_onboard():  # noqa:C901
     try:
         if get_value('thix_onboarded') == 'true':
             return render_template(
-                'thix_onboard.html',
+                THINGSIX_ONBOARD_TEMPLATE,
+                diagnostics=diagnostics,
                 msg='ThingsIX gateway already onboarded!'
             )
     except Exception:  # nosec
@@ -135,7 +141,8 @@ def process_onboard():  # noqa:C901
         onboard = submit_onboard(gateway, wallet)
     except Exception as err:
         return render_template(
-            'thix_onboard.html',
+            THINGSIX_ONBOARD_TEMPLATE,
+            diagnostics=diagnostics,
             msg=('Error occured during onboard. '
                  'Please check wallet id and try again - %s'
                  % str(err))
