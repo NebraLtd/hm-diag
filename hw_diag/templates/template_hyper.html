@@ -142,7 +142,7 @@
                             </a>
                         </li>
                         <li class="side-nav-item">
-                            {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+                            {% if diagnostics.commercial_fleet %}
                             <a href="https://dashboard.nebra.com/devices/{{ diagnostics.serial_number }}/" target="_blank" class="side-nav-link">
                                 <i class="fa-duotone fa-chart-line"></i>
                                 <span> View on Dashboard </span>
@@ -196,7 +196,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+                                {% if diagnostics.commercial_fleet %}
                                 <div class="text-md-start footer-links d-block">
                                     <i class="fa fa-star" aria-hidden="true"></i> Premium
                                 </div>

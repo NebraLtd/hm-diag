@@ -11,7 +11,14 @@ from hm_pyhelper.diagnostics.diagnostics_report import DIAGNOSTICS_PASSED_KEY, \
 from hw_diag.app import get_app
 from hw_diag.utilities.security import GnuPG
 
-
+@patch.dict(
+        os.environ,
+        {
+            'BALENA_APP_ID': '123456',
+            'BALENA_APP_NAME': 'Test',
+        },
+        clear=True
+    )
 class TestGetDiagnostics(unittest.TestCase):
     TEST_DATA = """Revision        : a020d3
     Serial\t\t: 00000000a3e7kg80

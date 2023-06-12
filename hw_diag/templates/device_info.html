@@ -54,7 +54,7 @@
        <div class="card mb-0 h-100 table-responsive">
          <table class="table dt-responsive nowrap m-2 w-auto">
            <tr>
-             {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+             {% if diagnostics.commercial_fleet %}
              <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
              <td class="text-right">
               <span class="badge badge-light p-2"><i class="fa fa-star" aria-hidden="true"></i> Premium - {{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</span>
@@ -255,7 +255,7 @@
      <p>Last Updated: Never</p>
      {% endif %}
      <p>To get support please visit <a href="https://nebra.io/support-diag-footer">the Nebra knowledgebase</a></p>
-     {% if diagnostics and diagnostics.BA and diagnostics.BA.endswith('-c') %}
+     {% if diagnostics.commercial_fleet %}
      <p><a href="https://dashboard.nebra.com/devices/{{ diagnostics.serial_number }}/">View your device on dashboard</a></p>
      {% else %}
      <p><a href={{ claim_deeplink }}>Claim your device on dashboard</a></p>
