@@ -197,13 +197,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 {% if diagnostics.commercial_fleet %}
-                                <div class="text-md-start footer-links d-none d-md-block">
+                                <div class="text-md-start footer-links d-block">
                                     <i class="fa fa-star" aria-hidden="true"></i> Premium
                                 </div>
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <div class="text-md-end footer-links d-none d-md-block">
+                                <div class="text-md-end footer-links d-block">
                                     <script>document.write(new Date().getFullYear())</script> © Nebra LTD.
                                 </div>
                             </div>
@@ -226,6 +226,38 @@
 
         <!-- App js -->
         <script src="/static/js/app.min.js"></script>
+
+        <!-- Sidenav scroll fix -->
+        <script>
+            $(document).ready(function() {
+                // Check initial value of data-sidenav-size
+                checkSidenavSize();
+              
+                // Create a new MutationObserver to watch for changes in the html element
+                var observer = new MutationObserver(function(mutations) {
+                  mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'data-sidenav-size') {
+                      checkSidenavSize();
+                      console.log("sidenav state changed");
+                    }
+                  });
+                });
+              
+                // Attach the observer to the html element
+                observer.observe(document.querySelector('html'), {attributes: true});
+              
+                function checkSidenavSize() {
+                  var sidenavSize = $('html').attr('data-sidenav-size');
+                
+                  if (sidenavSize === 'full') {
+                    $('#navbar-toggler').css('margin-left', '0');
+                    console.log("sidenav closed");
+                  } else {
+                    console.log("sidenav open");
+                  }
+                }
+              });          
+           </script>
 
     </body>
 </html>

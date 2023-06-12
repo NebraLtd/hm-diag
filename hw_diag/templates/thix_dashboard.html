@@ -14,11 +14,15 @@
               <table class="table dt-responsive nowrap m-2 w-auto">
                 <tr>
                     <td>Gateway Address</td>
-                    <td class="text-right"><a target="_blank" href="https://app.thingsix.com/gateways/{{ gateway.gatewayId }}">{{ gateway.gatewayId }}</a></td>
+                    <td class="text-right">
+                      <a target="_blank" href="https://app.thingsix.com/gateways/{{ gateway.gatewayId }}"><span class="badge badge-light p-2">{{ gateway.gatewayId }}</span></a>
+                    </td>
                 </tr>
                 <tr>
                     <td class="border-0">Gateway Owner</td>
-                    <td class="text-right border-0"><a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}">{{ gateway.owner }}</a></td>
+                    <td class="text-right border-0">
+                      <a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}"><span class="badge badge-light p-2">{{ gateway.owner }}</span></a>
+                    </td>
                 </tr>
               </table>
             </div>
@@ -60,7 +64,9 @@
                     <td class="border-0">Antenna Altitude</td>
                     <td class="border-0">
                         {% if gateway.details %}
+                        <span class="badge badge-light p-2">
                             {{ gateway.details.altitude }}m
+                        </span>
                         {% else %}
                             Onboard Pending
                         {% endif %}

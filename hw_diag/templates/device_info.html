@@ -56,40 +56,56 @@
            <tr>
              {% if diagnostics.commercial_fleet %}
              <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
-             <td class="text-right"><i class="fa fa-star" aria-hidden="true"></i> Premium - {{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2"><i class="fa fa-star" aria-hidden="true"></i> Premium - {{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</span>
+              </td>
              {% else %}
              <td><span class="uil uil-refresh icon"></span> Firmware Version</td>
-             <td class="text-right">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.FW }} ({{ diagnostics.firmware_short_hash }})</span>
+              </td>
              {% endif %}
            </tr>
            <tr>
              <td><span class="uil uil-focus icon"></span> Variant</td>
-             <td class="text-right">{{ diagnostics.FRIENDLY }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.FRIENDLY }}</span>
+              </td>
            </tr>
            <tr>
              <td><span class="uil uil-shield-check icon"></span> Hardware Serial Number</td>
-             <td class="text-right">{{ diagnostics.serial_number }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.serial_number }}</span>
+              </td>
            </tr>
            <tr>
              <td><span class="uil uil-external-link-alt icon"></span> Hostname</td>
              {% if hostname %}
-             <td class="text-right">{{ hostname }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ hostname }}</span>
+            </td>
              {% else %}
              <td class="text-danger text-right">Unknown</td>
              {% endif %}
            </tr>
            <tr>
              <td><span class="uil uil-cloud-data-connection icon"></span> Local IP Address</td>
-             <td class="text-right">{{ device_info.ip_address }}</td>
+             <td class="text-right">
+              <div id="ip-addresses"></div>
+             </td>
            </tr>
            <tr>
              <td><span class="uil uil-cloud-data-connection icon"></span> WAN IP Address</td>
-             <td class="text-right">{{ wan_ip_address }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ wan_ip_address }}</span>
+            </td>
            </tr>
            <tr>
              <td><span class="uil uil-data-sharing icon"></span> Ethernet MAC Address</td>
              {% if diagnostics.E0 %}
-             <td class="text-right">{{ diagnostics.E0 }}</td>
+             <td class="text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.E0 }}</span>
+              </td>
              {% else %}
              <td class="text-danger text-right">N/A</td>
              {% endif %}
@@ -97,7 +113,9 @@
            <tr>
              <td class="border-0"><span class="uil uil-data-sharing icon"></span> WiFi MAC Address</td>
              {% if diagnostics.W0 %}
-             <td class="border-0 text-right">{{ diagnostics.W0 }}</td>
+             <td class="border-0 text-right">
+              <span class="badge badge-light p-2">{{ diagnostics.W0 }}</span>
+            </td>
              {% else %}
              <td class="border-0 text-danger text-right">N/A</td>
              {% endif %}
@@ -245,4 +263,22 @@
      <p><a href="/json">Download Diagnostics Info for Support</a></p>
    </div>
  </div>
+
+ <script>
+  // Split the IP address string into an array of strings
+  var ipAddressArray = "{{ device_info.ip_address }}".split(" ");
+
+  // Get a reference to the parent div for the IP addresses
+  var ipAddressesDiv = document.getElementById('ip-addresses');
+
+  // Loop over the IP address array and create a new span element for each octet
+  for (var ipAddress of ipAddressArray) {
+    var octetSpan = document.createElement('span');
+    octetSpan.classList.add('badge', 'badge-light', 'p-2', 'mb-1');
+    octetSpan.innerHTML = ipAddress;
+  
+    ipAddressesDiv.appendChild(octetSpan);
+  }
+</script>
+
  {% endblock %}

@@ -34,7 +34,7 @@
             .dashboard-upsell--card img {
               height: 125px;
               margin: 0 auto;
-              padding: 25px;
+              padding: 25px 25px 0 25px;
             }
 
             .dashboard-upsell--button {
@@ -52,16 +52,16 @@
             }
 
             .dashboard-upsell--button h3 {
-              margin-bottom: 0;
+              margin: 0;
             }
          </style>
 
-         <div class="mx-auto p-3 py-md-5">
+         <div class="mx-auto p-md-3">
             <main class="dashboard-upsell--main">
 
               <img class="dashboard-upsell--logo img-responsive mb-3"
-                src="https://cdn.shopify.com/s/files/1/0071/2281/3001/files/Nebra-Dashboard-Logo-white.png?v=1676044443"
-                height="50px">
+                src="/static/images/Nebra-Dashboard-Logo-white.svg"
+                height="50px" alt="Nebra Dashboard">
               <h1 class="text-white">Upgrade to the full experience today!</h1>
               <p class="text-light mb-5">The Nebra Dashboard provides extra features like remote reboot, hardware diagnostics,
                 premium firmware and priority support. Control your device from anywhere, monitor its health, get advanced
@@ -72,8 +72,8 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="https://cdn.shopify.com/s/files/1/0071/2281/3001/files/Nebra-Dashboard-Promo-Icon-1_2x_23131f50-7af4-4c46-a825-e6f5f33e3fb8.png?v=1676042986"
-                      class="card-img-top" alt="...">
+                      src="/static/images/Nebra-Dashboard-Promo-Icon-1-white.svg"
+                      class="card-img-top" alt="Remote Reboot">
                     <div class="card-body">
                       <h3 class="card-title">Remote Reboot</h3>
                       <p class="card-text">Hotspot not responding? Reboot it without visiting its location.</p>
@@ -83,8 +83,8 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="https://cdn.shopify.com/s/files/1/0071/2281/3001/files/Nebra-Dashboard-Promo-Icon-3_2x_f9373920-4219-452a-81e4-a6b15c6d40fe.png?v=1676042986"
-                      class="card-img-top" alt="...">
+                      src="/static/images/Nebra-Dashboard-Promo-Icon-2-white.svg"
+                      class="card-img-top" alt="Hardware Diagnostics">
                     <div class="card-body">
                       <h3 class="card-title">Hardware Diagnostics</h3>
                       <p class="card-text">Access diagnostics information from anywhere.</p>
@@ -94,8 +94,8 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="https://cdn.shopify.com/s/files/1/0071/2281/3001/files/Nebra-Dashboard-Promo-Icon-2_2x_d787b226-e266-40e6-92e5-a065a28c64a8.png?v=1676042986"
-                      class="card-img-top" alt="...">
+                      src="/static/images/Nebra-Dashboard-Promo-Icon-3-white.svg"
+                      class="card-img-top" alt="Premium Firmware">
                     <div class="card-body">
                       <h3 class="card-title">Premium Firmware</h3>
                       <p class="card-text">More features including multi network support &amp; dVPN.</p>
@@ -105,11 +105,29 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="https://cdn.shopify.com/s/files/1/0071/2281/3001/files/Nebra-Dashboard-Promo-Icon-4_2x_c1336eb9-0a38-4f34-9c70-c3f659773527.png?v=1676042986"
-                      class="card-img-top" alt="...">
+                      src="/static/images/Nebra-Dashboard-Promo-Icon-4-white.svg"
+                      class="card-img-top" alt="Prioritised Support">
                     <div class="card-body">
                       <h3 class="card-title">Prioritised Support</h3>
                       <p class="card-text">Access our dedicated support team and skip the queue.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                  <div class="card dashboard-upsell--card">
+                    <img class="img-responsive" src="/static/images/Nebra-Dashboard-Promo-Icon-5-white.svg" alt="Multi-Mining">
+                    <div class="card-body">
+                      <h3 class="card-title">Multi-Mining</h3>
+                      <p class="card-text">Earn while you sleep and increase your earnings with multi-mining. Available on all of your existing devices with the Nebra Dashboard.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                  <div class="card dashboard-upsell--card">
+                    <img class="img-responsive" src="/static/images/Nebra-Dashboard-Promo-Icon-6-white.svg" alt="Coming Soon">
+                    <div class="card-body">
+                      <h3 class="card-title">Plus much more coming soon!</h3>
+                      <p class="card-text">Watch this space for new updates and features.</p>
                     </div>
                   </div>
                 </div>
@@ -117,7 +135,6 @@
 
               <div class="row">
                 <div class="text-center">
-                  <h5 class="text-center text-light my-4">Plus much more!</h5>
                   <a class="btn btn-lg btn-light p-3 dashboard-upsell--button" type="button" href={{ claim_deeplink }} target="_blank">
                     <h3>Claim your <strong>free</strong> trial now! <i class="fa fa-arrow-right"></i></h3>
                   </a>

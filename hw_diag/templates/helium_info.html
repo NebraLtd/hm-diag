@@ -24,7 +24,9 @@
                     <td class="text-right">Not Available</td>
                   {% else %}
                     <td><span class="uil uil-focus icon"></span> Hotspot Name</td>
-                    <td class="text-right">{{ diagnostics.AN }}</td>
+                    <td class="text-right">
+                      <span class="badge badge-light p-2">{{ diagnostics.AN }}</span>
+                    </td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -33,7 +35,9 @@
                     <td class="text-right">Not Available</td>
                   {% else %}
                     <td><i class="fa-kit fa-helium"></i> Helium Address</td>
-                    <td class="text-right">{{ diagnostics.PK }}</td>
+                    <td class="text-right">
+                      <span class="badge badge-light p-2">{{ diagnostics.PK }}</span>
+                    </td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -50,9 +54,13 @@
                   {% if not diagnostics.FR %}
                     <td class="text-right">N/A (Not Required)</td>
                   {% elif "N/A" in diagnostics.FR %}
-                    <td class="text-right">{{ diagnostics.FR }}</td>
+                    <td class="text-right">
+                      <span class="badge badge-light p-2">{{ diagnostics.FR }}</span>
+                    </td>
                   {% else %}
-                    <td class="text-right">{{ diagnostics.FR }} MHz</td>
+                    <td class="text-right">
+                      <span class="badge badge-light p-2">{{ diagnostics.FR }} MHz</span>
+                    </td>
                   {% endif %}
                 </tr>
                 <tr>
@@ -61,7 +69,9 @@
                     <td class="border-0 text-right">Awaiting Location Assertion</td>
                   {% else %}
                     <td class="border-0"><span class="uil uil-signal icon"></span> Region Plan</td>
-                    <td class="border-0 text-right">{{ diagnostics.RE }}</td>
+                    <td class="border-0 text-right">
+                      <span class="badge badge-light p-2">{{ diagnostics.RE }}</span>
+                    </td>
                   {% endif %}
                 </tr>
               </table>
