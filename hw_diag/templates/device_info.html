@@ -272,11 +272,11 @@
   var ipAddressesDiv = document.getElementById('ip-addresses');
 
   // Loop over the IP address array and create a new span element for each octet
-  for (var i = 0; i < ipAddressArray.length; i++) {
+  for (var ipAddress of ipAddressArray) {
     var octetSpan = document.createElement('span');
     octetSpan.classList.add('badge', 'badge-light', 'p-2', 'mb-1');
-    octetSpan.innerHTML = ipAddressArray[i];
-
+    octetSpan.innerHTML = ipAddress;
+  
     ipAddressesDiv.appendChild(octetSpan);
   }
 </script>
