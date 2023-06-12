@@ -12,7 +12,7 @@
   font-style: normal;
   font-weight: 100;
   font-display: block;
-  src: url("../webfonts/fa-thin-100.woff2") format("woff2"), url("../webfonts/fa-thin-100.ttf") format("truetype"); }
+  src: url("../../fonts/fa-thin-100.woff2") format("woff2"), url("../../fonts/fa-thin-100.ttf") format("truetype"); }
 
 .fat,
 .fa-thin {

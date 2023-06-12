@@ -35,5 +35,5 @@
   font-family: "Font Awesome Kit";
   font-style: normal;
   font-display: block;
-  src: url("../webfonts/custom-icons.woff2") format("woff2"), url("../webfonts/custom-icons.ttf") format("truetype");
+  src: url("../../fonts/custom-icons.woff2") format("woff2"), url("../../fonts/custom-icons.ttf") format("truetype");
 }

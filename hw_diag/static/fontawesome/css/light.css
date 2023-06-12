@@ -12,7 +12,7 @@
   font-style: normal;
   font-weight: 300;
   font-display: block;
-  src: url("../webfonts/fa-light-300.woff2") format("woff2"), url("../webfonts/fa-light-300.ttf") format("truetype"); }
+  src: url("../../fonts/fa-light-300.woff2") format("woff2"), url("../../fonts/fa-light-300.ttf") format("truetype"); }
 
 .fal,
 .fa-light {
