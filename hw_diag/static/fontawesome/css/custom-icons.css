@@ -1,0 +1,39 @@
+.fak.fa-controllino::before, .fa-kit.fa-controllino::before { content: "\e00f"; }
+.fak.fa-helium::before, .fa-kit.fa-helium::before { content: "\e00a"; }
+.fak.fa-justboom::before, .fa-kit.fa-justboom::before { content: "\e003"; }
+.fak.fa-myst::before, .fa-kit.fa-myst::before { content: "\e009"; }
+.fak.fa-myst-node::before, .fa-kit.fa-myst-node::before { content: "\e018"; }
+.fak.fa-nebra::before, .fa-kit.fa-nebra::before { content: "\e000"; }
+.fak.fa-pijuice::before, .fa-kit.fa-pijuice::before { content: "\e001"; }
+.fak.fa-pisupply::before, .fa-kit.fa-pisupply::before { content: "\e004"; }
+.fak.fa-pycom::before, .fa-kit.fa-pycom::before { content: "\e00e"; }
+.fak.fa-regular-file-invoice-lock::before, .fa-kit.fa-regular-file-invoice-lock::before { content: "\e014"; }
+.fak.fa-solid-graduation-cap-circle-dollar::before, .fa-kit.fa-solid-graduation-cap-circle-dollar::before { content: "\e007"; }
+.fak.fa-solid-microchip-circle-info::before, .fa-kit.fa-solid-microchip-circle-info::before { content: "\e016"; }
+.fak.fa-solid-mountain-circle-check::before, .fa-kit.fa-solid-mountain-circle-check::before { content: "\e006"; }
+.fak.fa-solid-rotate-circle-dollar::before, .fa-kit.fa-solid-rotate-circle-dollar::before { content: "\e012"; }
+.fak.fa-solid-sd-card-circle-info::before, .fa-kit.fa-solid-sd-card-circle-info::before { content: "\e015"; }
+.fak.fa-solid-tablet-circle-check::before, .fa-kit.fa-solid-tablet-circle-check::before { content: "\e010"; }
+.fak.fa-solid-trees-circle-check::before, .fa-kit.fa-solid-trees-circle-check::before { content: "\e013"; }
+.fak.fa-stakebox::before, .fa-kit.fa-stakebox::before { content: "\e002"; }
+.fak.fa-syncrobit::before, .fa-kit.fa-syncrobit::before { content: "\e011"; }
+.fak.fa-thingsix::before, .fa-kit.fa-thingsix::before { content: "\e008"; }
+.fak.fa-ttn::before, .fa-kit.fa-ttn::before { content: "\e00b"; }
+
+.fak, .fa-kit {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: var(--fa-display, inline-block);
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+  font-family: "Font Awesome Kit", sans-serif;
+}
+
+@font-face {
+  font-family: "Font Awesome Kit", sans-serif;
+  font-style: normal;
+  font-display: block;
+  src: url("../../fonts/custom-icons.woff2") format("woff2"), url("../../fonts/custom-icons.ttf") format("truetype");
+}
