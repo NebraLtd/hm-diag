@@ -19021,11 +19021,11 @@ readers do not read off random characters that represent icons */
   font-variant: normal;
   text-rendering: auto;
   line-height: 1;
-  font-family: "Font Awesome Kit";
+  font-family: "Font Awesome Kit", sans-serif;
 }
 
 @font-face {
-  font-family: "Font Awesome Kit";
+  font-family: "Font Awesome Kit", sans-serif;
   font-style: normal;
   font-display: block;
   src: url("../../fonts/custom-icons.woff2") format("woff2"), url("../../fonts/custom-icons.ttf") format("truetype");
