@@ -4,11 +4,11 @@
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-duotone: 'Font Awesome 6 Duotone';
-  --fa-font-duotone: normal 900 1em/1 'Font Awesome 6 Duotone'; }
+  --fa-style-family-duotone: 'Font Awesome 6 Duotone', sans-serif;
+  --fa-font-duotone: normal 900 1em/1 'Font Awesome 6 Duotone', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Duotone';
+  font-family: 'Font Awesome 6 Duotone', sans-serif;
   font-style: normal;
   font-weight: 900;
   font-display: block;

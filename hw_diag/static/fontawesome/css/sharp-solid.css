@@ -4,11 +4,11 @@
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-sharp: 'Font Awesome 6 Sharp';
-  --fa-font-sharp-solid: normal 900 1em/1 'Font Awesome 6 Sharp'; }
+  --fa-style-family-sharp: 'Font Awesome 6 Sharp', sans-serif;
+  --fa-font-sharp-solid: normal 900 1em/1 'Font Awesome 6 Sharp', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Sharp';
+  font-family: 'Font Awesome 6 Sharp', sans-serif;
   font-style: normal;
   font-weight: 900;
   font-display: block;

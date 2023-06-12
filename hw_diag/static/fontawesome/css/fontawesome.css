@@ -1,5 +1,5 @@
 .fa {
-  font-family: var(--fa-style-family, "Font Awesome 6 Pro");
+  font-family: var(--fa-style-family, "Font Awesome 6 Pro", sans-serif);
   font-weight: var(--fa-style, 900); }
 
 .fa,
@@ -38,22 +38,22 @@
 .fa-light,
 .fat,
 .fa-thin {
-  font-family: 'Font Awesome 6 Pro'; }
+  font-family: 'Font Awesome 6 Pro', sans-serif; }
 
 .fab,
 .fa-brands {
-  font-family: 'Font Awesome 6 Brands'; }
+  font-family: 'Font Awesome 6 Brands', sans-serif; }
 
 .fad,
 .fa-classic.fa-duotone,
 .fa-duotone {
-  font-family: 'Font Awesome 6 Duotone'; }
+  font-family: 'Font Awesome 6 Duotone', sans-serif; }
 
 .fass,
 .fasr,
 .fasl,
 .fa-sharp {
-  font-family: 'Font Awesome 6 Sharp'; }
+  font-family: 'Font Awesome 6 Sharp', sans-serif; }
 
 .fass,
 .fa-sharp {

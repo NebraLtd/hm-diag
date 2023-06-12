@@ -1,5 +1,5 @@
 .fa {
-  font-family: var(--fa-style-family, "Font Awesome 6 Pro");
+  font-family: var(--fa-style-family, "Font Awesome 6 Pro", sans-serif);
   font-weight: var(--fa-style, 900); }
 
 .fa,
@@ -38,22 +38,22 @@
 .fa-light,
 .fat,
 .fa-thin {
-  font-family: 'Font Awesome 6 Pro'; }
+  font-family: 'Font Awesome 6 Pro', sans-serif; }
 
 .fab,
 .fa-brands {
-  font-family: 'Font Awesome 6 Brands'; }
+  font-family: 'Font Awesome 6 Brands', sans-serif; }
 
 .fad,
 .fa-classic.fa-duotone,
 .fa-duotone {
-  font-family: 'Font Awesome 6 Duotone'; }
+  font-family: 'Font Awesome 6 Duotone', sans-serif; }
 
 .fass,
 .fasr,
 .fasl,
 .fa-sharp {
-  font-family: 'Font Awesome 6 Sharp'; }
+  font-family: 'Font Awesome 6 Sharp', sans-serif; }
 
 .fass,
 .fa-sharp {
@@ -4731,11 +4731,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-brands: 'Font Awesome 6 Brands';
-  --fa-font-brands: normal 400 1em/1 'Font Awesome 6 Brands'; }
+  --fa-style-family-brands: 'Font Awesome 6 Brands', sans-serif;
+  --fa-font-brands: normal 400 1em/1 'Font Awesome 6 Brands', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Brands';
+  font-family: 'Font Awesome 6 Brands', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -6254,11 +6254,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-classic: 'Font Awesome 6 Pro';
-  --fa-font-light: normal 300 1em/1 'Font Awesome 6 Pro'; }
+  --fa-style-family-classic: 'Font Awesome 6 Pro', sans-serif;
+  --fa-font-light: normal 300 1em/1 'Font Awesome 6 Pro', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Pro';
+  font-family: 'Font Awesome 6 Pro', sans-serif;
   font-style: normal;
   font-weight: 300;
   font-display: block;
@@ -6274,11 +6274,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-classic: 'Font Awesome 6 Pro';
-  --fa-font-regular: normal 400 1em/1 'Font Awesome 6 Pro'; }
+  --fa-style-family-classic: 'Font Awesome 6 Pro', sans-serif;
+  --fa-font-regular: normal 400 1em/1 'Font Awesome 6 Pro', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Pro';
+  font-family: 'Font Awesome 6 Pro', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -6294,11 +6294,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-classic: 'Font Awesome 6 Pro';
-  --fa-font-solid: normal 900 1em/1 'Font Awesome 6 Pro'; }
+  --fa-style-family-classic: 'Font Awesome 6 Pro', sans-serif;
+  --fa-font-solid: normal 900 1em/1 'Font Awesome 6 Pro', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Pro';
+  font-family: 'Font Awesome 6 Pro', sans-serif;
   font-style: normal;
   font-weight: 900;
   font-display: block;
@@ -6314,11 +6314,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-classic: 'Font Awesome 6 Pro';
-  --fa-font-thin: normal 100 1em/1 'Font Awesome 6 Pro'; }
+  --fa-style-family-classic: 'Font Awesome 6 Pro', sans-serif;
+  --fa-font-thin: normal 100 1em/1 'Font Awesome 6 Pro', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Pro';
+  font-family: 'Font Awesome 6 Pro', sans-serif;
   font-style: normal;
   font-weight: 100;
   font-display: block;
@@ -6334,11 +6334,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-duotone: 'Font Awesome 6 Duotone';
-  --fa-font-duotone: normal 900 1em/1 'Font Awesome 6 Duotone'; }
+  --fa-style-family-duotone: 'Font Awesome 6 Duotone', sans-serif;
+  --fa-font-duotone: normal 900 1em/1 'Font Awesome 6 Duotone', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Duotone';
+  font-family: 'Font Awesome 6 Duotone', sans-serif;
   font-style: normal;
   font-weight: 900;
   font-display: block;
@@ -18937,11 +18937,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-sharp: 'Font Awesome 6 Sharp';
-  --fa-font-sharp-light: normal 300 1em/1 'Font Awesome 6 Sharp'; }
+  --fa-style-family-sharp: 'Font Awesome 6 Sharp', sans-serif;
+  --fa-font-sharp-light: normal 300 1em/1 'Font Awesome 6 Sharp', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Sharp';
+  font-family: 'Font Awesome 6 Sharp', sans-serif;
   font-style: normal;
   font-weight: 300;
   font-display: block;
@@ -18957,11 +18957,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-sharp: 'Font Awesome 6 Sharp';
-  --fa-font-sharp-regular: normal 400 1em/1 'Font Awesome 6 Sharp'; }
+  --fa-style-family-sharp: 'Font Awesome 6 Sharp', sans-serif;
+  --fa-font-sharp-regular: normal 400 1em/1 'Font Awesome 6 Sharp', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Sharp';
+  font-family: 'Font Awesome 6 Sharp', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -18977,11 +18977,11 @@ readers do not read off random characters that represent icons */
  * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
-  --fa-style-family-sharp: 'Font Awesome 6 Sharp';
-  --fa-font-sharp-solid: normal 900 1em/1 'Font Awesome 6 Sharp'; }
+  --fa-style-family-sharp: 'Font Awesome 6 Sharp', sans-serif;
+  --fa-font-sharp-solid: normal 900 1em/1 'Font Awesome 6 Sharp', sans-serif; }
 
 @font-face {
-  font-family: 'Font Awesome 6 Sharp';
+  font-family: 'Font Awesome 6 Sharp', sans-serif;
   font-style: normal;
   font-weight: 900;
   font-display: block;
