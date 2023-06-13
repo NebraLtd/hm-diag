@@ -6,7 +6,7 @@
      <div class="content">
          <style>
             .dashboard-upsell--main {
-              background-image: url("/static/images/Nebra-Dashboard-Promo-Background-blue.webp");
+              background-image: url("{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Background-blue.webp') }}");
               background-position: center center;
               background-size: cover;
               border-radius: 25px;
@@ -56,7 +56,7 @@
             <main class="dashboard-upsell--main">
 
               <img class="dashboard-upsell--logo img-responsive mb-3"
-                src="/static/images/Nebra-Dashboard-Logo-white.svg"
+                src="{{ url_for('static',filename='images/Nebra-Dashboard-Logo-white.svg') }}"
                 height="50px" alt="Nebra Dashboard">
               <h1 class="text-white">Upgrade to the full experience today!</h1>
               <p class="text-light mb-5">The Nebra Dashboard provides extra features like remote reboot, hardware diagnostics,
@@ -68,7 +68,7 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="/static/images/Nebra-Dashboard-Promo-Icon-1-white.svg"
+                      src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-1-white.svg') }}"
                       class="card-img-top" alt="Remote Reboot">
                     <div class="card-body">
                       <h3 class="card-title">Remote Reboot</h3>
@@ -79,7 +79,7 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="/static/images/Nebra-Dashboard-Promo-Icon-2-white.svg"
+                      src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-2-white.svg') }}images/Nebra-Dashboard-Promo-Icon-2-white.svg"
                       class="card-img-top" alt="Hardware Diagnostics">
                     <div class="card-body">
                       <h3 class="card-title">Hardware Diagnostics</h3>
@@ -90,7 +90,7 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="/static/images/Nebra-Dashboard-Promo-Icon-3-white.svg"
+                      src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-3-white.svg') }}"
                       class="card-img-top" alt="Premium Firmware">
                     <div class="card-body">
                       <h3 class="card-title">Premium Firmware</h3>
@@ -101,7 +101,7 @@
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
                     <img class="img-responsive"
-                      src="/static/images/Nebra-Dashboard-Promo-Icon-4-white.svg"
+                      src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-4-white.svg') }}"
                       class="card-img-top" alt="Prioritised Support">
                     <div class="card-body">
                       <h3 class="card-title">Prioritised Support</h3>
@@ -111,7 +111,7 @@
                 </div>
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
-                    <img class="img-responsive" src="/static/images/Nebra-Dashboard-Promo-Icon-5-white.svg" alt="Multi-Mining">
+                    <img class="img-responsive" src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-5-white.svg') }}" alt="Multi-Mining">
                     <div class="card-body">
                       <h3 class="card-title">Multi-Mining</h3>
                       <p class="card-text">Earn while you sleep and increase your earnings with multi-mining. Available on all of your existing devices with the Nebra Dashboard.</p>
@@ -120,7 +120,7 @@
                 </div>
                 <div class="col-sm-6 col-lg-3 mb-4">
                   <div class="card dashboard-upsell--card">
-                    <img class="img-responsive" src="/static/images/Nebra-Dashboard-Promo-Icon-6-white.svg" alt="Coming Soon">
+                    <img class="img-responsive" src="{{ url_for('static',filename='images/Nebra-Dashboard-Promo-Icon-6-white.svg') }}" alt="Coming Soon">
                     <div class="card-body">
                       <h3 class="card-title">Plus much more coming soon!</h3>
                       <p class="card-text">Watch this space for new updates and features.</p>

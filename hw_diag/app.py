@@ -155,7 +155,10 @@ def get_app(name, lean_initializations=device_in_manufacturing()):
     if lean_initializations:
         logging.warning("Manufacturing Run: Lot of production initializations will be skipped")
 
-    app = Flask(name)
+    app = Flask(name, 
+                static_url_path='', 
+                static_folder='static',
+                template_folder='templates')
     cache.init_app(app)
 
     if not lean_initializations:
