@@ -29,6 +29,7 @@ RUN install_packages \
         libdbus-glib-1-dev \
         libdbus-1-dev && \
     python -m venv "$PYTHON_DEPENDENCIES_DIR" && . "$PYTHON_DEPENDENCIES_DIR/bin/activate" && \
+    pip install --upgrade pip && \
     pip install --no-cache-dir poetry==1.5.0 && \
     poetry config installer.max-workers 10 && \
     poetry install --no-cache --no-root && \
@@ -92,6 +93,8 @@ ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 
 # Copy environment variables startup script
 COPY setenv.sh /opt/nebra/setenv.sh
+
+RUN sed -i -e 's/2006816/2061551/g' /opt/python-dependencies/lib/python3.11/site-packages/hm_pyhelper/sbc.py
 
 # Copy container startup script
 COPY start_diagnostics.sh /opt/start_diagnostics.sh
