@@ -18,12 +18,8 @@
         <link href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" type="text/css" />
 
         <!-- Font Awesome -->
-        <link href="{{ url_for('static',filename='fontawesome/css/fontawesome.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/brands.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/regular.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/solid.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/duotone.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/custom-icons.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static',filename='fontawesome/css/all.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static',filename='fontawesome/css/custom-icons.min.css') }}" rel="stylesheet" type="text/css">
 
         <!-- jQuery -->
         <script src="{{ url_for('static',filename='js/jquery-3.7.0.min.js') }}" type="text/javascript"></script>
@@ -248,7 +244,7 @@
                   mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'data-sidenav-size') {
                       checkSidenavSize();
-                      console.log("sidenav state changed");
+                      //console.log("sidenav state changed");
                     }
                   });
                 });
@@ -261,9 +257,9 @@
                 
                   if (sidenavSize === 'full') {
                     $('#navbar-toggler').css('margin-left', '0');
-                    console.log("sidenav closed");
+                    //console.log("sidenav closed");
                   } else {
-                    console.log("sidenav open");
+                    //console.log("sidenav open");
                   }
                 }
               });          
