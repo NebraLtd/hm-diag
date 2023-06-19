@@ -94,7 +94,7 @@ ENV PATH="${PYTHON_DEPENDENCIES_DIR}/bin:${PATH}"
 # Copy environment variables startup script
 COPY setenv.sh /opt/nebra/setenv.sh
 
-RUN sed -i -e 's/2006816/2061551/g' /opt/python-dependencies/lib/python3.11/site-packages/hm_pyhelper/sbc.py
+RUN sed -i -e 's/2006816/2062758/g' /opt/python-dependencies/lib/python3.11/site-packages/hm_pyhelper/sbc.py
 
 # Copy container startup script
 COPY start_diagnostics.sh /opt/start_diagnostics.sh
