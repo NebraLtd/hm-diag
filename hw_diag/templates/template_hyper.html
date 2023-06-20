@@ -32,7 +32,7 @@
 
     <body>
         <!-- Mobile Nav -->
-        <div class="d-md-none">
+        <div class="d-lg-none">
             <nav class="navbar navbar-dark bg-primary px-2">
               <button id="navbar-toggler" class="navbar-toggler" type="button" aria-expanded="false" aria-label="Toggle mobile navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -52,9 +52,12 @@
                   } else {
                     $("html").attr("data-sidenav-size", "condensed");
                     $(this).css("margin-left", "70px");
+                    if ($(window).scrollTop() > 0) {
+                      $("html").attr("data-sidenav-size", "condensed");
+                    }
                   }
                 });
-              });     
+              });                   
         </script>
 
         <!-- Begin page -->
@@ -236,9 +239,11 @@
         <!-- Sidenav scroll fix -->
         <script>
             $(document).ready(function() {
+                var navTogglerClicked = false;
+              
                 // Check initial value of data-sidenav-size
                 checkSidenavSize();
-              
+                  
                 // Create a new MutationObserver to watch for changes in the html element
                 var observer = new MutationObserver(function(mutations) {
                   mutations.forEach(function(mutation) {
@@ -248,22 +253,52 @@
                     }
                   });
                 });
-              
+                  
                 // Attach the observer to the html element
                 observer.observe(document.querySelector('html'), {attributes: true});
-              
+                
+                // Function to check sidenav size and set margin-left property accordingly
                 function checkSidenavSize() {
                   var sidenavSize = $('html').attr('data-sidenav-size');
-                
+              
                   if (sidenavSize === 'full') {
                     $('#navbar-toggler').css('margin-left', '0');
                     //console.log("sidenav closed");
                   } else {
+                    $('#navbar-toggler').css('margin-left', '70px');
                     //console.log("sidenav open");
                   }
                 }
-              });          
-           </script>
+                
+                // Function to update the lgScreen variable and set data-sidenav-size attribute accordingly
+                function updateSidenavSize() {
+                  var lgScreen = window.matchMedia("(min-width: 992px)");
+                  if (lgScreen.matches) {
+                    $('html').attr('data-sidenav-size', '');
+                  } else {
+                    if (navTogglerClicked) {
+                      $('html').attr('data-sidenav-size', 'condensed'); 
+                    } else {
+                      $('html').attr('data-sidenav-size', 'full'); 
+                    }
+                  }
+                }
+                
+                // Call updateSidenavSize function on document ready
+                updateSidenavSize();
+                
+                // Call updateSidenavSize function on window resize events
+                $(window).on('resize', function() {
+                  updateSidenavSize();
+                });
+              
+                // Set flag to true when #navbar-toggler is clicked
+                $('#navbar-toggler').click(function() {
+                  navTogglerClicked = true;
+                });
+              });
+                                                
+        </script>
 
     </body>
 </html>
