@@ -249,7 +249,6 @@
                   mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'data-sidenav-size') {
                       checkSidenavSize();
-                      //console.log("sidenav state changed");
                     }
                   });
                 });
@@ -263,10 +262,8 @@
               
                   if (sidenavSize === 'full') {
                     $('#navbar-toggler').css('margin-left', '0');
-                    //console.log("sidenav closed");
                   } else {
                     $('#navbar-toggler').css('margin-left', '70px');
-                    //console.log("sidenav open");
                   }
                 }
                 
