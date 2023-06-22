@@ -142,3 +142,11 @@ cython_debug/
 .vscode/
 *.code-workspace
 /.flake8
+
+# Local mac dev
+nebra_ssh.sh
+.gitignore
+balenarc.yml
+nebra_scp.sh
+.DS_Store
+

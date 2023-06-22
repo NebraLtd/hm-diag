@@ -101,13 +101,7 @@ table {
 }
 
 table td {
-    width: 100%;
-}
-
-@media (min-width: 768px) {
-    table td {
-        width: auto;
-    }
+    width: 20%;
 }
 
 /* --- Badge --- */
