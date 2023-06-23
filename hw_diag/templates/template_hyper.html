@@ -18,12 +18,8 @@
         <link href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" type="text/css" />
 
         <!-- Font Awesome -->
-        <link href="{{ url_for('static',filename='fontawesome/css/fontawesome.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/brands.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/regular.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/solid.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/duotone.css') }}" rel="stylesheet" type="text/css">
-        <link href="{{ url_for('static',filename='fontawesome/css/custom-icons.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static',filename='fontawesome/css/all.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static',filename='fontawesome/css/custom-icons.min.css') }}" rel="stylesheet" type="text/css">
 
         <!-- jQuery -->
         <script src="{{ url_for('static',filename='js/jquery-3.7.0.min.js') }}" type="text/javascript"></script>
@@ -36,7 +32,7 @@
 
     <body>
         <!-- Mobile Nav -->
-        <div class="d-md-none">
+        <div class="d-lg-none">
             <nav class="navbar navbar-dark bg-primary px-2">
               <button id="navbar-toggler" class="navbar-toggler" type="button" aria-expanded="false" aria-label="Toggle mobile navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -56,9 +52,12 @@
                   } else {
                     $("html").attr("data-sidenav-size", "condensed");
                     $(this).css("margin-left", "70px");
+                    if ($(window).scrollTop() > 0) {
+                      $("html").attr("data-sidenav-size", "condensed");
+                    }
                   }
                 });
-              });     
+              });                   
         </script>
 
         <!-- Begin page -->
@@ -240,34 +239,63 @@
         <!-- Sidenav scroll fix -->
         <script>
             $(document).ready(function() {
+                var navTogglerClicked = false;
+              
                 // Check initial value of data-sidenav-size
                 checkSidenavSize();
-              
+                  
                 // Create a new MutationObserver to watch for changes in the html element
                 var observer = new MutationObserver(function(mutations) {
                   mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'data-sidenav-size') {
                       checkSidenavSize();
-                      console.log("sidenav state changed");
                     }
                   });
                 });
-              
+                  
                 // Attach the observer to the html element
                 observer.observe(document.querySelector('html'), {attributes: true});
-              
+                
+                // Function to check sidenav size and set margin-left property accordingly
                 function checkSidenavSize() {
                   var sidenavSize = $('html').attr('data-sidenav-size');
-                
+              
                   if (sidenavSize === 'full') {
                     $('#navbar-toggler').css('margin-left', '0');
-                    console.log("sidenav closed");
                   } else {
-                    console.log("sidenav open");
+                    $('#navbar-toggler').css('margin-left', '70px');
                   }
                 }
-              });          
-           </script>
+                
+                // Function to update the lgScreen variable and set data-sidenav-size attribute accordingly
+                function updateSidenavSize() {
+                  var lgScreen = window.matchMedia("(min-width: 992px)");
+                  if (lgScreen.matches) {
+                    $('html').attr('data-sidenav-size', '');
+                  } else {
+                    if (navTogglerClicked) {
+                      $('html').attr('data-sidenav-size', 'condensed'); 
+                    } else {
+                      $('html').attr('data-sidenav-size', 'full'); 
+                    }
+                  }
+                }
+                
+                // Call updateSidenavSize function on document ready
+                updateSidenavSize();
+                
+                // Call updateSidenavSize function on window resize events
+                $(window).on('resize', function() {
+                  updateSidenavSize();
+                });
+              
+                // Set flag to true when #navbar-toggler is clicked
+                $('#navbar-toggler').click(function() {
+                  navTogglerClicked = true;
+                });
+              });
+                                                
+        </script>
 
     </body>
 </html>

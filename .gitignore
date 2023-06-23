@@ -143,8 +143,10 @@ cython_debug/
 *.code-workspace
 /.flake8
 
-# Mac 
-.DS_Store
+# Local mac dev
+nebra_ssh.sh
+.gitignore
 balenarc.yml
 nebra_scp.sh
-nebra_ssh.sh
+.DS_Store
+
