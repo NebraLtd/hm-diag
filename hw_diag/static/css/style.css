@@ -94,16 +94,6 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .content-pa
     color: #02A8F5 !important;
 }
 
-/* --- Tables --- */
-
-table {
-    overflow-wrap: anywhere !important;
-}
-
-table td {
-    width: 20%;
-}
-
 /* --- Badge --- */
 
 .badge-light {
