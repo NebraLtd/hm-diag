@@ -142,3 +142,9 @@ cython_debug/
 .vscode/
 *.code-workspace
 /.flake8
+
+# Mac 
+.DS_Store
+balenarc.yml
+nebra_scp.sh
+nebra_ssh.sh
