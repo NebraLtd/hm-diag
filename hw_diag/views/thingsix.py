@@ -16,6 +16,8 @@ from hw_diag.utilities.thix import get_unknown_gateways
 from hw_diag.utilities.thix import get_gateways
 from hw_diag.utilities.thix import submit_onboard
 from hw_diag.utilities.thix import remove_testnet
+from hw_diag.utilities.thix import is_region_set
+from hw_diag.utilities.thix import write_region_file
 from hw_diag.utilities.diagnostics import read_diagnostics_file
 
 
@@ -29,6 +31,7 @@ THINGSIX_CONFIG_TEMPLATE = '/opt/thingsix/thingsix_config.yaml'
 THINGSIX_CONFIG_FILE = '/var/thix/config.yaml'
 THINGSIX_SETUP_TEMPLATE = 'thix_setup.html'
 THINGSIX_ONBOARD_TEMPLATE = 'thix_onboard.html'
+THINGSIX_SET_REGION_TEMPLATE = 'thix_set_region.html'
 
 @THINGSIX.route('/thingsix')
 @authenticate
@@ -39,8 +42,11 @@ def get_thix_dashboard():
 
     try:
         if get_value('thix_enabled') != 'true':
-            render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
+            raise Exception("ThingsIX not enabled yet.")
     except Exception:
+        # Check if region is set, if not set then send user to the set region page...
+        if not is_region_set():
+            return render_template(THINGSIX_SET_REGION_TEMPLATE, diagnostics=diagnostics)
         return render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
 
     try:
@@ -93,6 +99,32 @@ def enable_thix():
     shutil.copy(THINGSIX_CONFIG_TEMPLATE, THINGSIX_CONFIG_FILE)
     set_value('thix_enabled', 'true')
     return 'Accepted', 202
+
+
+@THINGSIX.route('/thingsix/set_region', methods=['POST'])
+@authenticate
+@commercial_fleet_only
+def set_region():
+    region = request.form.get('selRegion')
+
+    # Validate region is valid...
+    if region not in [
+        'EU868',
+        'US915',
+        'CN779',
+        'EU433',
+        'AU915',
+        'CN470',
+        'AS923',
+        'KR920',
+        'IN865',
+        'RU864'
+    ]:
+        return 'Bad region provided', 400
+
+    # Set the region file and redirect user back to the onboard...
+    write_region_file(region)
+    return redirect('/thingsix')
 
 
 @THINGSIX.route('/thingsix/onboard', methods=['POST'])
