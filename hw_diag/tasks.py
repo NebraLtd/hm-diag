@@ -14,7 +14,7 @@ from hw_diag.utilities.shell import get_environment_var
 from hw_diag.utilities.gcs_shipper import upload_diagnostics
 from hw_diag.diagnostics.gateway_diagnostics import GatewayDiagnostics
 from hm_pyhelper.diagnostics import DiagnosticsReport
-from hm_pyhelper.sbc import is_commercial_fleet
+from hm_pyhelper.sbc import is_commercial_fleet, is_nebra_fleet
 
 
 log = logging.getLogger()
@@ -51,6 +51,7 @@ def perform_hw_diagnostics(ship=False):  # noqa: C901
     diagnostics['PK'] = public_keys['key']
     diagnostics['AN'] = public_keys['name']
     diagnostics['commercial_fleet'] = is_commercial_fleet()
+    diagnostics['nebra_fleet'] = is_nebra_fleet()
 
     set_diagnostics_bt_lte(diagnostics)
 

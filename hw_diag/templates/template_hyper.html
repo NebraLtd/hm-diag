@@ -156,8 +156,13 @@
                                 <i class="fa-duotone fa-chart-line"></i>
                                 <span> View on Dashboard </span>
                             </a>
-                            {% else %}
+                            {% elif diagnostics.nebra_fleet %}
                             <a href={{ claim_deeplink }} target="_blank" class="side-nav-link">
+                                <i class="fa-duotone fa-chart-line"></i>
+                                <span> Claim on Dashboard </span>
+                            </a>
+                            {% else %}
+                            <a href="/openfleet" class="side-nav-link">
                                 <i class="fa-duotone fa-chart-line"></i>
                                 <span> Claim on Dashboard </span>
                             </a>

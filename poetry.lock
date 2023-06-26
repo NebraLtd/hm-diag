@@ -645,13 +645,13 @@ tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "hm-pyhelper"
-version = "0.14.16"
+version = "0.14.17"
 description = "Helium Python Helper"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "hm_pyhelper-0.14.16-py3-none-any.whl", hash = "sha256:b4ab0a44da68aff72a8662ad51ebcebe180abae370d9504d4d15f2302c534b1c"},
-    {file = "hm_pyhelper-0.14.16.tar.gz", hash = "sha256:3ee1346e0ca5fd9de13c8a422eaff5d7ff55caacbed36f7bcfec9c5323c433e7"},
+    {file = "hm_pyhelper-0.14.17-py3-none-any.whl", hash = "sha256:d59df06b0eb169b76cde6abfd1f28b9e3d5b6c1b3dd81214009678d778d6cba3"},
+    {file = "hm_pyhelper-0.14.17.tar.gz", hash = "sha256:a435df48cc99bcf194e96f667d687e30a1a6f3137cf4b3075a4991525cda4c5e"},
 ]
 
 [package.dependencies]
@@ -1547,4 +1547,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "38e7eb13dfa2b541c9af7a791c6e7d7b022c81dbe0246644cb8e7ca639f2abd0"
+content-hash = "257b87879654bead8c68e2b459c226507f3c4e16a1d6d2ed962dd0bf6dd5ba73"
