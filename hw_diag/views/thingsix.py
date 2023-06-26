@@ -33,6 +33,18 @@ THINGSIX_SETUP_TEMPLATE = 'thix_setup.html'
 THINGSIX_ONBOARD_TEMPLATE = 'thix_onboard.html'
 THINGSIX_SET_REGION_TEMPLATE = 'thix_set_region.html'
 
+REGION_PREFIXES = (
+    'AS923',
+    'AU915',
+    'CN470',
+    'EU433',
+    'EU868',
+    'IN865',
+    'KR920',
+    'RU864',
+    'US915'
+)
+
 @THINGSIX.route('/thingsix')
 @authenticate
 @commercial_fleet_only
@@ -108,18 +120,7 @@ def set_region():
     region = request.form.get('selRegion')
 
     # Validate region is valid...
-    if region not in [
-        'EU868',
-        'US915',
-        'CN779',
-        'EU433',
-        'AU915',
-        'CN470',
-        'AS923',
-        'KR920',
-        'IN865',
-        'RU864'
-    ]:
+    if not region.startswith(REGION_PREFIXES):
         return 'Bad region provided', 400
 
     # Set the region file and redirect user back to the onboard...
