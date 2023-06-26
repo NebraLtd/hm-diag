@@ -1,0 +1,82 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}ThingsIX Region{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <br/>
+        <div class="text-center">
+            <h3 class="text-center mb-4">ThingsIX Region</h3>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0" style="padding:20px">
+            <div class="card mb-0 h-100">
+              <p>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                          <div>
+                            <p>Please select your hotspot's region. To find the appropriate region for your hotspot please use our <a href='https://region.nebra.com/' target='_blank'>Region Tool</a>.</p>
+                            {% if msg %}
+                                <p class="text-danger">{{ msg }}</p>
+                            {% endif %}
+                            <form action="/thingsix/set_region" method="POST">
+                            <div class="form-group">
+                              <select class="form-select" aria-label="Default select example" id="selRegion" name="selRegion">
+                                  <option value="AS923">AS923</option>
+                                  <option value="AS923_1">AS923_1</option>
+                                  <option value="AS923_1A">AS923_1A</option>
+                                  <option value="AS923_1B">AS923_1B</option>
+                                  <option value="AS923_1C">AS923_1C</option>
+                                  <option value="AS923_1D">AS923_1D</option>
+                                  <option value="AS923_1E">AS923_1E</option>
+                                  <option value="AS923_1F">AS923_1F</option>
+                                  <option value="AS923_2">AS923_2</option>
+                                  <option value="AS923_2A">AS923_2A</option>
+                                  <option value="AS923_3">AS923_3</option>
+                                  <option value="AS923_3A">AS923_3A</option>
+                                  <option value="AS923_4">AS923_4</option>
+                                  <option value="AS923_4A">AS923_4A</option>
+                                  <option value="AS923_1">AS923_1</option>
+                                  <option value="AU915">AU915</option>
+                                  <option value="AU915_SB1">AU915_SB1</option>
+                                  <option value="AU915_SB2">AU915_SB2</option>
+                                  <option value="CN470">CN470</option>
+                                  <option value="EU433">EU433</option>
+                                  <option value="EU868">EU868</option>
+                                  <option value="EU868_A">EU868_A</option>
+                                  <option value="EU868_B">EU868_B</option>
+                                  <option value="EU868_C">EU868_C</option>
+                                  <option value="EU868_D">EU868_D</option>
+                                  <option value="EU868_E">EU868_E</option>
+                                  <option value="EU868_F">EU868_F</option>
+                                  <option value="IN865">IN865</option>
+                                  <option value="IN865_A">IN865_A</option>
+                                  <option value="KR920">KR920</option>
+                                  <option value="KR920_A">KR920_A</option>
+                                  <option value="RU864">RU864</option>
+                                  <option value="RU864_A">RU864_A</option>
+                                  <option value="US915">US915</option>
+                                  <option value="US915_SB2">US915_SB2</option>
+                              </select>
+                            </div>
+                            <br/>
+                            <div class="text-center"><input class="btn btn-primary" type="submit" value="Set Region" /></div>
+                            </form>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+          </div>
+        </div>
+    </div>
+{% endblock %}

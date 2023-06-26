@@ -1,8 +1,18 @@
 import requests
+import os
 import shutil
 
 
 THIX_FORWARDER_API = 'http://thix-forwarder:8080/v1'
+
+
+def is_region_set():
+    return os.path.isfile('/var/pktfwd/region')
+
+
+def write_region_file(region):
+    with open("/var/pktfwd/region", "w") as region_file:
+        region_file.write(region)
 
 
 def get_unknown_gateways():
