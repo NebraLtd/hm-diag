@@ -88,6 +88,7 @@ include hw_diag/templates/device_info.html
 include hw_diag/templates/helium_info.html
 include hw_diag/templates/login_form.html
 include hw_diag/templates/myst.html
+include hw_diag/templates/openfleet.html
 include hw_diag/templates/password_change_form.html
 include hw_diag/templates/password_reset.html
 include hw_diag/templates/reconfigure_countdown.html
@@ -95,6 +96,7 @@ include hw_diag/templates/template_hyper.html
 include hw_diag/templates/thix_dashboard.html
 include hw_diag/templates/thix_error.html
 include hw_diag/templates/thix_onboard.html
+include hw_diag/templates/thix_set_region.html
 include hw_diag/templates/thix_setup.html
 include hw_diag/templates/ttn_config.html
 include hw_diag/templates/upgrade.html

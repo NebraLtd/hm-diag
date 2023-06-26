@@ -212,3 +212,13 @@ def display_upgrade_page():
         diagnostics=diagnostics,
         claim_deeplink=claim_deeplink
     )
+
+
+@AUTH.route('/openfleet')
+@authenticate
+def display_openfleet_page():
+    diagnostics = read_diagnostics_file()
+    return render_template(
+        'openfleet.html',
+        diagnostics=diagnostics
+    )
