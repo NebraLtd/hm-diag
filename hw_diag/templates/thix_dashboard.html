@@ -13,16 +13,35 @@
             <div class="card mb-0 h-100 table-responsive">
               <table class="table dt-responsive nowrap m-md-2 w-auto">
                 <tr>
-                    <td>Gateway Address</td>
+                    <td><i class="uil uil-sign-alt"></i> Gateway Address</td>
+                    {% if not gateway.gatewayId %}
+                    <td class="text-right">Not Available</td>
+                    {% else %}
                     <td class="text-right">
                       <a target="_blank" href="https://app.thingsix.com/gateways/{{ gateway.gatewayId }}"><span class="badge badge-light p-2">{{ gateway.gatewayId }}</span></a>
                     </td>
+                    {% endif %}
                 </tr>
                 <tr>
-                    <td class="border-0">Gateway Owner</td>
+                    <td class="border-0"><i class="uil uil-wallet"></i> Gateway Owner</td>
+                    {% if not gateway.owner %}
+                    <td class="text-right border-0">Not Available</td>
+                    {% else %}
                     <td class="text-right border-0">
-                      <a target="_blank" href="https://mumbai.polygonscan.com/address/{{ gateway.owner }}"><span class="badge badge-light p-2">{{ gateway.owner }}</span></a>
+                      <a target="_blank" href="https://polygonscan.com/address/{{ gateway.owner }}"><span class="badge badge-light p-2">{{ gateway.owner }}</span></a>
                     </td>
+                    {% endif %}
+                </tr>
+                <tr>
+                  {% if not gateway.gatewayId %}
+                    <td class="border-0"><i class="fak fa-thingsix"></i> Explorer Link</td>
+                    <td class="text-right border-0">Not Available</td>
+                  {% else %}
+                    <td class="border-0"><i class="fak fa-thingsix"></i> Explorer Link</td>
+                    <td class="text-right border-0">
+                      <a target="_blank" href="https://app.thingsix.com/gateways/{{ gateway.gatewayId }}">View on Explorer</a>
+                    </td>
+                  {% endif %}
                 </tr>
               </table>
             </div>
@@ -31,46 +50,46 @@
             <div class="card mb-0 h-100 table-responsive">
               <table class="table dt-responsive nowrap m-md-2 w-auto">
                 <tr>
-                    <td>Radio Operational</td>
+                    <td><span class="uil uil-wifi-router icon"></span> Radio Operational</td>
                     {% if diagnostics.LOR %}
-                      <td class="text-success text-right">True</td>
+                      <td class="text-right"><span class="uil uil-check-circle text-success"></span></td>
                     {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
                       <td class="text-right">Awaiting Location Assertion</td>
                     {% else %}
-                      <td class="text-danger text-right">False</td>
+                      <td class="text-right"><span class="uil uil-times-circle text-danger"></span></td>
                     {% endif %}
                 </tr>
                 <tr>
-                    <td>Band</td>
-                    <td>
-                        {% if gateway.details %}
-                            {{ gateway.details.band }}
-                        {% else %}
-                            Onboard Pending
-                        {% endif %}
-                    </td>
+                    <td class="border-0"><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
+                    {% if gateway.details %}
+                        <td class="border-0 text-right">
+                          <span class="badge badge-light p-2">{{ gateway.details.band }}</span>
+                        </td>
+                    {% else %}
+                        <td class="border-0 text-right">Onboard Pending</td>
+                    {% endif %}
                 </tr>
                 <tr>
-                    <td>Antenna Gain</td>
-                    <td>
+                    <td class="border-0"><span class="uil uil-signal icon"></span> Antenna Gain</td>
                         {% if gateway.details %}
-                            {{ gateway.details.antennaGain }}dBi
-                        {% else %}
-                            Onboard Pending
-                        {% endif %}
-                    </td>
+                        <td class="border-0 text-right">
+                          <span class="badge badge-light p-2">{{ gateway.details.antennaGain }} dBi</span>
+                        </td>
+                    {% else %}
+                        <td class="border-0 text-right">Onboard Pending</td>
+                    {% endif %}
                 </tr>
                 <tr>
-                    <td class="border-0">Antenna Altitude</td>
-                    <td class="border-0">
+                    <td class="border-0"><span class="uil uil-top-arrow-to-top icon"></span> Antenna Altitude</td>
                         {% if gateway.details %}
-                        <span class="badge badge-light p-2">
-                            {{ gateway.details.altitude }}m
-                        </span>
+                        <td class="border-0 text-right">
+                            <span class="badge badge-light p-2">
+                                {{ gateway.details.altitude }} m
+                            </span>
+                        </td>
                         {% else %}
-                            Onboard Pending
+                            <td class="border-0 text-right">Onboard Pending</td>
                         {% endif %}
-                    </td>
                 </tr>
               </table>
             </div>
@@ -101,5 +120,12 @@
             </div>
           </div>
         </div>
+        <div class="text-center">
+          {% if diagnostics.last_updated %}
+            <p>Last Updated: {{ diagnostics.last_updated }}</p>
+          {% else %}
+            <p>Last Updated: Never</p>
+          {% endif %}
+      </div>
     </div>
 {% endblock %}

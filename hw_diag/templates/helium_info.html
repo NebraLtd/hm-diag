@@ -31,10 +31,10 @@
                 </tr>
                 <tr>
                   {% if not diagnostics.PK %}
-                    <td><i class="fa-kit fa-helium"></i> Helium Address</td>
+                    <td><i class="uil uil-sign-alt"></i> Helium Address</td>
                     <td class="text-right">Not Available</td>
                   {% else %}
-                    <td><i class="fa-kit fa-helium"></i> Helium Address</td>
+                    <td><i class="uil uil-sign-alt"></i> Helium Address</td>
                     <td class="text-right">
                       <span class="badge badge-light p-2">{{ diagnostics.PK }}</span>
                     </td>
@@ -65,10 +65,10 @@
                 </tr>
                 <tr>
                   {% if diagnostics.RE == 'UN123' %}
-                    <td class="border-0"><span class="uil uil-signal icon"></span> Region Plan</td>
+                    <td class="border-0"><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
                     <td class="border-0 text-right">Awaiting Location Assertion</td>
                   {% else %}
-                    <td class="border-0"><span class="uil uil-signal icon"></span> Region Plan</td>
+                    <td class="border-0"><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
                     <td class="border-0 text-right">
                       <span class="badge badge-light p-2">{{ diagnostics.RE }}</span>
                     </td>
