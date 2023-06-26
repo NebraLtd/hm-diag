@@ -23,11 +23,11 @@
                     {% endif %}
                 </tr>
                 <tr>
-                    <td class="border-0"><i class="uil uil-wallet"></i> Gateway Owner</td>
+                    <td><i class="uil uil-wallet"></i> Gateway Owner</td>
                     {% if not gateway.owner %}
-                    <td class="text-right border-0">Not Available</td>
+                    <td class="text-right">Not Available</td>
                     {% else %}
-                    <td class="text-right border-0">
+                    <td class="text-right">
                       <a target="_blank" href="https://polygonscan.com/address/{{ gateway.owner }}"><span class="badge badge-light p-2">{{ gateway.owner }}</span></a>
                     </td>
                     {% endif %}
@@ -60,23 +60,23 @@
                     {% endif %}
                 </tr>
                 <tr>
-                    <td class="border-0"><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
+                    <td><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
                     {% if gateway.details %}
-                        <td class="border-0 text-right">
+                        <td class="text-right">
                           <span class="badge badge-light p-2">{{ gateway.details.band }}</span>
                         </td>
                     {% else %}
-                        <td class="border-0 text-right">Onboard Pending</td>
+                        <td class="text-right">Onboard Pending</td>
                     {% endif %}
                 </tr>
                 <tr>
-                    <td class="border-0"><span class="uil uil-signal icon"></span> Antenna Gain</td>
+                    <td><span class="uil uil-signal icon"></span> Antenna Gain</td>
                         {% if gateway.details %}
-                        <td class="border-0 text-right">
+                        <td class="text-right">
                           <span class="badge badge-light p-2">{{ gateway.details.antennaGain }} dBi</span>
                         </td>
                     {% else %}
-                        <td class="border-0 text-right">Onboard Pending</td>
+                        <td class="text-right">Onboard Pending</td>
                     {% endif %}
                 </tr>
                 <tr>
