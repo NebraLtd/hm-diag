@@ -13,6 +13,7 @@ from hw_diag.utilities.backup import perform_restore
 from hw_diag.utilities.backup import update_backup_checkpoint
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -25,8 +26,13 @@ BACKUP_RESTORE = Blueprint('BACKUP_RESTORE', __name__)
 @authenticate
 def get_backup_page():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     
-    return render_template('backup_restore.html', diagnostics=diagnostics)
+    return render_template(
+        'backup_restore.html', 
+        diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink
+    )
 
 
 @BACKUP_RESTORE.route('/backup')

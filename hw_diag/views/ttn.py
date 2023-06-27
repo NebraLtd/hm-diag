@@ -12,6 +12,7 @@ from hw_diag.utilities.auth import generate_default_password
 from hw_diag.utilities.ttn import write_ttn_config
 from hw_diag.utilities.ttn import read_ttn_config
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -25,11 +26,13 @@ TTN = Blueprint('TTN', __name__)
 @commercial_fleet_only
 def get_ttn_dashboard():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     gateway_eui = '0000%s' % generate_default_password().upper()
     ttn_config = read_ttn_config()
     return render_template(
         'ttn_config.html',
         diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
         gateway_eui=gateway_eui,
         ttn_config=ttn_config
     )

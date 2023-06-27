@@ -19,6 +19,7 @@ from hw_diag.utilities.thix import remove_testnet
 from hw_diag.utilities.thix import is_region_set
 from hw_diag.utilities.thix import write_region_file
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
@@ -51,6 +52,7 @@ REGION_PREFIXES = (
 def get_thix_dashboard():
     # If THIX isn't enabled render the setup page.
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
 
     try:
         if get_value('thix_enabled') != 'true':
@@ -58,8 +60,16 @@ def get_thix_dashboard():
     except Exception:
         # Check if region is set, if not set then send user to the set region page...
         if not is_region_set():
-            return render_template(THINGSIX_SET_REGION_TEMPLATE, diagnostics=diagnostics)
-        return render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
+            return render_template(
+                THINGSIX_SET_REGION_TEMPLATE,
+                diagnostics=diagnostics,
+                claim_deeplink=claim_deeplink
+            )
+        return render_template(
+            THINGSIX_SETUP_TEMPLATE,
+            diagnostics=diagnostics,
+            claim_deeplink=claim_deeplink
+        )
 
     try:
         if get_value('thix_onboarded') == 'true':
@@ -67,16 +77,28 @@ def get_thix_dashboard():
             remove_testnet()
             set_value('thix_enabled', 'false')
             set_value('thix_onboarded', 'false')
-            return render_template(THINGSIX_SETUP_TEMPLATE, diagnostics=diagnostics)
+            return render_template(
+                THINGSIX_SETUP_TEMPLATE,
+                diagnostics=diagnostics,
+                claim_deeplink=claim_deeplink
+            )
     except Exception:  # nosec
         pass
 
     # If THIX is enabled but isn't onboarded render the onboard page.
     try:
         if get_value('thix_onboarded') != 'mainnet':
-            render_template(THINGSIX_ONBOARD_TEMPLATE, diagnostics=diagnostics)
+            render_template(
+                THINGSIX_ONBOARD_TEMPLATE,
+                diagnostics=diagnostics,
+                claim_deeplink=claim_deeplink
+            )
     except Exception:
-        return render_template(THINGSIX_ONBOARD_TEMPLATE, diagnostics=diagnostics)
+        return render_template(
+            THINGSIX_ONBOARD_TEMPLATE,
+            diagnostics=diagnostics,
+            claim_deeplink=claim_deeplink
+        )
 
     try:
         gateways = get_gateways()
@@ -86,13 +108,15 @@ def get_thix_dashboard():
         return render_template(
             'thix_dashboard.html',
             gateway=gateway,
+            claim_deeplink=claim_deeplink,
             diagnostics=diagnostics
         )
 
     except Exception:  # nosec
         return render_template(
             'thix_error.html',
-            diagnostics=diagnostics
+            diagnostics=diagnostics,
+            claim_deeplink=claim_deeplink
         )
 
 
@@ -133,12 +157,14 @@ def set_region():
 @commercial_fleet_only
 def process_onboard():  # noqa:C901
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     # Only allow this if it's currently enabled and not onboarded...
     try:
         if get_value('thix_enabled') != 'true':
             return render_template(
                 THINGSIX_ONBOARD_TEMPLATE,
                 diagnostics=diagnostics,
+                claim_deeplink=claim_deeplink,
                 msg='ThingsIX gateway needs to be enabled before onboarding!'
             )
     except Exception:  # nosec
@@ -149,6 +175,7 @@ def process_onboard():  # noqa:C901
             return render_template(
                 THINGSIX_ONBOARD_TEMPLATE,
                 diagnostics=diagnostics,
+                claim_deeplink=claim_deeplink,
                 msg='ThingsIX gateway already onboarded!'
             )
     except Exception:  # nosec
@@ -176,6 +203,7 @@ def process_onboard():  # noqa:C901
         return render_template(
             THINGSIX_ONBOARD_TEMPLATE,
             diagnostics=diagnostics,
+            claim_deeplink=claim_deeplink,
             msg=('Error occured during onboard. '
                  'Please check wallet id and try again - %s'
                  % str(err))
