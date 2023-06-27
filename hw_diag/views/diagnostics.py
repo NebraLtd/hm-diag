@@ -98,11 +98,13 @@ def get_diagnostics():
 @authenticate
 def get_helium_info():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     now = datetime.utcnow()
     template_filename = 'helium_info.html'
     response = render_template(
         template_filename,
         diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
         now=now
     )
     return response
@@ -300,6 +302,7 @@ def add_security_headers(response):
 @authenticate
 def get_device_config_page():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     display_lte = should_display_lte(diagnostics)
     now = datetime.utcnow()
     hostname = get_device_hostname()
@@ -312,6 +315,7 @@ def get_device_config_page():
         now=now,
         hostname=hostname,
         has_external_antenna_support=has_external_antenna_support(),
+        claim_deeplink=claim_deeplink
     )
 
     return response
