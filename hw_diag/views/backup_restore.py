@@ -25,8 +25,13 @@ BACKUP_RESTORE = Blueprint('BACKUP_RESTORE', __name__)
 @authenticate
 def get_backup_page():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     
-    return render_template('backup_restore.html', diagnostics=diagnostics)
+    return render_template(
+        'backup_restore.html', 
+        diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink
+    )
 
 
 @BACKUP_RESTORE.route('/backup')
