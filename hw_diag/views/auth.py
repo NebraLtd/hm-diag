@@ -53,12 +53,14 @@ def get_login_form():
 @authenticate
 def get_password_change_form():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     now = datetime.datetime.utcnow()
     template_filename = 'password_change_form.html'
 
     return render_template(
         template_filename,
         diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
         display_lte=False,
         now=now
     )
@@ -80,12 +82,14 @@ def handle_password_change():
     msg = result.get('msg')
     color = result.get('color')
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     now = datetime.datetime.utcnow()
     template_filename = 'password_change_form.html'
 
     return render_template(
         template_filename,
         diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
         display_lte=False,
         now=now,
         msg=msg,
@@ -218,7 +222,9 @@ def display_upgrade_page():
 @authenticate
 def display_openfleet_page():
     diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
     return render_template(
         'openfleet.html',
-        diagnostics=diagnostics
+        diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink
     )
