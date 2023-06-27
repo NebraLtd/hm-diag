@@ -13,6 +13,7 @@ from hw_diag.utilities.backup import perform_restore
 from hw_diag.utilities.backup import update_backup_checkpoint
 from hw_diag.utilities.balena_supervisor import BalenaSupervisor
 from hw_diag.utilities.diagnostics import read_diagnostics_file
+from hw_diag.utilities.dashboard_registration import claim_miner_deeplink
 
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
