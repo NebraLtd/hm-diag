@@ -6,6 +6,10 @@
     color: white;
 }
 
+.content-page a span {
+    color: #02A8F5;
+}
+
 .progress-row {
     width: 33.3%;
 }
