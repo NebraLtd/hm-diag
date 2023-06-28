@@ -100,5 +100,6 @@ html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .content-pa
     color: #212529;
     background-color: #f8f9fa;
     font-weight: 400;
+    margin-right: 1rem;
 }
 
