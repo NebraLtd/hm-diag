@@ -255,10 +255,12 @@ def get_serial_number(diagnostics):
         cpuinfo = load_cpu_info()
         serial = load_serial_number()
         serial_number = ""
-        if has_valid_serial(serial):
+        if has_valid_serial(serial) and not is_rockpi():
             serial_number = serial[CPUINFO_SERIAL_KEY]
         elif has_valid_serial(cpuinfo):
             serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
+        elif has_valid_serial(serial) and is_rockpi():
+            serial_number = serial[CPUINFO_SERIAL_KEY]
         else:
             serial_number = "Serial number not found"
     except FileNotFoundError as e:
