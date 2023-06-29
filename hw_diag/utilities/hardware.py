@@ -253,12 +253,14 @@ def get_serial_number(diagnostics):
     """
     try:
         cpuinfo = load_cpu_info()
+        serial = load_serial_number()
         serial_number = ""
-        if has_valid_serial(cpuinfo):
+        if has_valid_serial(serial):
+            serial_number = serial[CPUINFO_SERIAL_KEY]
+        elif has_valid_serial(cpuinfo):
             serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
         else:
-            serial_number = open("/proc/device-tree/serial-number").readline() \
-                .rstrip('\x00')
+            serial_number = "Serial number not found"
     except FileNotFoundError as e:
         raise e
     except PermissionError as e:
@@ -294,6 +296,20 @@ def load_cpu_info() -> dict:
     except Exception as e:
         logging.warning(f"failed to load /proc/cpuinfo: {e}")
     return cpuinfo
+
+
+def load_serial_number() -> dict:
+    '''
+    returns /proc/device-tree/serial-number as dict, keys are case-insensitive
+    '''
+    serial = {}
+    try:
+        serial_number = open("/proc/device-tree/serial-number").readline() \
+                .rstrip('\x00')
+        serial[CPUINFO_SERIAL_KEY] = serial_number
+    except Exception as e:
+        logging.warning(f"failed to load /proc/device-tree/serial-number: {e}")
+    return serial
 
 
 @retry(Exception, tries=5, delay=5, max_delay=15, backoff=2, logger=logging)
