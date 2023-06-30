@@ -1,6 +1,7 @@
 import dbus
 import os
 import psutil
+import string
 from typing import Union
 from urllib.parse import urlparse
 from hm_pyhelper.logger import get_logger
@@ -77,6 +78,20 @@ EXT_ANT_DEVICE_TYPES = {'raspberrypicm4-ioboard'}
 DTPARAM_CONFIG_VAR_NAME = 'BALENA_HOST_CONFIG_dtparam'
 DTPARAM_CONFIG_VAR_NAMES = ['BALENA_HOST_CONFIG_dtparam', 'RESIN_HOST_CONFIG_dtparam']
 EXT_ANT_DTPARAM = '"ant2"'
+
+INCORRECT_BOBCAT_SERIALS = ['c3d9b8674f4b94f6']
+INCORRECT_ROCKPI_SERIALS = [
+    'W1EP3DN9PU',
+    '0UQMAKIBII',
+    'PN06893W5V',
+    'KLOFHWLY95',
+    '3IT1I4E9TG',
+    'CKHZ4CHI1P',
+    'I4YE1UGF5N',
+    'PERTSKMCT0',
+    'S63QCF54CJ',
+    'YYMSYLJWG8'
+]
 
 
 def should_display_lte(diagnostics):
@@ -255,11 +270,11 @@ def get_serial_number(diagnostics):
         cpuinfo = load_cpu_info()
         serial = load_serial_number()
         serial_number = ""
-        if has_valid_serial(serial) and not is_rockpi():
+        if not is_rockpi() and has_valid_serial(serial):
             serial_number = serial[CPUINFO_SERIAL_KEY]
         elif has_valid_serial(cpuinfo):
             serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
-        elif has_valid_serial(serial) and is_rockpi():
+        elif is_rockpi() and has_valid_serial(serial):
             serial_number = serial[CPUINFO_SERIAL_KEY]
         else:
             serial_number = "Serial number not found"
@@ -275,9 +290,29 @@ def has_valid_serial(cpuinfo: dict) -> bool:
     if CPUINFO_SERIAL_KEY not in cpuinfo:
         return False
 
-    # Check if serial number is all 0s...
     serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
+
+    # Check if serial number is all 0s...
     if all(c in '0' for c in str(serial_number)):
+        return False
+
+    # Check if serial number is a known incorrect ROCKPi serial
+    # in INCORRECT_ROCKPI_SERIALS...
+    if str(serial_number) in INCORRECT_ROCKPI_SERIALS:
+        return False
+
+    # Check if serial number is a known incorrect Bobcat serial
+    # in INCORRECT_BOBCAT_SERIALS...
+    if str(serial_number) in INCORRECT_BOBCAT_SERIALS:
+        return False
+
+    # Check if serial number is 10 characters and non-hexadecimal...
+    if len(str(serial_number)) == 10 and not all(
+        c in string.hexdigits for c in str(serial_number)):
+        return False
+
+    # Check if serial number is < 10 characters...
+    if len(str(serial_number)) < 10:
         return False
 
     return True
