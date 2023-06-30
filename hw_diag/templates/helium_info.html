@@ -52,7 +52,9 @@
                 <tr>
                  <td><span class="uil uil-rss icon"></span> Frequency</td>
                   {% if not diagnostics.FR %}
-                    <td class="text-right">N/A (Not Required)</td>
+                    <td class="text-right">
+                      <span class="badge badge-light p-2">N/A (Not Required)</span>
+                    </td>
                   {% elif "N/A" in diagnostics.FR %}
                     <td class="text-right">
                       <span class="badge badge-light p-2">{{ diagnostics.FR }}</span>
