@@ -8,6 +8,7 @@ from flask import request
 
 from hm_pyhelper.logger import get_logger
 from hw_diag.utilities.auth import authenticate
+from hw_diag.utilities.auth import commercial_fleet_only
 from hw_diag.utilities.backup import perform_backup
 from hw_diag.utilities.backup import perform_restore
 from hw_diag.utilities.backup import update_backup_checkpoint
@@ -24,6 +25,7 @@ BACKUP_RESTORE = Blueprint('BACKUP_RESTORE', __name__)
 
 @BACKUP_RESTORE.route('/backup_restore')
 @authenticate
+@commercial_fleet_only
 def get_backup_page():
     diagnostics = read_diagnostics_file()
     claim_deeplink = claim_miner_deeplink()
@@ -37,6 +39,7 @@ def get_backup_page():
 
 @BACKUP_RESTORE.route('/backup')
 @authenticate
+@commercial_fleet_only
 def do_backup():
     backup_file = perform_backup()
     update_backup_checkpoint()
@@ -45,6 +48,7 @@ def do_backup():
 
 @BACKUP_RESTORE.route('/restore', methods=['POST'])
 @authenticate
+@commercial_fleet_only
 def do_restore():
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
