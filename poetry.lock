@@ -337,17 +337,13 @@ toml = ["tomli"]
 
 [[package]]
 name = "dbus-python"
-version = "1.3.2"
+version = "1.2.18"
 description = "Python bindings for libdbus"
 optional = false
-python-versions = ">=3.7"
+python-versions = "*"
 files = [
-    {file = "dbus-python-1.3.2.tar.gz", hash = "sha256:ad67819308618b5069537be237f8e68ca1c7fcc95ee4a121fe6845b1418248f8"},
+    {file = "dbus-python-1.2.18.tar.gz", hash = "sha256:92bdd1e68b45596c833307a5ff4b217ee6929a1502f5341bae28fd120acf7260"},
 ]
-
-[package.extras]
-doc = ["sphinx", "sphinx_rtd_theme"]
-test = ["tap.py"]
 
 [[package]]
 name = "decorator"
@@ -1559,4 +1555,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "ebee6180d2a7407d716eea361167175a3420da70b4bfb61d21439262b3d9a9d5"
+content-hash = "5c5117cef77489665121a6c208c0747fcd3f83462a054420db35d541619a97f0"
