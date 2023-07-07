@@ -101,35 +101,35 @@ class TestGetSerialNumber(unittest.TestCase):
     def test_load_cpuinfo_fail(self):
         with patch("builtins.open", mock_open()) as mf:
             mf.side_effect = FileNotFoundError()
-            
+
             cpuinfo = load_cpu_info()
             captured = self.caplog
             self.assertTrue('failed to load /proc/cpuinfo' in str(captured.text))
             self.assertEqual(cpuinfo, FAILED_CPU_INFO_RESULT)
 
     def test_has_valid_serial_all_zeros(self):
-            self.assertFalse(has_valid_serial(SERIAL_ALL_ZERO))
+        self.assertFalse(has_valid_serial(SERIAL_ALL_ZERO))
 
     def test_has_valid_serial_non_hex(self):
-            self.assertFalse(has_valid_serial(SERIAL_NON_HEX_TEN_DIGITS))
+        self.assertFalse(has_valid_serial(SERIAL_NON_HEX_TEN_DIGITS))
 
-    def test_has_valid_serial_knonwn_wrong(self):
-            self.assertFalse(has_valid_serial(SERIAL_WRONG_ROCKPI))
+    def test_has_valid_serial_knonwn_wrong_rockpi(self):
+        self.assertFalse(has_valid_serial(SERIAL_WRONG_ROCKPI))
 
-    def test_has_valid_serial_knonwn_wrong(self):
-            self.assertFalse(has_valid_serial(SERIAL_WRONG_BOBCAT))
+    def test_has_valid_serial_knonwn_wrong_bobcat(self):
+        self.assertFalse(has_valid_serial(SERIAL_WRONG_BOBCAT))
 
     def test_has_valid_serial_mising(self):
-            self.assertFalse(has_valid_serial(SERIAL_MISSING))
+        self.assertFalse(has_valid_serial(SERIAL_MISSING))
 
     def test_has_valid_serial_blank(self):
-            self.assertFalse(has_valid_serial(SERIAL_BLANK))
+        self.assertFalse(has_valid_serial(SERIAL_BLANK))
 
     def test_has_valid_serial_short(self):
-            self.assertFalse(has_valid_serial(SERIAL_SHORT))
+        self.assertFalse(has_valid_serial(SERIAL_SHORT))
 
     def test_has_valid_serial_true(self):
-            self.assertTrue(has_valid_serial(SERIAL_VALID))
+        self.assertTrue(has_valid_serial(SERIAL_VALID))
 
     @patch('hw_diag.utilities.hardware.is_rockpi')
     @patch('hw_diag.utilities.hardware.load_cpu_info')
@@ -309,7 +309,7 @@ class TestGetSerialNumber(unittest.TestCase):
         mock_rockpi.return_value = False
         mock_cpuinfo.return_value = {'serial': TEST_SERIAL}
         mock_serial.return_value = {'serial': TEST_SERIAL_EMPTY}
-        
+
         get_serial_number(self.diag)
         mock_valid_serial.assert_called_once()
 
@@ -317,10 +317,10 @@ class TestGetSerialNumber(unittest.TestCase):
     @patch('hw_diag.utilities.hardware.load_cpu_info')
     @patch('hw_diag.utilities.hardware.load_serial_number')
     @patch('hw_diag.utilities.hardware.has_valid_serial')
-    def test_has_valid_serial_called(self, mock_valid_serial, mock_serial, mock_cpuinfo, mock_rockpi):
+    def test_has_valid_serial_called_with_rockpi_false(self, mock_valid_serial, mock_serial, mock_cpuinfo, mock_rockpi):
         mock_rockpi.return_value = True
         mock_cpuinfo.return_value = {'serial': TEST_SERIAL_SHORT}
         mock_serial.return_value = {'serial': TEST_SERIAL_BOBCAT_WRONG}
-        
+
         get_serial_number(self.diag)
         self.assertEqual(mock_valid_serial.call_count, 2)
