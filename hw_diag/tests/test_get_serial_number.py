@@ -316,11 +316,11 @@ class TestGetSerialNumber(unittest.TestCase):
     @patch('hw_diag.utilities.hardware.is_rockpi')
     @patch('hw_diag.utilities.hardware.load_cpu_info')
     @patch('hw_diag.utilities.hardware.load_serial_number')
-    @patch('hw_diag.utilities.hardware.has_valid_serial')
-    def test_has_valid_serial_called_with_rockpi_false(self, mock_valid_serial, mock_serial, mock_cpuinfo, mock_rockpi):
+    def test_has_valid_serial_called_for_rockpi(self, mock_serial, mock_cpuinfo, mock_rockpi):
         mock_rockpi.return_value = True
         mock_cpuinfo.return_value = {'serial': TEST_SERIAL_SHORT}
         mock_serial.return_value = {'serial': TEST_SERIAL_BOBCAT_WRONG}
 
+
         get_serial_number(self.diag)
-        self.assertEqual(mock_valid_serial.call_count, 2)
+        assert self.diag['serial_number'] == 'Serial number not found'
