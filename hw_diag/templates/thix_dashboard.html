@@ -13,6 +13,12 @@
             <div class="card mb-0 h-100 table-responsive">
               <table class="table dt-responsive nowrap m-md-2 w-auto">
                 <tr>
+                  <td><span class="uil uil-refresh icon"></span> ThingsIX Version</td>
+                  <td class="text-right">
+                    <span class="badge badge-light p-2">Forwarder v{{ diagnostics.thingsix_version }}</span>
+                  </td>
+                </tr>
+                <tr>
                     <td><i class="uil uil-sign-alt"></i> Gateway Address</td>
                     {% if not gateway.gatewayId %}
                     <td class="text-right">Not Available</td>
