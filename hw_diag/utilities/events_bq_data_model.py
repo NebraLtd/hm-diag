@@ -5,18 +5,18 @@ from typing import Optional, List
 
 class EventDataModel(BaseModel):
     generated_ts: datetime
-    event_type: Optional[str]
-    serial: Optional[str]
-    variant: Optional[str]
-    firmware_version: Optional[str]
-    region_override: Optional[str]
-    packet_errors: Optional[int]
-    msg: Optional[str]
-    action_type: Optional[str]
-    uptime_hours: Optional[float]
-    balena_app_state: Optional[str]
-    balena_release: Optional[str]
-    balena_all_running: Optional[bool]
+    event_type: Optional[str] = None
+    serial: Optional[str] = None
+    variant: Optional[str] = None
+    firmware_version: Optional[str] = None
+    region_override: Optional[str] = None
+    packet_errors: Optional[int] = None
+    msg: Optional[str] = None
+    action_type: Optional[str] = None
+    uptime_hours: Optional[float] = None
+    balena_app_state: Optional[str] = None
+    balena_release: Optional[str] = None
+    balena_all_running: Optional[bool] = None
     balena_failed_containers: List[str]
-    balena_api_status: Optional[str]
-    network_state: Optional[str]
+    balena_api_status: Optional[str] = None
+    network_state: Optional[str] = None
