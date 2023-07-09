@@ -46,7 +46,9 @@
                     <td class="text-right">Not Available</td>
                   {% else %}
                     <td><i class="fa-kit fa-helium"></i> Explorer Link</td>
-                    <td class="text-right"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></td>
+                    <td class="text-right">
+                     <span class="badge badge-light p-2"><a href="https://explorer.helium.com/hotspots/{{ diagnostics.PK }}" target="_blank">View on Explorer</a></span>
+                    </td>
                   {% endif %}
                 </tr>
                 <tr>
