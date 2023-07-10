@@ -4,7 +4,7 @@ ARG BUILD_BOARD
 
 ####################################################################################################
 ################################## Stage: builder ##################################################
-FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20221215 AS builder
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-build-20230530 AS builder
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
@@ -26,10 +26,11 @@ RUN install_packages \
         gcc \
         libtool \
         python3-dev \
+        dbus \
         libdbus-glib-1-dev \
         libdbus-1-dev && \
     python -m venv "$PYTHON_DEPENDENCIES_DIR" && . "$PYTHON_DEPENDENCIES_DIR/bin/activate" && \
-    pip install --no-cache-dir poetry==1.5.0 && \
+    pip install --no-cache-dir poetry==1.5.1 && \
     poetry config installer.max-workers 10 && \
     poetry install --no-cache --no-root && \
     poetry build && \
@@ -46,7 +47,7 @@ RUN make
 
 ####################################################################################################
 ################################### Stage: runner ##################################################
-FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-run-20221215 AS runner
+FROM balenalib/"$BUILD_BOARD"-debian-python:bullseye-run-20230530 AS runner
 
 ENV PYTHON_DEPENDENCIES_DIR=/opt/python-dependencies
 
