@@ -68,7 +68,7 @@
                   {% endif %}
                 </tr>
                 <tr>
-                  {% if diagnostics.RE == 'UN123' %}
+                  {% if diagnostics.RE == 'UN123' or diagnostics.RE == 'UNKNOWN' %}
                     <td class="border-0"><span class="fa-sharp fa-regular fa-earth-europe"></span> Region Plan</td>
                     <td class="border-0 text-right">Awaiting Location Assertion</td>
                   {% else %}
@@ -88,7 +88,7 @@
                     <td><span class="uil uil-wifi-router icon"></span> Radio Operational</td>
                     {% if diagnostics.LOR %}
                       <td class="text-right"><span class="uil uil-check-circle text-success"></span></td>
-                    {% elif diagnostics.RE == 'UN123' and not diagnostics.LOR %}
+                    {% elif (diagnostics.RE == 'UN123' or diagnostics.RE == 'UNKNOWN') and not diagnostics.LOR %}
                       <td class="text-right">Awaiting Location Assertion</td>
                     {% else %}
                       <td class="text-right"><span class="uil uil-times-circle text-danger"></span></td>
