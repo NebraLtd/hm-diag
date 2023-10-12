@@ -10,7 +10,7 @@
         {% if diagnostics.PF %}
                     <span class="text-success">All Ok</span>
             {% elif diagnostics.RE == 'UN123' or diagnostics.RE == 'UNKNOWN' %}
-                    <span class="text-danger">Awaiting Location Assertion</span>
+                    <span class="text-warning">Awaiting Location Assertion</span>
             {% else %}
                     <span class="text-danger">Errors Found</span>
             {% endif %}
