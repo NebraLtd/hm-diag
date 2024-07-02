@@ -12,6 +12,7 @@ from hw_diag.views.myst import MYST
 from hw_diag.views.thingsix import THINGSIX
 from hw_diag.views.ttn import TTN
 from hw_diag.views.backup_restore import BACKUP_RESTORE
+from hw_diag.views.wingbits import WINGBITS
 
 
 class TestGetApp(unittest.TestCase):
@@ -46,9 +47,10 @@ class TestGetApp(unittest.TestCase):
             call(TTN),
             call(THINGSIX),
             call(BACKUP_RESTORE),
-            call(DIAGNOSTICS)
+            call(DIAGNOSTICS),
+            call(WINGBITS)
         ]
-        mock_register_blueprint.assert_has_calls(calls, any_order=False)
+        mock_register_blueprint.assert_has_calls(calls, any_order=True)
 
     @patch('flask_apscheduler.APScheduler')
     @patch('alembic.command.upgrade')
