@@ -24,6 +24,7 @@ from hw_diag.views.diagnostics import DIAGNOSTICS
 from hw_diag.views.auth import AUTH
 from hw_diag.views.myst import MYST
 from hw_diag.views.ttn import TTN
+from hw_diag.views.wingbits import WINGBITS
 from hw_diag.views.thingsix import THINGSIX
 from hw_diag.views.backup_restore import BACKUP_RESTORE
 from hw_diag.utilities.quectel import ensure_quectel_health
@@ -192,6 +193,7 @@ def get_app(name, lean_initializations=device_in_manufacturing()):
         app.register_blueprint(TTN)
         app.register_blueprint(THINGSIX)
         app.register_blueprint(BACKUP_RESTORE)
+        app.register_blueprint(WINGBITS)
 
     app.register_blueprint(DIAGNOSTICS)
     return app

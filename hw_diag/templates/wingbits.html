@@ -1,0 +1,73 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}Wingbits{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <br/>
+        <h3 class="text-center mb-4">Wingbits Configuration</h3>
+        <div class="row mb-4">
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <form action="/wingbits" method="POST">
+                {% if error %}
+                    <div class="card text-center">
+                        <br/>
+                        <font color="red">{{ error }}</font>
+                        <br />
+                    </div>
+                {% endif %}
+                <div class="card h-100 table-responsive">
+                  <table class="table dt-responsive nowrap m-md-2 w-auto">
+                    <tr>
+                        <td><span class="uil uil-focus icon"></span> Node Name</td>
+                        <td class="text-right">
+                            <input type="text" class="form-control" name="txtNodeName" id="txtNodeName" value="{{ config.node_name }}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><i class="uil uil-sign-alt"></i> Latitude</td>
+                        <td class="text-right">
+                            <input type="text" class="form-control" name="txtLatitude" id="txtLatitude" value="{{ config.latitude }}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-0"><i class="uil uil-sign-alt"></i> Longitude</td>
+                        <td class="border-0 text-right">
+                            <input type="text" class="form-control" name="txtLongitude" id="txtLongitude" value="{{ config.longitude }}" />
+                        </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="card">
+                    <br/>
+                        <center>
+                            <input type="submit" class="btn btn-primary" style="width:35%;" value="Update Configuration" />
+                        </center>
+                    <br />
+                </div>
+            </form>
+          </div>
+          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="card h-100 table-responsive">
+              <table class="table dt-responsive nowrap m-md-2 w-auto">
+                <tr>
+                    <td class="border-0"><span class="uil uil-wifi-router icon"></span> SDR Operational</td>
+                    {% if sdr_present %}
+                        <td class="border-0 text-right"><span class="uil uil-check-circle text-success"></span></td>
+                    {% else %}
+                        <td class="border-0 text-right"><span class="uil uil-times-circle text-danger"></span></td>
+                    {% endif %}
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="text-center">
+          {% if diagnostics.last_updated %}
+            <p>Last Updated: {{ diagnostics.last_updated }}</p>
+          {% else %}
+            <p>Last Updated: Never</p>
+          {% endif %}
+      </div>
+    </div>
+{% endblock %}
