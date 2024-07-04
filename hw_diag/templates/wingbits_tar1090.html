@@ -1,0 +1,24 @@
+{% extends 'template_hyper.html' %}
+
+{% block title %}Wingbits - TAR1090{% endblock %}
+
+{% block body %}
+    <style>
+        .content-page {
+            position: relative;
+            margin-left: var(--ct-leftbar-width);
+            min-height: calc(100vh - var(--ct-topbar-height) - 2px);
+            padding: 0 0 0;
+            -webkit-transition: all .25s ease-in-out;
+            transition: all .25s ease-in-out;
+        }
+        footer {
+                bottom: -52px !important;
+        }
+    </style>
+    <iframe title="TAR1090" id='frmWingbits' frameborder="0" style="overflow: hidden; height: 100vh; width: 100%;">Loading...</iframe>
+    <script>
+        var url = 'http://' + window.location.href.split('/')[2] + ':8081/tar1090/?ts={{ now }}';
+        document.getElementById('frmWingbits').src = url;
+    </script>
+{% endblock %}

@@ -7,7 +7,7 @@
         <br/>
         <h3 class="text-center mb-4">Wingbits Configuration</h3>
         <div class="row mb-4">
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+          <div class="col-12 col-lg-8 mb-4 mb-lg-0">
             <form action="/wingbits" method="POST">
                 {% if error %}
                     <div class="card text-center">
@@ -41,14 +41,20 @@
                 <div class="card">
                     <br/>
                         <center>
-                            <input type="submit" class="btn btn-primary" style="width:35%;" value="Update Configuration" />
+                            <input type="submit" class="btn btn-primary" style="width:20%;" value="Update Configuration" />
+                            &nbsp;&nbsp;
+                            <a href="/wingbits/tar1090" class="btn btn-secondary" style="width:20%;" />Live Map</a>
+                            &nbsp;&nbsp;
+                            <a href="/wingbits/graphs1090" class="btn btn-secondary" style="width:20%;" />Statistics</a>
+                            &nbsp;&nbsp;
+                            <a href="https://wingbits.com/dashboard/antennas" target="_blank" class="btn btn-secondary" style="width:20%;" />Wingbits Dashboard</a>
                         </center>
                     <br />
                 </div>
             </form>
           </div>
-          <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-            <div class="card h-100 table-responsive">
+          <div class="col-12 col-lg-4 mb-4 mb-lg-0">
+            <div class="card table-responsive">
               <table class="table dt-responsive nowrap m-md-2 w-auto">
                 <tr>
                     <td class="border-0"><span class="uil uil-wifi-router icon"></span> SDR Operational</td>

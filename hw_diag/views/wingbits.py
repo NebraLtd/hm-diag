@@ -65,6 +65,38 @@ def get_wingbits_dashboard():
     )
 
 
+@WINGBITS.route('/wingbits/tar1090')
+@authenticate
+@commercial_fleet_only
+def get_wingbits_tar1090():
+    diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
+    now = round(time.time())
+
+    return render_template(
+        'wingbits_tar1090.html',
+        diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
+        now=now
+    )
+
+
+@WINGBITS.route('/wingbits/graphs1090')
+@authenticate
+@commercial_fleet_only
+def get_wingbits_graphs1090():
+    diagnostics = read_diagnostics_file()
+    claim_deeplink = claim_miner_deeplink()
+    now = round(time.time())
+
+    return render_template(
+        'wingbits_graph1090.html',
+        diagnostics=diagnostics,
+        claim_deeplink=claim_deeplink,
+        now=now
+    )
+
+
 @WINGBITS.route('/wingbits', methods=['POST'])
 @authenticate
 @commercial_fleet_only
