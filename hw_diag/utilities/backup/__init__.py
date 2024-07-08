@@ -6,6 +6,7 @@ import logging
 from hw_diag.utilities.backup.myst import MystBackupRestore
 from hw_diag.utilities.backup.thingsix import ThingsIXBackupRestore
 from hw_diag.utilities.backup.nebra import NebraBackupRestore
+from hw_diag.utilities.backup.wingbits import WingbitsBackupRestore
 from hw_diag.utilities.db import get_value, set_value
 from hw_diag.utilities.crypto import empty_hash
 
@@ -13,7 +14,8 @@ from hw_diag.utilities.crypto import empty_hash
 PLUGINS = [
     MystBackupRestore,
     ThingsIXBackupRestore,
-    NebraBackupRestore
+    NebraBackupRestore,
+    WingbitsBackupRestore
 ]
 
 

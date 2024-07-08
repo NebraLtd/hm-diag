@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 from flask import Blueprint
 from flask import render_template
@@ -29,11 +30,12 @@ BACKUP_RESTORE = Blueprint('BACKUP_RESTORE', __name__)
 def get_backup_page():
     diagnostics = read_diagnostics_file()
     claim_deeplink = claim_miner_deeplink()
-    
+
     return render_template(
         'backup_restore.html', 
         diagnostics=diagnostics,
-        claim_deeplink=claim_deeplink
+        claim_deeplink=claim_deeplink,
+        now=round(time.time())
     )
 
 
@@ -64,7 +66,8 @@ def do_restore():
         return render_template(
             'reconfigure_countdown.html',
             seconds=120,
-            next_url='/'
+            next_url='/',
+            now=round(time.time())
         )
     except Exception:
         return 'Error during restoration', 500
