@@ -47,7 +47,7 @@
                             &nbsp;&nbsp;
                             <a href="/wingbits/graphs1090" class="btn btn-secondary" style="width:20%;" />Statistics</a>
                             &nbsp;&nbsp;
-                            <a href="https://wingbits.com/dashboard/antennas" target="_blank" class="btn btn-secondary" style="width:20%;" />Wingbits Dashboard</a>
+                            <a href="https://wingbits.com/dashboard/antennas" target="_blank" rel="noopener" class="btn btn-secondary" style="width:20%;" />Wingbits Dashboard</a>
                         </center>
                     <br />
                 </div>
@@ -57,11 +57,15 @@
             <div class="card table-responsive">
               <table class="table dt-responsive nowrap m-md-2 w-auto">
                 <tr>
-                    <td class="border-0"><span class="uil uil-wifi-router icon"></span> SDR Operational</td>
                     {% if sdr_present %}
+                        <td class="border-0"><span class="uil uil-wifi-router icon"></span> SDR Operational</td>
                         <td class="border-0 text-right"><span class="uil uil-check-circle text-success"></span></td>
                     {% else %}
-                        <td class="border-0 text-right"><span class="uil uil-times-circle text-danger"></span></td>
+                        <td><span class="uil uil-wifi-router icon"></span> SDR Operational</td>
+                        <td class="text-right"><span class="uil uil-times-circle text-danger"></span></td>
+                </tr>
+                <tr>
+                    <td class="border-0"><span class="uil uil-info-circle icon text-warning"></span> In order to feed data to the Wingbits network you will need a RTL-SDR based ADS-B radio dongle and 1090MHz antenna. You may also need a USB hub or splitter depending on your miner type. You can read more about the necessary hardware on <a href="https://docs.wingbits.com/get-started/hardware-suggestions" target="_blank" rel="noopener">the Wingbits docs</a>.</td>
                     {% endif %}
                 </tr>
               </table>
