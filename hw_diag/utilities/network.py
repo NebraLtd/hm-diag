@@ -79,8 +79,10 @@ def setup_hostname():
 
             if INITIAL_HOSTNAME_OVERRIDE != "false":
                 hostname = INITIAL_HOSTNAME_OVERRIDE
+                logging.info("Using hostname override from env var!")
             else:
                 hostname = "nebra-%s.local" % hostname_suffix
+                logging.info("No hostname override, using default!")
 
             balena_supervisor = BalenaSupervisor.new_from_env()
             balena_supervisor.set_hostname(hostname)
