@@ -76,7 +76,7 @@ def read_password():
             filter(AuthKeyValue.key == 'password_hash'). \
             one()
     except NoResultFound:
-        if PASSWORD_OVERRIDE != "false":
+        if PASSWORD_OVERRIDE != "false":  # nosec
             default_password = PASSWORD_OVERRIDE
             logging.info("Using password from override env var!")
         else:
