@@ -376,8 +376,15 @@ def shutdown():
 @authenticate
 def handle_hostname_update():
     req_body = request.get_json()
-    new_hostname = req_body.get('hostname')
+    HOSTNAME_OVERRIDE = os.getenv('HOSTNAME_OVERRIDE', 'false')
 
+    if HOSTNAME_OVERRIDE != "false":
+        new_hostname = HOSTNAME_OVERRIDE
+        logging.info("Hostname overriden from env var. Not updating!")
+    else:
+        new_hostname = req_body.get('hostname')
+        logging.info("No hostname override, updating as per request!")
+        
     try:
         balena_supervisor = BalenaSupervisor.new_from_env()
         balena_supervisor.set_hostname(new_hostname)
