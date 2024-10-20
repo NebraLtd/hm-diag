@@ -70,9 +70,17 @@ def get_password_change_form():
 @authenticate
 def handle_password_change():
     current_password = request.form.get('txtOriginalPassword')
-    new_password = request.form.get('txtNewPassword')
-    confirm_password = request.form.get('txtConfirmPassword')
+    PASSWORD_OVERRIDE = os.getenv('PASSWORD_OVERRIDE', 'false')
 
+    if PASSWORD_OVERRIDE != "false":  # nosec
+        new_password = PASSWORD_OVERRIDE
+        confirm_password = new_password
+        logging.info("Password overriden env var - not updating!")
+    else:
+        new_password = request.form.get('txtNewPassword')
+        confirm_password = request.form.get('txtConfirmPassword')
+        logging.info("No password override. Saving new password!")
+    
     result = update_password(
         current_password,
         new_password,
