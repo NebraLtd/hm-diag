@@ -270,7 +270,7 @@ def get_serial_number(diagnostics):
         cpuinfo = load_cpu_info()
         serial = load_serial_number()
         serial_number = ""
-        if not is_rockpi() and has_valid_serial(serial):
+        if not (is_rockpi() and has_valid_serial(serial)):
             serial_number = serial[CPUINFO_SERIAL_KEY]
         elif has_valid_serial(cpuinfo):
             serial_number = cpuinfo[CPUINFO_SERIAL_KEY]
