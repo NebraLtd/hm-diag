@@ -1,3 +1,5 @@
+import os
+import logging
 import datetime
 import bcrypt
 
@@ -68,12 +70,19 @@ def write_password(password):
 
 
 def read_password():
+    PASSWORD_OVERRIDE = os.getenv('PASSWORD_OVERRIDE', 'false')
     try:
         password_row = g.db.query(AuthKeyValue). \
             filter(AuthKeyValue.key == 'password_hash'). \
             one()
     except NoResultFound:
-        default_password = generate_default_password()
+        if PASSWORD_OVERRIDE != "false":  # nosec
+            default_password = PASSWORD_OVERRIDE
+            logging.info("Using password from override env var!")
+        else:
+            default_password = generate_default_password()
+            logging.info("No password override. Generating default!")
+
         password_row = write_password(default_password)
     return password_row
 
